@@ -3,26 +3,15 @@ import Base from '../layouts/Base.astro';
 import { site } from '../data/site.js';
 ---
 
-<Base title="About" description="About Aleksandr Kozlov — technical artist working with Houdini, Python and real-time graphics.">
+<Base title="About" description="About Aleksandr Kozlov — Senior Technical Artist working with real-time 3D, machine learning and robotics.">
   <section class="section">
     <div class="container about">
       <h1 class="page-title">About</h1>
+      <img class="about-photo" src="/images/about/about_photo.jpg" alt={`Portrait of ${site.name}`} />
       <div class="prose">
-        <p>
-          I'm <strong>{site.name}</strong>, a technical artist focused on the
-          space between art and engineering: procedural content, DCC tooling,
-          and the pipelines that hold production together.
-        </p>
-        <p>
-          My day-to-day toolkit is Houdini and Python, with frequent detours
-          into NumPy for heavy geometry and volume processing, and GLSL when
-          things need to run in real time. I like problems where the answer is
-          a system, not a one-off asset.
-        </p>
-        <p>
-          This site is a static build (Astro) with hand-written WebGL2 shader
-          demos — you can find the source on GitHub.
-        </p>
+        <p>I'm a Senior Technical Artist with 10+ years of experience building tools and pipelines for real-time 3D production — from procedural content generation in Houdini to performance optimization in Unreal Engine. I've worked on titles including PUBG Black Budget, Battlefield 2042, FIFA, and King's Bounty II, focusing on the unglamorous but critical work of making large open worlds run fast without looking worse.</p>
+        <p>Over the past few years my focus has shifted toward the intersection of real-time engines and machine learning — applying deep learning to content optimization, and more recently moving that curiosity into physical systems. I'm currently building and training a LeRobot-based mobile manipulator (LeKiwi + Jetson Orin Nano Super), and experimenting with LLM agents controlling it through a custom MCP server.</p>
+        <p>This site is where I write up what I learn along the way — Houdini tricks, engine internals, ML experiments, and now robotics — mostly so future-me remembers how I solved something, and maybe useful to someone else too.</p>
       </div>
 
       <h2 class="section-title" style="margin-top: 48px;">Contact</h2>
@@ -37,23 +26,8 @@ import { site } from '../data/site.js';
 
 <style>
   .page-title { font-size: 2.4rem; margin-bottom: 24px; }
-  .contact {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  .contact li {
-    display: flex;
-    gap: 20px;
-    align-items: baseline;
-  }
-  .contact .label {
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--text-faint);
-    width: 80px;
-  }
+  .about-photo { width: min(100%, 360px); margin-bottom: 28px; border: 1px solid var(--border); border-radius: 10px; }
+  .contact { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .contact li { display: flex; gap: 20px; align-items: baseline; }
+  .contact .label { font-family: var(--font-mono); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-faint); width: 80px; }
 </style>
