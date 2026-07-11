@@ -299,7 +299,9 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
   // Sparse stars with a gentle shimmer.
   vec2 starCell = floor((p + vec2(2.0, 1.0)) * 16.0);
-  vec2 starPos = fract((p + vec2(2.0, 1.0)) * 16.0) - 0.5;
+  // Jitter each star away from its cell center so the underlying grid vanishes.
+  vec2 starJitter = (vec2(hash(starCell + 3.1), hash(starCell + 9.7)) - 0.5) * 0.7;
+  vec2 starPos = fract((p + vec2(2.0, 1.0)) * 16.0) - 0.5 - starJitter;
   // Disc with a soft edge: hover grows the core radius while tightening the
   // falloff, so stars get bigger and crisper instead of just blurrier.
   float starDist = length(starPos);
