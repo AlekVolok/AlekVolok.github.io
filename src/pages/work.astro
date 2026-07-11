@@ -1,0 +1,31 @@
+---
+import Base from '../layouts/Base.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { projects } from '../data/projects.js';
+---
+
+<Base title="Work" description="Projects and tools by Aleksandr Kozlov — Houdini, Python, geometry processing and real-time graphics.">
+  <section class="section">
+    <div class="container">
+      <h1 class="page-title">Work</h1>
+      <p class="page-intro">
+        Tools, experiments and pipelines. Most of it lives at the intersection
+        of DCC software and code — making 3D content generation faster,
+        smarter, or possible at all.
+      </p>
+      <div class="card-grid">
+        {projects.map((p) => <ProjectCard project={p} />)}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page-title { font-size: 2.4rem; margin-bottom: 16px; }
+  .page-intro {
+    color: var(--text-dim);
+    max-width: 620px;
+    margin-bottom: 44px;
+    font-size: 1.05rem;
+  }
+</style>

@@ -1,0 +1,79 @@
+---
+import { site } from '../data/site.js';
+
+const nav = [
+  { href: '/work', label: 'Work' },
+  { href: '/lab', label: 'Lab' },
+  { href: '/blog', label: 'Blog' },
+  { href: '/about', label: 'About' },
+];
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+---
+
+<header class="site-header">
+  <div class="container inner">
+    <a href="/" class="logo">
+      <span class="logo-mark">◮</span>
+      <span class="logo-text">{site.name}</span>
+    </a>
+    <nav>
+      {nav.map((item) => (
+        <a href={item.href} class:list={{ active: path.startsWith(item.href) }}>
+          {item.label}
+        </a>
+      ))}
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10, 12, 16, 0.82);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text);
+    font-weight: 650;
+    letter-spacing: -0.01em;
+  }
+  .logo:hover { text-decoration: none; color: var(--accent); }
+  .logo-mark { color: var(--accent); font-size: 1.1rem; }
+  nav {
+    display: flex;
+    gap: 6px;
+  }
+  nav a {
+    color: var(--text-dim);
+    font-size: 0.92rem;
+    padding: 6px 12px;
+    border-radius: 6px;
+    transition: color 0.15s, background 0.15s;
+  }
+  nav a:hover {
+    color: var(--text);
+    background: var(--bg-raised);
+    text-decoration: none;
+  }
+  nav a.active {
+    color: var(--accent);
+    background: var(--accent-dim);
+  }
+  @media (max-width: 560px) {
+    .logo-text { display: none; }
+    nav a { padding: 6px 9px; }
+  }
+</style>

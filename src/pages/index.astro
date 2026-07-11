@@ -1,0 +1,126 @@
+---
+import Base from '../layouts/Base.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { site } from '../data/site.js';
+import { projects } from '../data/projects.js';
+import { heroShader } from '../data/shaders.js';
+
+const featured = projects.filter((p) => p.featured);
+---
+
+<Base>
+  <section class="hero">
+    <shader-canvas class="hero-bg" max-dim="960" aria-hidden="true">
+      <script type="x-shader/fragment" is:inline set:html={heroShader} />
+    </shader-canvas>
+    <div class="container hero-content">
+      <p class="kicker">// {site.role.toUpperCase()}</p>
+      <h1>{site.name}</h1>
+      <p class="tagline">{site.tagline}</p>
+      <div class="cta">
+        <a href="/work" class="btn primary">View work</a>
+        <a href="/lab" class="btn">Shader lab</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">Featured work</h2>
+      <div class="card-grid">
+        {featured.map((p) => <ProjectCard project={p} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">What I do</h2>
+      <div class="skills">
+        <div>
+          <h3>Procedural &amp; Pipeline</h3>
+          <p>
+            Houdini tool development, HDAs, procedural asset generation, and
+            Python pipelines that remove repetitive work from artists' hands.
+          </p>
+        </div>
+        <div>
+          <h3>Geometry &amp; Data</h3>
+          <p>
+            Point clouds, volumes and meshes as data — NumPy/SciPy processing,
+            skeleton extraction, and bridging DCC tools with scientific Python.
+          </p>
+        </div>
+        <div>
+          <h3>Real-time Graphics</h3>
+          <p>
+            GLSL shaders, raymarching and WebGL experiments — see the
+            <a href="/lab">Lab</a> for live demos running in your browser.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import '../scripts/shader-canvas.js';
+</script>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 68vh;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    display: block;
+  }
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    padding-top: 64px;
+    padding-bottom: 64px;
+  }
+  .kicker {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    letter-spacing: 0.22em;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+  h1 {
+    font-size: clamp(2.6rem, 7vw, 4.5rem);
+    margin-bottom: 20px;
+  }
+  .tagline {
+    max-width: 560px;
+    color: var(--text-dim);
+    font-size: 1.12rem;
+    margin-bottom: 36px;
+  }
+  .cta {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .skills {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 36px;
+  }
+  .skills h3 {
+    font-size: 1.05rem;
+    margin-bottom: 10px;
+  }
+  .skills p {
+    color: var(--text-dim);
+    font-size: 0.95rem;
+  }
+</style>

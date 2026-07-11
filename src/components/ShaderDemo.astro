@@ -1,0 +1,66 @@
+---
+interface Props {
+  shader: {
+    id: string;
+    title: string;
+    description: string;
+    tags: string[];
+    source: string;
+  };
+}
+const { shader } = Astro.props;
+---
+
+<figure class="shader-demo" id={shader.id}>
+  <div class="viewport">
+    <shader-canvas>
+      <script type="x-shader/fragment" is:inline set:html={shader.source} />
+    </shader-canvas>
+  </div>
+  <figcaption>
+    <h3>{shader.title}</h3>
+    <p>{shader.description}</p>
+    <div class="tags">
+      {shader.tags.map((t) => <span class="tag">{t}</span>)}
+    </div>
+  </figcaption>
+</figure>
+
+<script>
+  import '../scripts/shader-canvas.js';
+</script>
+
+<style>
+  .shader-demo {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.15s;
+  }
+  .shader-demo:hover {
+    border-color: var(--border-hover);
+  }
+  .viewport {
+    aspect-ratio: 16 / 9;
+    background: #000;
+  }
+  .viewport shader-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: crosshair;
+    touch-action: none;
+  }
+  figcaption {
+    padding: 20px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  figcaption h3 { font-size: 1.05rem; }
+  figcaption p {
+    color: var(--text-dim);
+    font-size: 0.92rem;
+  }
+</style>

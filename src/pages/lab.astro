@@ -1,0 +1,40 @@
+---
+import Base from '../layouts/Base.astro';
+import ShaderDemo from '../components/ShaderDemo.astro';
+import { shaders } from '../data/shaders.js';
+---
+
+<Base title="Shader Lab" description="Live GLSL experiments — raymarching, fractals and volumetric rendering running in WebGL2.">
+  <section class="section">
+    <div class="container">
+      <h1 class="page-title">Shader Lab</h1>
+      <p class="page-intro">
+        Live GLSL experiments rendering in your browser right now — no video,
+        no screenshots. Each canvas is a WebGL2 fragment shader using
+        Shadertoy-style uniforms. <strong>Drag on a canvas</strong> to move the
+        camera where supported.
+      </p>
+      <div class="lab-grid">
+        {shaders.map((s) => <ShaderDemo shader={s} />)}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page-title { font-size: 2.4rem; margin-bottom: 16px; }
+  .page-intro {
+    color: var(--text-dim);
+    max-width: 640px;
+    margin-bottom: 44px;
+    font-size: 1.05rem;
+  }
+  .lab-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+    gap: 24px;
+  }
+  @media (max-width: 520px) {
+    .lab-grid { grid-template-columns: 1fr; }
+  }
+</style>

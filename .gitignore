@@ -1,10 +1,4 @@
-_site
-.sass-cache
-.jekyll-metadata
-.jekyll-cache
-.vscode
-.idea
-.DS_Store
-
-# Local backup of the previous site
+node_modules/
+dist/
 _old-site-backup/
+

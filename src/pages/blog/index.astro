@@ -1,0 +1,94 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog')).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+
+const fmt = new Intl.DateTimeFormat('en', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+});
+---
+
+<Base title="Blog" description="Notes on Houdini, Python, procedural workflows and graphics programming.">
+  <section class="section">
+    <div class="container">
+      <h1 class="page-title">Blog</h1>
+      <p class="page-intro">
+        Notes on Houdini, Python and graphics programming — things I wished
+        someone had written down before I had to figure them out.
+      </p>
+      <ul class="post-list">
+        {posts.map((post) => (
+          <li>
+            <a href={`/blog/${post.id}`} class="post-row">
+              <div>
+                <h2>{post.data.title}</h2>
+                <p>{post.data.description}</p>
+                <div class="tags">
+                  {post.data.tags.map((t) => <span class="tag">{t}</span>)}
+                </div>
+              </div>
+              <time datetime={post.data.date.toISOString()}>
+                {fmt.format(post.data.date)}
+              </time>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page-title { font-size: 2.4rem; margin-bottom: 16px; }
+  .page-intro {
+    color: var(--text-dim);
+    max-width: 620px;
+    margin-bottom: 44px;
+    font-size: 1.05rem;
+  }
+  .post-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .post-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: inherit;
+    transition: border-color 0.15s;
+  }
+  .post-row:hover {
+    text-decoration: none;
+    border-color: var(--border-hover);
+  }
+  .post-row h2 {
+    font-size: 1.15rem;
+    margin-bottom: 8px;
+  }
+  .post-row:hover h2 { color: var(--accent); }
+  .post-row p {
+    color: var(--text-dim);
+    font-size: 0.94rem;
+    margin-bottom: 12px;
+  }
+  .post-row time {
+    color: var(--text-faint);
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    white-space: nowrap;
+  }
+  @media (max-width: 560px) {
+    .post-row { flex-direction: column-reverse; gap: 8px; }
+  }
+</style>
