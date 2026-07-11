@@ -5,3 +5,6 @@ _site
 .vscode
 .idea
 .DS_Store
+
+# Local backup of the previous site
+_old-site-backup/
