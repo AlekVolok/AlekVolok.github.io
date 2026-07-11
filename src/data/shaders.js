@@ -291,16 +291,28 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
   sky += vec3(0.95, 0.16, 0.32) * glow * 0.8;
   sky += vec3(0.12, 0.12, 0.55) * exp(-2.5 * abs(p.y - horizon));
 
+  // Stars near the cursor swell slightly and brighten, fading out with distance.
+  vec2 mouse = (iMouse.xy * 2.0 - iResolution.xy) / iResolution.y;
+  float hover = 0.0;
+  if (iMouse.x > 0.0 || iMouse.y > 0.0)
+    hover = 1.0 - smoothstep(0.0, 0.55, distance(p, mouse));
+
   // Sparse stars with a gentle shimmer.
   vec2 starCell = floor((p + vec2(2.0, 1.0)) * 16.0);
   vec2 starPos = fract((p + vec2(2.0, 1.0)) * 16.0) - 0.5;
-  float star = exp(-90.0 * dot(starPos, starPos)) * step(0.84, hash(starCell));
+  // Disc with a soft edge: hover grows the core radius while tightening the
+  // falloff, so stars get bigger and crisper instead of just blurrier.
+  float starDist = length(starPos);
+  float starRadius = mix(0.045, 0.095, hover);
+  float starSoft = mix(0.085, 0.03, hover);
+  float star = (1.0 - smoothstep(starRadius - starSoft, starRadius + starSoft, starDist))
+             * step(0.84, hash(starCell));
   float starSeed = hash(starCell + 19.7);
   float starSpeed = mix(0.55, 3.8, hash(starCell + 7.3));
   float starPhase = hash(starCell + 41.2) * 6.28318;
   float pulse = 0.5 + 0.5 * sin(iTime * starSpeed + starPhase);
   pulse = smoothstep(0.08, 0.92, pulse);
-  sky += vec3(0.5, 0.72, 1.0) * star * mix(0.2, 1.0, starSeed) * (0.3 + 0.7 * pulse);
+  sky += vec3(0.5, 0.72, 1.0) * star * mix(0.2, 1.0, starSeed) * (0.3 + 0.7 * pulse) * (1.0 + hover * 0.7);
 
   // Layered wireframe-like dunes receding into the horizon.
   vec3 col = sky;

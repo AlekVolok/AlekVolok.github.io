@@ -88,8 +88,12 @@ class ShaderCanvas extends HTMLElement {
         this._mouse[2] = 0;
       }
     };
-    this.canvas.addEventListener('pointermove', this._onPointer);
-    this.canvas.addEventListener('pointerdown', this._onPointer);
+    // mouse="window" tracks the pointer page-wide, for backgrounds that sit
+    // beneath other content and never receive pointer events themselves.
+    this._pointerTarget =
+      this.getAttribute('mouse') === 'window' ? window : this.canvas;
+    this._pointerTarget.addEventListener('pointermove', this._onPointer);
+    this._pointerTarget.addEventListener('pointerdown', this._onPointer);
 
     this._observer = new IntersectionObserver((entries) => {
       this._visible = entries[0].isIntersecting;
@@ -102,6 +106,8 @@ class ShaderCanvas extends HTMLElement {
   disconnectedCallback() {
     cancelAnimationFrame(this._raf);
     this._observer?.disconnect();
+    this._pointerTarget?.removeEventListener('pointermove', this._onPointer);
+    this._pointerTarget?.removeEventListener('pointerdown', this._onPointer);
     this.gl?.getExtension('WEBGL_lose_context')?.loseContext();
   }
 

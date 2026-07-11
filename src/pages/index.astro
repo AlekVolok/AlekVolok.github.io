@@ -10,7 +10,7 @@ const featured = projects.filter((p) => p.featured);
 
 <Base>
   <section class="hero">
-    <shader-canvas class="hero-bg" max-dim="960" aria-hidden="true">
+    <shader-canvas class="hero-bg" max-dim="960" mouse="window" aria-hidden="true">
       <script type="x-shader/fragment" is:inline set:html={heroShader} />
     </shader-canvas>
     <div class="container hero-content">
