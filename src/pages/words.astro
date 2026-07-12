@@ -1,0 +1,289 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Word Pairs" description="Vocabulary matching game.">
+  <section class="section">
+    <div class="container">
+      <h1 class="page-title">Word Pairs</h1>
+      <p class="page-intro">
+        Match each word on the left with its translation on the right.
+        Ported from an old side-project language app.
+      </p>
+
+      <div class="game" id="game">
+        <div class="controls">
+          <select id="topicSelect"></select>
+          <button id="reloadBtn" class="btn">Reload</button>
+        </div>
+        <div class="stats">
+          <span id="score">Score: 0</span>
+          <span id="mistakes">Mistakes: 0</span>
+          <span id="multiplier">Multiplier: x1</span>
+        </div>
+        <div class="words-container">
+          <div id="leftWords" class="word-col"></div>
+          <div id="rightWords" class="word-col"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  type Pairs = Record<string, string>;
+
+  let selectedLeft: string | null = null;
+  let selectedRight: string | null = null;
+  let pairs: Pairs = {};
+  let displayedPairs: Record<string, boolean> = {};
+  let correctlyGuessedPairs = 0;
+  let score = 0;
+  let mistakes = 0;
+  let comboMultiplier = 1;
+  let comboCount = 0;
+  const numberRows = 8;
+
+  const $ = <T extends Element>(sel: string) =>
+    document.querySelector<T>(sel)!;
+
+  const leftWordsEl = $<HTMLDivElement>('#leftWords');
+  const rightWordsEl = $<HTMLDivElement>('#rightWords');
+  const topicSelect = $<HTMLSelectElement>('#topicSelect');
+  const scoreEl = $<HTMLSpanElement>('#score');
+  const mistakesEl = $<HTMLSpanElement>('#mistakes');
+  const multiplierEl = $<HTMLSpanElement>('#multiplier');
+
+  function makeButton(word: string, onClick: () => void): HTMLButtonElement {
+    const btn = document.createElement('button');
+    btn.textContent = word;
+    btn.dataset.word = word;
+    btn.addEventListener('click', onClick);
+    return btn;
+  }
+
+  function loadNewSetOfPairs() {
+    correctlyGuessedPairs = 0;
+    leftWordsEl.innerHTML = '';
+    rightWordsEl.innerHTML = '';
+    selectedLeft = null;
+    selectedRight = null;
+
+    let remaining = Object.entries(pairs).filter(([left]) => !displayedPairs[left]);
+    if (remaining.length < numberRows) {
+      displayedPairs = {};
+      remaining = Object.entries(pairs);
+    }
+
+    const samplePairs = remaining.sort(() => 0.5 - Math.random()).slice(0, numberRows);
+    const leftWords = samplePairs.map(([left]) => left);
+    const rightWords = samplePairs.map(([, right]) => right).sort(() => Math.random() - 0.5);
+
+    leftWords.forEach((word) => {
+      leftWordsEl.appendChild(makeButton(word, () => onLeftClick(word)));
+      displayedPairs[word] = true;
+    });
+
+    rightWords.forEach((word) => {
+      rightWordsEl.appendChild(makeButton(word, () => onRightClick(word)));
+    });
+
+    updateUI();
+  }
+
+  function checkPair(leftWord: string, rightWord: string) {
+    document.querySelectorAll('.selected').forEach((el) => el.classList.remove('selected'));
+    if (pairs[leftWord] === rightWord) {
+      correctlyGuessedPairs += 1;
+      markCorrect(leftWord, rightWord);
+      score += numberRows * comboMultiplier;
+      if (correctlyGuessedPairs === numberRows) {
+        loadNewSetOfPairs();
+      }
+    } else {
+      mistakes += 1;
+      score -= 5;
+      comboCount = 0;
+      comboMultiplier = 1;
+      markIncorrect(leftWord, rightWord);
+    }
+    selectedLeft = null;
+    selectedRight = null;
+    updateUI();
+  }
+
+  function markCorrect(leftWord: string, rightWord: string) {
+    leftWordsEl.querySelector(`[data-word="${CSS.escape(leftWord)}"]`)?.classList.add('correct');
+    rightWordsEl.querySelector(`[data-word="${CSS.escape(rightWord)}"]`)?.classList.add('correct');
+    comboCount += 1;
+    if (comboCount % 3 === 0) comboMultiplier += 1;
+  }
+
+  function markIncorrect(leftWord: string, rightWord: string) {
+    const l = leftWordsEl.querySelector(`[data-word="${CSS.escape(leftWord)}"]`);
+    const r = rightWordsEl.querySelector(`[data-word="${CSS.escape(rightWord)}"]`);
+    l?.classList.add('incorrect');
+    r?.classList.add('incorrect');
+    setTimeout(() => {
+      l?.classList.remove('incorrect');
+      r?.classList.remove('incorrect');
+    }, 700);
+  }
+
+  function onLeftClick(word: string) {
+    if (leftWordsEl.querySelector(`[data-word="${CSS.escape(word)}"]`)?.classList.contains('correct')) return;
+    document.querySelectorAll('.selected').forEach((el) => el.classList.remove('selected'));
+    if (selectedRight) {
+      checkPair(word, selectedRight);
+    } else {
+      selectedLeft = word;
+      leftWordsEl.querySelector(`[data-word="${CSS.escape(word)}"]`)?.classList.add('selected');
+    }
+  }
+
+  function onRightClick(word: string) {
+    if (rightWordsEl.querySelector(`[data-word="${CSS.escape(word)}"]`)?.classList.contains('correct')) return;
+    document.querySelectorAll('.selected').forEach((el) => el.classList.remove('selected'));
+    if (selectedLeft) {
+      checkPair(selectedLeft, word);
+    } else {
+      selectedRight = word;
+      rightWordsEl.querySelector(`[data-word="${CSS.escape(word)}"]`)?.classList.add('selected');
+    }
+  }
+
+  async function loadWords() {
+    score = 0;
+    mistakes = 0;
+    comboMultiplier = 1;
+    comboCount = 0;
+    const topic = topicSelect.value;
+    const res = await fetch(`/words/topics/${encodeURIComponent(topic)}.json`);
+    pairs = await res.json();
+    displayedPairs = {};
+    loadNewSetOfPairs();
+  }
+
+  function updateUI() {
+    scoreEl.textContent = `Score: ${score}`;
+    mistakesEl.textContent = `Mistakes: ${mistakes}`;
+    multiplierEl.textContent = `Multiplier: x${comboMultiplier}`;
+    scoreEl.classList.toggle('negative', score < 0);
+    scoreEl.classList.toggle('high', score >= 1000);
+  }
+
+  async function init() {
+    const res = await fetch('/words/topics.json');
+    const topics: { slug: string; label: string }[] = await res.json();
+    topics.forEach(({ slug, label }) => {
+      const opt = document.createElement('option');
+      opt.value = slug;
+      opt.textContent = label;
+      topicSelect.appendChild(opt);
+    });
+    await loadWords();
+  }
+
+  topicSelect.addEventListener('change', loadWords);
+  $('#reloadBtn').addEventListener('click', loadWords);
+
+  init();
+</script>
+
+<style>
+  .page-title {
+    font-size: 2.4rem;
+    margin-bottom: 16px;
+  }
+  .page-intro {
+    color: var(--text-dim);
+    max-width: 640px;
+    margin-bottom: 44px;
+    font-size: 1.05rem;
+  }
+
+  .game {
+    max-width: 640px;
+  }
+
+  .controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .controls select {
+    background: var(--bg-raised);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.92rem;
+    font-family: var(--font-sans);
+    flex: 1;
+  }
+  .controls select:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .stats {
+    display: flex;
+    gap: 20px;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin-bottom: 24px;
+  }
+  #score.negative { color: #f08080; }
+  #score.high { color: var(--accent); }
+
+  .words-container {
+    display: flex;
+    gap: 24px;
+  }
+  .word-col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+  }
+
+  .word-col button {
+    appearance: none;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    padding: 12px 16px;
+    font-size: 0.95rem;
+    font-family: var(--font-sans);
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  }
+  .word-col button:hover:not(:disabled) {
+    border-color: var(--border-hover);
+  }
+  .word-col button.selected {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+    color: var(--accent);
+  }
+  .word-col button.correct {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+    color: var(--accent);
+    opacity: 0.55;
+    cursor: default;
+  }
+  .word-col button.incorrect {
+    border-color: #f08080;
+    background: rgba(240, 128, 128, 0.12);
+    color: #f08080;
+  }
+
+  @media (max-width: 520px) {
+    .controls { flex-direction: column; }
+    .stats { flex-wrap: wrap; gap: 12px; }
+  }
+</style>
