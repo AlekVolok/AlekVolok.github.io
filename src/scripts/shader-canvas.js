@@ -39,6 +39,8 @@ class ShaderCanvas extends HTMLElement {
     this._visible = false;
     this._start = performance.now();
     this._mouse = [0, 0, 0, 0];
+    this._hoverActivity = 0;
+    this._lastFrameTime = 0;
   }
 
   connectedCallback() {
@@ -87,6 +89,7 @@ class ShaderCanvas extends HTMLElement {
         this._mouse[1] = y;
         this._mouse[2] = 0;
       }
+      this._hoverActivity = 1;
     };
     // mouse="window" tracks the pointer page-wide, for backgrounds that sit
     // beneath other content and never receive pointer events themselves.
@@ -154,9 +157,22 @@ class ShaderCanvas extends HTMLElement {
       gl.viewport(0, 0, w, h);
     }
 
+    const now = performance.now();
+    const dt = this._lastFrameTime ? (now - this._lastFrameTime) / 1000 : 0;
+    this._lastFrameTime = now;
+    // Decay hover activity back to 0 a couple seconds after the pointer stops
+    // moving, so mouse-reactive effects (e.g. hero stars) ease back to rest.
+    this._hoverActivity = Math.max(0, this._hoverActivity - dt / 2);
+
     gl.uniform3f(this._uResolution, w, h, 1);
-    gl.uniform1f(this._uTime, (performance.now() - this._start) / 1000);
-    gl.uniform4f(this._uMouse, ...this._mouse);
+    gl.uniform1f(this._uTime, (now - this._start) / 1000);
+    gl.uniform4f(
+      this._uMouse,
+      this._mouse[0],
+      this._mouse[1],
+      this._mouse[2],
+      this._hoverActivity
+    );
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     this._raf = requestAnimationFrame(this._loop);
   };
