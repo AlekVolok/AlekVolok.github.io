@@ -1,13 +1,18 @@
 ---
-import Base from '../layouts/Base.astro';
+import '../styles/global.css';
 ---
 
-<Base title="Word Pairs" description="Vocabulary matching game.">
-  <section class="section">
-    <div class="container">
-      <h1 class="page-title">Word Pairs</h1>
-
-
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Word Pairs</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <main class="game-page">
       <div class="game" id="game">
         <div class="controls">
           <select id="topicSelect"></select>
@@ -23,9 +28,9 @@ import Base from '../layouts/Base.astro';
           <div id="rightWords" class="word-col"></div>
         </div>
       </div>
-    </div>
-  </section>
-</Base>
+    </main>
+  </body>
+</html>
 
 <script>
   type Pairs = Record<string, string>;
@@ -208,18 +213,16 @@ import Base from '../layouts/Base.astro';
 </script>
 
 <style>
-  .page-title {
-    font-size: 2.4rem;
-    margin-bottom: 16px;
-  }
-  .page-intro {
-    color: var(--text-dim);
-    max-width: 640px;
-    margin-bottom: 44px;
-    font-size: 1.05rem;
+  .game-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 24px;
   }
 
   .game {
+    width: 100%;
     max-width: 640px;
   }
 
@@ -278,7 +281,7 @@ import Base from '../layouts/Base.astro';
     border: 1px solid var(--border);
     border-radius: 8px;
     color: var(--text);
-    padding: 12px 16px;
+    padding: 18px 16px;
     font-size: 0.95rem;
     font-family: var(--font-sans);
     text-align: left;
