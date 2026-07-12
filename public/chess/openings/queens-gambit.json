@@ -1,0 +1,144 @@
+{
+  "slug": "queens-gambit",
+  "label": "Queen's Gambit",
+  "side": "white",
+  "root": {
+    "children": [
+      {
+        "from": "d2",
+        "to": "d4",
+        "san": "d4",
+        "children": [
+          {
+            "from": "d7",
+            "to": "d5",
+            "san": "d5",
+            "children": [
+              {
+                "from": "c2",
+                "to": "c4",
+                "san": "c4",
+                "children": [
+                  {
+                    "from": "e7",
+                    "to": "e6",
+                    "san": "e6",
+                    "children": [
+                      {
+                        "from": "b1",
+                        "to": "c3",
+                        "san": "Nc3",
+                        "children": [
+                          {
+                            "from": "g8",
+                            "to": "f6",
+                            "san": "Nf6",
+                            "children": [
+                              {
+                                "from": "c1",
+                                "to": "g5",
+                                "san": "Bg5",
+                                "children": [
+                                  {
+                                    "from": "f8",
+                                    "to": "e7",
+                                    "san": "Be7",
+                                    "children": [
+                                      {
+                                        "from": "e2",
+                                        "to": "e3",
+                                        "san": "e3",
+                                        "children": [
+                                          {
+                                            "from": "e8",
+                                            "to": "g8",
+                                            "san": "O-O",
+                                            "rookFrom": "h8",
+                                            "rookTo": "f8",
+                                            "children": [
+                                              {
+                                                "from": "g1",
+                                                "to": "f3",
+                                                "san": "Nf3",
+                                                "children": []
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "from": "d5",
+                    "to": "c4",
+                    "san": "dxc4",
+                    "children": [
+                      {
+                        "from": "g1",
+                        "to": "f3",
+                        "san": "Nf3",
+                        "children": [
+                          {
+                            "from": "g8",
+                            "to": "f6",
+                            "san": "Nf6",
+                            "children": [
+                              {
+                                "from": "e2",
+                                "to": "e3",
+                                "san": "e3",
+                                "children": [
+                                  {
+                                    "from": "e7",
+                                    "to": "e6",
+                                    "san": "e6",
+                                    "children": [
+                                      {
+                                        "from": "f1",
+                                        "to": "c4",
+                                        "san": "Bxc4",
+                                        "children": [
+                                          {
+                                            "from": "c7",
+                                            "to": "c5",
+                                            "san": "c5",
+                                            "children": [
+                                              {
+                                                "from": "e1",
+                                                "to": "g1",
+                                                "san": "O-O",
+                                                "rookFrom": "h1",
+                                                "rookTo": "f1",
+                                                "children": []
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

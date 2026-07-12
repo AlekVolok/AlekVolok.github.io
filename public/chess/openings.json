@@ -1,0 +1,42 @@
+[
+  {
+    "slug": "italian-game",
+    "label": "Italian Game",
+    "side": "white"
+  },
+  {
+    "slug": "ruy-lopez",
+    "label": "Ruy Lopez",
+    "side": "white"
+  },
+  {
+    "slug": "queens-gambit",
+    "label": "Queen's Gambit",
+    "side": "white"
+  },
+  {
+    "slug": "london-system",
+    "label": "London System",
+    "side": "white"
+  },
+  {
+    "slug": "sicilian-defense",
+    "label": "Sicilian Defense (Najdorf)",
+    "side": "black"
+  },
+  {
+    "slug": "french-defense",
+    "label": "French Defense",
+    "side": "black"
+  },
+  {
+    "slug": "caro-kann",
+    "label": "Caro-Kann Defense",
+    "side": "black"
+  },
+  {
+    "slug": "scandinavian-defense",
+    "label": "Scandinavian Defense",
+    "side": "black"
+  }
+]

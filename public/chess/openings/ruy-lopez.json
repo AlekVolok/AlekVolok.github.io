@@ -1,0 +1,156 @@
+{
+  "slug": "ruy-lopez",
+  "label": "Ruy Lopez",
+  "side": "white",
+  "root": {
+    "children": [
+      {
+        "from": "e2",
+        "to": "e4",
+        "san": "e4",
+        "children": [
+          {
+            "from": "e7",
+            "to": "e5",
+            "san": "e5",
+            "children": [
+              {
+                "from": "g1",
+                "to": "f3",
+                "san": "Nf3",
+                "children": [
+                  {
+                    "from": "b8",
+                    "to": "c6",
+                    "san": "Nc6",
+                    "children": [
+                      {
+                        "from": "f1",
+                        "to": "b5",
+                        "san": "Bb5",
+                        "children": [
+                          {
+                            "from": "a7",
+                            "to": "a6",
+                            "san": "a6",
+                            "children": [
+                              {
+                                "from": "b5",
+                                "to": "a4",
+                                "san": "Ba4",
+                                "children": [
+                                  {
+                                    "from": "g8",
+                                    "to": "f6",
+                                    "san": "Nf6",
+                                    "children": [
+                                      {
+                                        "from": "e1",
+                                        "to": "g1",
+                                        "san": "O-O",
+                                        "rookFrom": "h1",
+                                        "rookTo": "f1",
+                                        "children": [
+                                          {
+                                            "from": "f8",
+                                            "to": "e7",
+                                            "san": "Be7",
+                                            "children": [
+                                              {
+                                                "from": "f1",
+                                                "to": "e1",
+                                                "san": "Re1",
+                                                "children": [
+                                                  {
+                                                    "from": "b7",
+                                                    "to": "b5",
+                                                    "san": "b5",
+                                                    "children": [
+                                                      {
+                                                        "from": "a4",
+                                                        "to": "b3",
+                                                        "san": "Bb3",
+                                                        "children": [
+                                                          {
+                                                            "from": "d7",
+                                                            "to": "d6",
+                                                            "san": "d6",
+                                                            "children": [
+                                                              {
+                                                                "from": "c2",
+                                                                "to": "c3",
+                                                                "san": "c3",
+                                                                "children": []
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "from": "b7",
+                                            "to": "b5",
+                                            "san": "b5",
+                                            "children": [
+                                              {
+                                                "from": "a4",
+                                                "to": "b3",
+                                                "san": "Bb3",
+                                                "children": [
+                                                  {
+                                                    "from": "f8",
+                                                    "to": "e7",
+                                                    "san": "Be7",
+                                                    "children": [
+                                                      {
+                                                        "from": "f1",
+                                                        "to": "e1",
+                                                        "san": "Re1",
+                                                        "children": [
+                                                          {
+                                                            "from": "d7",
+                                                            "to": "d6",
+                                                            "san": "d6",
+                                                            "children": [
+                                                              {
+                                                                "from": "c2",
+                                                                "to": "c3",
+                                                                "san": "c3",
+                                                                "children": []
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

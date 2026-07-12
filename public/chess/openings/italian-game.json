@@ -1,0 +1,162 @@
+{
+  "slug": "italian-game",
+  "label": "Italian Game",
+  "side": "white",
+  "root": {
+    "children": [
+      {
+        "from": "e2",
+        "to": "e4",
+        "san": "e4",
+        "children": [
+          {
+            "from": "e7",
+            "to": "e5",
+            "san": "e5",
+            "children": [
+              {
+                "from": "g1",
+                "to": "f3",
+                "san": "Nf3",
+                "children": [
+                  {
+                    "from": "b8",
+                    "to": "c6",
+                    "san": "Nc6",
+                    "children": [
+                      {
+                        "from": "f1",
+                        "to": "c4",
+                        "san": "Bc4",
+                        "children": [
+                          {
+                            "from": "f8",
+                            "to": "c5",
+                            "san": "Bc5",
+                            "children": [
+                              {
+                                "from": "c2",
+                                "to": "c3",
+                                "san": "c3",
+                                "children": [
+                                  {
+                                    "from": "g8",
+                                    "to": "f6",
+                                    "san": "Nf6",
+                                    "children": [
+                                      {
+                                        "from": "d2",
+                                        "to": "d4",
+                                        "san": "d4",
+                                        "children": [
+                                          {
+                                            "from": "e5",
+                                            "to": "d4",
+                                            "san": "exd4",
+                                            "children": [
+                                              {
+                                                "from": "c3",
+                                                "to": "d4",
+                                                "san": "cxd4",
+                                                "children": [
+                                                  {
+                                                    "from": "c5",
+                                                    "to": "b4",
+                                                    "san": "Bb4+",
+                                                    "children": [
+                                                      {
+                                                        "from": "b1",
+                                                        "to": "c3",
+                                                        "san": "Nc3",
+                                                        "children": []
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "from": "d2",
+                                "to": "d3",
+                                "san": "d3",
+                                "children": [
+                                  {
+                                    "from": "g8",
+                                    "to": "f6",
+                                    "san": "Nf6",
+                                    "children": [
+                                      {
+                                        "from": "e1",
+                                        "to": "g1",
+                                        "san": "O-O",
+                                        "rookFrom": "h1",
+                                        "rookTo": "f1",
+                                        "children": [
+                                          {
+                                            "from": "d7",
+                                            "to": "d6",
+                                            "san": "d6",
+                                            "children": [
+                                              {
+                                                "from": "c2",
+                                                "to": "c3",
+                                                "san": "c3",
+                                                "children": []
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "from": "g8",
+                            "to": "f6",
+                            "san": "Nf6",
+                            "children": [
+                              {
+                                "from": "d2",
+                                "to": "d3",
+                                "san": "d3",
+                                "children": [
+                                  {
+                                    "from": "f8",
+                                    "to": "c5",
+                                    "san": "Bc5",
+                                    "children": [
+                                      {
+                                        "from": "b1",
+                                        "to": "c3",
+                                        "san": "Nc3",
+                                        "children": []
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

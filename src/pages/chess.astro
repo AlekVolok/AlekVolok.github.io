@@ -1,0 +1,502 @@
+---
+import '../styles/global.css';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Openings</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <main class="game-page">
+      <div class="game" id="game">
+        <div class="controls">
+          <select id="openingSelect"></select>
+          <button id="reloadBtn" class="btn">Reload</button>
+        </div>
+        <div class="stats">
+          <span id="score">Score: 0</span>
+          <span id="mistakes">Mistakes: 0</span>
+          <span id="multiplier">Multiplier: x1</span>
+        </div>
+        <div class="board-wrap">
+          <div id="board" class="board"></div>
+          <svg id="hintOverlay" viewBox="0 0 8 8" preserveAspectRatio="none">
+            <defs>
+              <marker id="arrowHead" viewBox="0 0 10 10" refX="8" refY="5"
+                markerWidth="4" markerHeight="4" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"></path>
+              </marker>
+            </defs>
+          </svg>
+          <div id="winOverlay" class="overlay" hidden>
+            <p class="overlay-title">Line complete!</p>
+            <p class="overlay-stats" id="finalStats"></p>
+            <button id="playAgainBtn" class="btn">Play again</button>
+            <p class="overlay-note">…or pick another opening above</p>
+          </div>
+        </div>
+        <div class="under-board">
+          <button id="hintBtn" class="btn">Hint</button>
+          <span id="turnLabel"></span>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
+
+<script>
+  type Move = {
+    from: string;
+    to: string;
+    san: string;
+    rookFrom?: string;
+    rookTo?: string;
+    epCapture?: string;
+    promotion?: string;
+    children: Move[];
+  };
+  type Node = { children: Move[] };
+  type Side = 'white' | 'black';
+
+  const FILES = 'abcdefgh';
+  const GLYPHS: Record<string, string> = {
+    K: '♚︎',
+    Q: '♛︎',
+    R: '♜︎',
+    B: '♝︎',
+    N: '♞︎',
+    P: '♟︎',
+  };
+
+  let board: Record<string, string> = {};
+  let playerSide: Side = 'white';
+  let currentNode: Node = { children: [] };
+  let selectedSquare: string | null = null;
+  let phase: 'player' | 'ai' | 'finished' | 'loading' = 'loading';
+  let hintUsedThisMove = false;
+  let gameId = 0;
+  let score = 0;
+  let mistakes = 0;
+  let comboMultiplier = 1;
+  let comboCount = 0;
+
+  const $ = <T extends Element>(sel: string) =>
+    document.querySelector<T>(sel)!;
+
+  const boardEl = $<HTMLDivElement>('#board');
+  const openingSelect = $<HTMLSelectElement>('#openingSelect');
+  const scoreEl = $<HTMLSpanElement>('#score');
+  const mistakesEl = $<HTMLSpanElement>('#mistakes');
+  const multiplierEl = $<HTMLSpanElement>('#multiplier');
+  const hintOverlay = $<SVGSVGElement>('#hintOverlay');
+  const winOverlay = $<HTMLDivElement>('#winOverlay');
+  const finalStatsEl = $<HTMLParagraphElement>('#finalStats');
+  const turnLabel = $<HTMLSpanElement>('#turnLabel');
+
+  function startPosition(): Record<string, string> {
+    const pos: Record<string, string> = {};
+    const back = ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'];
+    for (let f = 0; f < 8; f++) {
+      pos[`${FILES[f]}1`] = `w${back[f]}`;
+      pos[`${FILES[f]}2`] = 'wP';
+      pos[`${FILES[f]}7`] = 'bP';
+      pos[`${FILES[f]}8`] = `b${back[f]}`;
+    }
+    return pos;
+  }
+
+  function squareEl(sq: string) {
+    return boardEl.querySelector<HTMLButtonElement>(`[data-square="${sq}"]`);
+  }
+
+  function renderBoard(lastMove?: { from: string; to: string }) {
+    boardEl.innerHTML = '';
+    const flip = playerSide === 'black';
+    for (let row = 0; row < 8; row++) {
+      for (let col = 0; col < 8; col++) {
+        const file = flip ? 7 - col : col;
+        const rank = flip ? row + 1 : 8 - row;
+        const sq = `${FILES[file]}${rank}`;
+        const btn = document.createElement('button');
+        btn.className = `square ${(file + rank) % 2 === 0 ? 'dark' : 'light'}`;
+        btn.dataset.square = sq;
+        const piece = board[sq];
+        if (piece) {
+          btn.textContent = GLYPHS[piece[1]];
+          btn.classList.add(piece[0] === 'w' ? 'wpiece' : 'bpiece');
+        }
+        if (lastMove && (sq === lastMove.from || sq === lastMove.to)) {
+          btn.classList.add('last-move');
+        }
+        btn.addEventListener('click', () => onSquareClick(sq));
+        boardEl.appendChild(btn);
+      }
+    }
+  }
+
+  function applyMove(m: Move) {
+    if (m.epCapture) delete board[m.epCapture];
+    board[m.to] = m.promotion
+      ? board[m.from][0] + m.promotion.toUpperCase()
+      : board[m.from];
+    delete board[m.from];
+    if (m.rookFrom && m.rookTo) {
+      board[m.rookTo] = board[m.rookFrom];
+      delete board[m.rookFrom];
+    }
+    clearHint();
+    renderBoard({ from: m.from, to: m.to });
+  }
+
+  function flash(sq: string, cls: string) {
+    const el = squareEl(sq);
+    el?.classList.add(cls);
+    setTimeout(() => el?.classList.remove(cls), 700);
+  }
+
+  function onSquareClick(sq: string) {
+    if (phase !== 'player') return;
+    if (selectedSquare === sq) {
+      squareEl(sq)?.classList.remove('sel');
+      selectedSquare = null;
+      return;
+    }
+    const piece = board[sq];
+    const own = piece && piece[0] === playerSide[0];
+    if (!selectedSquare) {
+      if (!own) return;
+      selectedSquare = sq;
+      squareEl(sq)?.classList.add('sel');
+      return;
+    }
+    if (own) {
+      squareEl(selectedSquare)?.classList.remove('sel');
+      selectedSquare = sq;
+      squareEl(sq)?.classList.add('sel');
+      return;
+    }
+    const from = selectedSquare;
+    selectedSquare = null;
+    squareEl(from)?.classList.remove('sel');
+    tryPlayerMove(from, sq);
+  }
+
+  function tryPlayerMove(from: string, to: string) {
+    const m = currentNode.children.find((c) => c.from === from && c.to === to);
+    if (m) {
+      applyMove(m);
+      flash(to, 'flash-good');
+      score += 8 * comboMultiplier;
+      if (!hintUsedThisMove) {
+        comboCount += 1;
+        if (comboCount % 3 === 0) comboMultiplier += 1;
+      }
+      hintUsedThisMove = false;
+      currentNode = m;
+      updateUI();
+      if (m.children.length === 0) {
+        showWinScreen();
+      } else {
+        phase = 'ai';
+        turnLabel.textContent = 'Opponent thinking…';
+        const id = gameId;
+        setTimeout(() => aiMove(id), 450);
+      }
+    } else {
+      mistakes += 1;
+      score -= 5;
+      comboCount = 0;
+      comboMultiplier = 1;
+      flash(from, 'flash-bad');
+      flash(to, 'flash-bad');
+      updateUI();
+    }
+  }
+
+  function aiMove(id: number) {
+    if (id !== gameId || phase !== 'ai') return;
+    const moves = currentNode.children;
+    const m = moves[Math.floor(Math.random() * moves.length)];
+    applyMove(m);
+    currentNode = m;
+    if (m.children.length === 0) {
+      showWinScreen();
+    } else {
+      phase = 'player';
+      turnLabel.textContent = `Opponent played ${m.san} — your move`;
+    }
+  }
+
+  let hintTimer: ReturnType<typeof setTimeout> | undefined;
+
+  function clearHint() {
+    clearTimeout(hintTimer);
+    hintOverlay.querySelector('line')?.remove();
+  }
+
+  function showHint() {
+    if (phase !== 'player' || currentNode.children.length === 0) return;
+    clearHint();
+    const m = currentNode.children[0];
+    const flip = playerSide === 'black';
+    const coord = (sq: string) => {
+      const f = FILES.indexOf(sq[0]);
+      const r = Number(sq[1]) - 1;
+      return {
+        x: (flip ? 7 - f : f) + 0.5,
+        y: (flip ? r : 7 - r) + 0.5,
+      };
+    };
+    const a = coord(m.from);
+    const b = coord(m.to);
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', String(a.x));
+    line.setAttribute('y1', String(a.y));
+    line.setAttribute('x2', String(b.x));
+    line.setAttribute('y2', String(b.y));
+    line.setAttribute('marker-end', 'url(#arrowHead)');
+    hintOverlay.appendChild(line);
+    hintUsedThisMove = true;
+    hintTimer = setTimeout(clearHint, 2500);
+  }
+
+  function showWinScreen() {
+    phase = 'finished';
+    turnLabel.textContent = '';
+    finalStatsEl.textContent = `Score: ${score} · Mistakes: ${mistakes}`;
+    winOverlay.hidden = false;
+  }
+
+  async function loadOpening() {
+    gameId += 1;
+    phase = 'loading';
+    score = 0;
+    mistakes = 0;
+    comboMultiplier = 1;
+    comboCount = 0;
+    hintUsedThisMove = false;
+    selectedSquare = null;
+    winOverlay.hidden = true;
+    clearHint();
+
+    const slug = openingSelect.value;
+    const res = await fetch(`/chess/openings/${encodeURIComponent(slug)}.json`);
+    const data = await res.json();
+
+    playerSide = data.side;
+    currentNode = data.root;
+    board = startPosition();
+    renderBoard();
+    updateUI();
+
+    if (playerSide === 'black') {
+      phase = 'ai';
+      turnLabel.textContent = 'Opponent thinking…';
+      const id = gameId;
+      setTimeout(() => aiMove(id), 450);
+    } else {
+      phase = 'player';
+      turnLabel.textContent = 'Your move';
+    }
+  }
+
+  function updateUI() {
+    scoreEl.textContent = `Score: ${score}`;
+    mistakesEl.textContent = `Mistakes: ${mistakes}`;
+    multiplierEl.textContent = `Multiplier: x${comboMultiplier}`;
+    scoreEl.classList.toggle('negative', score < 0);
+    scoreEl.classList.toggle('high', score >= 1000);
+  }
+
+  async function init() {
+    const res = await fetch('/chess/openings.json');
+    const openings: { slug: string; label: string; side: Side }[] =
+      await res.json();
+
+    openings.forEach(({ slug, label, side }) => {
+      const opt = document.createElement('option');
+      opt.value = slug;
+      opt.textContent = side === 'black' ? `${label} (as Black)` : label;
+      openingSelect.appendChild(opt);
+    });
+    await loadOpening();
+  }
+
+  openingSelect.addEventListener('change', loadOpening);
+  $('#reloadBtn').addEventListener('click', loadOpening);
+  $('#hintBtn').addEventListener('click', showHint);
+  $('#playAgainBtn').addEventListener('click', loadOpening);
+
+  init();
+</script>
+
+<style>
+  .game-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 24px;
+  }
+
+  .game {
+    width: 100%;
+    max-width: 560px;
+  }
+
+  .controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .controls select {
+    background: var(--bg-raised);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.92rem;
+    font-family: var(--font-sans);
+    flex: 1;
+  }
+  .controls select:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .stats {
+    display: flex;
+    gap: 20px;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin-bottom: 24px;
+  }
+  #score.negative { color: #f08080; }
+  #score.high { color: var(--accent); }
+
+  .board-wrap {
+    position: relative;
+    container-type: inline-size;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  #hintOverlay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  #hintOverlay :global(line) {
+    stroke: var(--accent);
+    stroke-width: 0.14;
+    stroke-linecap: round;
+    opacity: 0.85;
+  }
+
+  .overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(3px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    text-align: center;
+    padding: 24px;
+  }
+  .overlay[hidden] { display: none; }
+  .overlay-title {
+    font-family: var(--font-sans);
+    font-size: 1.4rem;
+    color: var(--accent);
+    margin: 0;
+  }
+  .overlay-stats {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    color: var(--text);
+    margin: 0;
+  }
+  .overlay-note {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin: 0;
+  }
+
+  .under-board {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 16px;
+  }
+  #turnLabel {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+
+  @media (max-width: 520px) {
+    .controls { flex-direction: column; }
+    .stats { flex-wrap: wrap; gap: 12px; }
+  }
+</style>
+
+<style is:global>
+  .board {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    aspect-ratio: 1;
+    width: 100%;
+  }
+  .board .square {
+    appearance: none;
+    border: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1;
+    font-size: 8.2cqw;
+    line-height: 1;
+    cursor: pointer;
+    font-family: 'Segoe UI Symbol', 'Noto Sans Symbols 2', 'DejaVu Sans', sans-serif;
+    transition: background 0.15s, box-shadow 0.15s;
+  }
+  .board .square.light { background: #4a4f58; }
+  .board .square.dark { background: #31353c; }
+  .board .square.wpiece {
+    color: #e8e6e3;
+    text-shadow: 0 0 2px #000;
+  }
+  .board .square.bpiece {
+    color: #26262a;
+    text-shadow: 0 0 2px rgba(255, 255, 255, 0.35);
+  }
+  .board .square.sel {
+    box-shadow: inset 0 0 0 2px var(--accent);
+    background: var(--accent-dim);
+  }
+  .board .square.last-move {
+    box-shadow: inset 0 0 0 2px rgba(79, 214, 190, 0.35);
+  }
+  .board .square.flash-good {
+    background: rgba(79, 214, 190, 0.45);
+    box-shadow: inset 0 0 0 2px var(--accent);
+  }
+  .board .square.flash-bad {
+    background: rgba(240, 128, 128, 0.45);
+    box-shadow: inset 0 0 0 2px #f08080;
+  }
+</style>

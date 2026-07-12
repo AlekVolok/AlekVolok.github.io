@@ -1,0 +1,133 @@
+{
+  "slug": "sicilian-defense",
+  "label": "Sicilian Defense (Najdorf)",
+  "side": "black",
+  "root": {
+    "children": [
+      {
+        "from": "e2",
+        "to": "e4",
+        "san": "e4",
+        "children": [
+          {
+            "from": "c7",
+            "to": "c5",
+            "san": "c5",
+            "children": [
+              {
+                "from": "g1",
+                "to": "f3",
+                "san": "Nf3",
+                "children": [
+                  {
+                    "from": "d7",
+                    "to": "d6",
+                    "san": "d6",
+                    "children": [
+                      {
+                        "from": "d2",
+                        "to": "d4",
+                        "san": "d4",
+                        "children": [
+                          {
+                            "from": "c5",
+                            "to": "d4",
+                            "san": "cxd4",
+                            "children": [
+                              {
+                                "from": "f3",
+                                "to": "d4",
+                                "san": "Nxd4",
+                                "children": [
+                                  {
+                                    "from": "g8",
+                                    "to": "f6",
+                                    "san": "Nf6",
+                                    "children": [
+                                      {
+                                        "from": "b1",
+                                        "to": "c3",
+                                        "san": "Nc3",
+                                        "children": [
+                                          {
+                                            "from": "a7",
+                                            "to": "a6",
+                                            "san": "a6",
+                                            "children": [
+                                              {
+                                                "from": "f1",
+                                                "to": "e2",
+                                                "san": "Be2",
+                                                "children": [
+                                                  {
+                                                    "from": "e7",
+                                                    "to": "e5",
+                                                    "san": "e5",
+                                                    "children": [
+                                                      {
+                                                        "from": "d4",
+                                                        "to": "b3",
+                                                        "san": "Nb3",
+                                                        "children": [
+                                                          {
+                                                            "from": "f8",
+                                                            "to": "e7",
+                                                            "san": "Be7",
+                                                            "children": []
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "from": "c1",
+                                                "to": "e3",
+                                                "san": "Be3",
+                                                "children": [
+                                                  {
+                                                    "from": "e7",
+                                                    "to": "e5",
+                                                    "san": "e5",
+                                                    "children": [
+                                                      {
+                                                        "from": "d4",
+                                                        "to": "b3",
+                                                        "san": "Nb3",
+                                                        "children": [
+                                                          {
+                                                            "from": "c8",
+                                                            "to": "e6",
+                                                            "san": "Be6",
+                                                            "children": []
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

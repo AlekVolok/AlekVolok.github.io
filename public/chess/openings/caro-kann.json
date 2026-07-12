@@ -1,0 +1,160 @@
+{
+  "slug": "caro-kann",
+  "label": "Caro-Kann Defense",
+  "side": "black",
+  "root": {
+    "children": [
+      {
+        "from": "e2",
+        "to": "e4",
+        "san": "e4",
+        "children": [
+          {
+            "from": "c7",
+            "to": "c6",
+            "san": "c6",
+            "children": [
+              {
+                "from": "d2",
+                "to": "d4",
+                "san": "d4",
+                "children": [
+                  {
+                    "from": "d7",
+                    "to": "d5",
+                    "san": "d5",
+                    "children": [
+                      {
+                        "from": "b1",
+                        "to": "c3",
+                        "san": "Nc3",
+                        "children": [
+                          {
+                            "from": "d5",
+                            "to": "e4",
+                            "san": "dxe4",
+                            "children": [
+                              {
+                                "from": "c3",
+                                "to": "e4",
+                                "san": "Nxe4",
+                                "children": [
+                                  {
+                                    "from": "c8",
+                                    "to": "f5",
+                                    "san": "Bf5",
+                                    "children": [
+                                      {
+                                        "from": "e4",
+                                        "to": "g3",
+                                        "san": "Ng3",
+                                        "children": [
+                                          {
+                                            "from": "f5",
+                                            "to": "g6",
+                                            "san": "Bg6",
+                                            "children": []
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "from": "e4",
+                        "to": "e5",
+                        "san": "e5",
+                        "children": [
+                          {
+                            "from": "c8",
+                            "to": "f5",
+                            "san": "Bf5",
+                            "children": [
+                              {
+                                "from": "g1",
+                                "to": "f3",
+                                "san": "Nf3",
+                                "children": [
+                                  {
+                                    "from": "e7",
+                                    "to": "e6",
+                                    "san": "e6",
+                                    "children": [
+                                      {
+                                        "from": "f1",
+                                        "to": "e2",
+                                        "san": "Be2",
+                                        "children": [
+                                          {
+                                            "from": "g8",
+                                            "to": "e7",
+                                            "san": "Ne7",
+                                            "children": []
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "from": "e4",
+                        "to": "d5",
+                        "san": "exd5",
+                        "children": [
+                          {
+                            "from": "c6",
+                            "to": "d5",
+                            "san": "cxd5",
+                            "children": [
+                              {
+                                "from": "f1",
+                                "to": "d3",
+                                "san": "Bd3",
+                                "children": [
+                                  {
+                                    "from": "b8",
+                                    "to": "c6",
+                                    "san": "Nc6",
+                                    "children": [
+                                      {
+                                        "from": "c2",
+                                        "to": "c3",
+                                        "san": "c3",
+                                        "children": [
+                                          {
+                                            "from": "g8",
+                                            "to": "f6",
+                                            "san": "Nf6",
+                                            "children": []
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
