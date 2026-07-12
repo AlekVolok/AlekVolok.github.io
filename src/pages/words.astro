@@ -149,14 +149,27 @@ import Base from '../layouts/Base.astro';
     }
   }
 
+  let allTopicSlugs: string[] = [];
+
   async function loadWords() {
     score = 0;
     mistakes = 0;
     comboMultiplier = 1;
     comboCount = 0;
     const topic = topicSelect.value;
-    const res = await fetch(`/words/topics/${encodeURIComponent(topic)}.json`);
-    pairs = await res.json();
+
+    if (topic === '__random__') {
+      const results = await Promise.all(
+        allTopicSlugs.map((slug) =>
+          fetch(`/words/topics/${encodeURIComponent(slug)}.json`).then((res) => res.json())
+        )
+      );
+      pairs = Object.assign({}, ...(results as Pairs[]));
+    } else {
+      const res = await fetch(`/words/topics/${encodeURIComponent(topic)}.json`);
+      pairs = await res.json();
+    }
+
     displayedPairs = {};
     loadNewSetOfPairs();
   }
@@ -172,6 +185,13 @@ import Base from '../layouts/Base.astro';
   async function init() {
     const res = await fetch('/words/topics.json');
     const topics: { slug: string; label: string }[] = await res.json();
+    allTopicSlugs = topics.map((t) => t.slug);
+
+    const randomOpt = document.createElement('option');
+    randomOpt.value = '__random__';
+    randomOpt.textContent = 'Random (all topics)';
+    topicSelect.appendChild(randomOpt);
+
     topics.forEach(({ slug, label }) => {
       const opt = document.createElement('option');
       opt.value = slug;
