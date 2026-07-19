@@ -22,6 +22,8 @@ import '../styles/global.css';
           <span id="score">Score: 0</span>
           <span id="mistakes">Mistakes: 0</span>
           <span id="multiplier">Multiplier: x1</span>
+          <span id="timer">Time: 00:00</span>
+          <span id="page" aria-live="polite">Page: 0/0</span>
         </div>
         <div class="words-container">
           <div id="leftWords" class="word-col"></div>
@@ -34,17 +36,34 @@ import '../styles/global.css';
 
 <script>
   type Pairs = Record<string, string>;
+  type Pair = [string, string];
+  type PageType = 'regular' | 'penalty';
 
   let selectedLeft: string | null = null;
   let selectedRight: string | null = null;
   let pairs: Pairs = {};
-  let displayedPairs: Record<string, boolean> = {};
+  let regularPages: Pair[][] = [];
+  let currentPagePairs: Pair[] = [];
+  let currentRegularPageIndex = 0;
+  let currentPenaltyPage = 0;
+  let pageType: PageType = 'regular';
+  let pendingPenaltyPairs: Pair[] = [];
+  let queuedPenaltyKeys = new Set<string>();
+  let missedPairsOnCurrentPage = new Set<string>();
   let correctlyGuessedPairs = 0;
   let score = 0;
   let mistakes = 0;
   let comboMultiplier = 1;
   let comboCount = 0;
   const numberRows = 8;
+  const maxRegularPages = 5;
+  const pointsPerCorrectAnswer = 10;
+  const pointsDecayIntervalMs = 5_000;
+  let gameStartedAt = 0;
+  let pageStartedAt = 0;
+  let lastActionAt = 0;
+  let inactivitySteps = 0;
+  let gameActive = false;
 
   const $ = <T extends Element>(sel: string) =>
     document.querySelector<T>(sel)!;
@@ -55,6 +74,19 @@ import '../styles/global.css';
   const scoreEl = $<HTMLSpanElement>('#score');
   const mistakesEl = $<HTMLSpanElement>('#mistakes');
   const multiplierEl = $<HTMLSpanElement>('#multiplier');
+  const timerEl = $<HTMLSpanElement>('#timer');
+  const pageEl = $<HTMLSpanElement>('#page');
+
+  function shuffle<T>(items: T[]): T[] {
+    return [...items].sort(() => Math.random() - 0.5);
+  }
+
+  function formatTime(milliseconds: number): string {
+    const totalSeconds = Math.floor(milliseconds / 1_000);
+    const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+    const seconds = (totalSeconds % 60).toString().padStart(2, '0');
+    return `${minutes}:${seconds}`;
+  }
 
   function makeButton(word: string, onClick: () => void): HTMLButtonElement {
     const btn = document.createElement('button');
@@ -64,26 +96,22 @@ import '../styles/global.css';
     return btn;
   }
 
-  function loadNewSetOfPairs() {
+  function loadPage(page: Pair[], nextPageType: PageType) {
     correctlyGuessedPairs = 0;
     leftWordsEl.innerHTML = '';
     rightWordsEl.innerHTML = '';
     selectedLeft = null;
     selectedRight = null;
+    missedPairsOnCurrentPage = new Set<string>();
+    currentPagePairs = page;
+    pageType = nextPageType;
+    pageStartedAt = Date.now();
 
-    let remaining = Object.entries(pairs).filter(([left]) => !displayedPairs[left]);
-    if (remaining.length < numberRows) {
-      displayedPairs = {};
-      remaining = Object.entries(pairs);
-    }
-
-    const samplePairs = remaining.sort(() => 0.5 - Math.random()).slice(0, numberRows);
-    const leftWords = samplePairs.map(([left]) => left);
-    const rightWords = samplePairs.map(([, right]) => right).sort(() => Math.random() - 0.5);
+    const leftWords = currentPagePairs.map(([left]) => left);
+    const rightWords = shuffle(currentPagePairs.map(([, right]) => right));
 
     leftWords.forEach((word) => {
       leftWordsEl.appendChild(makeButton(word, () => onLeftClick(word)));
-      displayedPairs[word] = true;
     });
 
     rightWords.forEach((word) => {
@@ -93,20 +121,67 @@ import '../styles/global.css';
     updateUI();
   }
 
+  function queuePenaltyPair(leftWord: string) {
+    if (queuedPenaltyKeys.has(leftWord)) return;
+
+    const pair = currentPagePairs.find(([left]) => left === leftWord);
+    if (!pair) return;
+
+    pendingPenaltyPairs.push(pair);
+    queuedPenaltyKeys.add(leftWord);
+  }
+
+  function markPairForPenalty(leftWord: string) {
+    missedPairsOnCurrentPage.add(leftWord);
+  }
+
+  function loadNextPage() {
+    missedPairsOnCurrentPage.forEach(queuePenaltyPair);
+
+    if (pageType === 'regular' && currentRegularPageIndex < regularPages.length - 1) {
+      currentRegularPageIndex += 1;
+      loadPage(regularPages[currentRegularPageIndex], 'regular');
+      return;
+    }
+
+    if (pendingPenaltyPairs.length > 0) {
+      const nextPenaltyPage = pendingPenaltyPairs.splice(0, numberRows);
+      nextPenaltyPage.forEach(([left]) => queuedPenaltyKeys.delete(left));
+      currentPenaltyPage += 1;
+      loadPage(nextPenaltyPage, 'penalty');
+      return;
+    }
+
+    gameActive = false;
+    pageEl.textContent = `Complete in ${formatTime(Date.now() - gameStartedAt)}`;
+    updateUI();
+  }
+
+  function getPointsForCorrectAnswer(): number {
+    const elapsedSteps = Math.floor((Date.now() - pageStartedAt) / pointsDecayIntervalMs);
+    const timeAdjustedPoints = Math.max(1, pointsPerCorrectAnswer - elapsedSteps);
+    return timeAdjustedPoints * comboMultiplier;
+  }
+
   function checkPair(leftWord: string, rightWord: string) {
     document.querySelectorAll('.selected').forEach((el) => el.classList.remove('selected'));
     if (pairs[leftWord] === rightWord) {
       correctlyGuessedPairs += 1;
+      score += getPointsForCorrectAnswer();
       markCorrect(leftWord, rightWord);
-      score += numberRows * comboMultiplier;
-      if (correctlyGuessedPairs === numberRows) {
-        loadNewSetOfPairs();
+      if (correctlyGuessedPairs === currentPagePairs.length) {
+        loadNextPage();
       }
     } else {
       mistakes += 1;
       score -= 5;
       comboCount = 0;
       comboMultiplier = 1;
+      markPairForPenalty(leftWord);
+      const pairWithSelectedTranslation = currentPagePairs.find(([, right]) => right === rightWord);
+      if (pairWithSelectedTranslation) {
+        markPairForPenalty(pairWithSelectedTranslation[0]);
+      }
       markIncorrect(leftWord, rightWord);
     }
     selectedLeft = null;
@@ -134,6 +209,7 @@ import '../styles/global.css';
 
   function onLeftClick(word: string) {
     if (leftWordsEl.querySelector(`[data-word="${CSS.escape(word)}"]`)?.classList.contains('correct')) return;
+    recordAction();
     document.querySelectorAll('.selected').forEach((el) => el.classList.remove('selected'));
     if (selectedRight) {
       checkPair(word, selectedRight);
@@ -145,6 +221,7 @@ import '../styles/global.css';
 
   function onRightClick(word: string) {
     if (rightWordsEl.querySelector(`[data-word="${CSS.escape(word)}"]`)?.classList.contains('correct')) return;
+    recordAction();
     document.querySelectorAll('.selected').forEach((el) => el.classList.remove('selected'));
     if (selectedLeft) {
       checkPair(selectedLeft, word);
@@ -155,6 +232,23 @@ import '../styles/global.css';
   }
 
   let allTopicSlugs: string[] = [];
+
+  function recordAction() {
+    lastActionAt = Date.now();
+    inactivitySteps = 0;
+    updateUI();
+  }
+
+  function tickTimer() {
+    if (!gameActive) return;
+
+    const idleSteps = Math.floor((Date.now() - lastActionAt) / pointsDecayIntervalMs);
+    if (idleSteps > inactivitySteps) {
+      comboMultiplier = Math.max(1, comboMultiplier - (idleSteps - inactivitySteps));
+      inactivitySteps = idleSteps;
+    }
+    updateUI();
+  }
 
   async function loadWords() {
     score = 0;
@@ -175,14 +269,40 @@ import '../styles/global.css';
       pairs = await res.json();
     }
 
-    displayedPairs = {};
-    loadNewSetOfPairs();
+    const selectedPairs = shuffle(Object.entries(pairs)).slice(0, numberRows * maxRegularPages);
+    regularPages = Array.from(
+      { length: Math.ceil(selectedPairs.length / numberRows) },
+      (_, index) => selectedPairs.slice(index * numberRows, (index + 1) * numberRows)
+    );
+    currentRegularPageIndex = 0;
+    currentPenaltyPage = 0;
+    pendingPenaltyPairs = [];
+    queuedPenaltyKeys = new Set<string>();
+    gameStartedAt = Date.now();
+    lastActionAt = gameStartedAt;
+    inactivitySteps = 0;
+    gameActive = regularPages.length > 0;
+
+    if (gameActive) {
+      loadPage(regularPages[0], 'regular');
+    } else {
+      leftWordsEl.innerHTML = '';
+      rightWordsEl.innerHTML = '';
+      pageEl.textContent = 'No words available';
+      updateUI();
+    }
   }
 
   function updateUI() {
     scoreEl.textContent = `Score: ${score}`;
     mistakesEl.textContent = `Mistakes: ${mistakes}`;
     multiplierEl.textContent = `Multiplier: x${comboMultiplier}`;
+    timerEl.textContent = `Time: ${formatTime(Date.now() - gameStartedAt)}`;
+    if (gameActive) {
+      pageEl.textContent = pageType === 'regular'
+        ? `Page: ${currentRegularPageIndex + 1}/${regularPages.length}`
+        : `Penalty page: ${currentPenaltyPage}`;
+    }
     scoreEl.classList.toggle('negative', score < 0);
     scoreEl.classList.toggle('high', score >= 1000);
   }
@@ -209,6 +329,7 @@ import '../styles/global.css';
   topicSelect.addEventListener('change', loadWords);
   $('#reloadBtn').addEventListener('click', loadWords);
 
+  window.setInterval(tickTimer, 1_000);
   init();
 </script>
 
