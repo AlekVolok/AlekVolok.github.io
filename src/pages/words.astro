@@ -25,10 +25,25 @@ import '../styles/global.css';
           <span id="timer">Time: 00:00</span>
           <span id="page" aria-live="polite">Page: 0/0</span>
         </div>
-        <div class="words-container">
+        <div id="wordsContainer" class="words-container">
           <div id="leftWords" class="word-col"></div>
           <div id="rightWords" class="word-col"></div>
         </div>
+        <section id="resultPanel" class="result-panel" hidden aria-live="polite">
+          <div class="confetti" aria-hidden="true">
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+          </div>
+          <p class="result-kicker">Congratulations!</p>
+          <h1>Exercise complete</h1>
+          <div class="final-score">
+            <span>Score</span>
+            <strong id="finalScore">0</strong>
+          </div>
+          <p id="sessionRecord" class="session-record">Session record: 0</p>
+          <p id="completionDetails" class="completion-details"></p>
+          <button id="playAgainBtn" class="btn">Play again</button>
+        </section>
       </div>
     </main>
   </body>
@@ -70,12 +85,19 @@ import '../styles/global.css';
 
   const leftWordsEl = $<HTMLDivElement>('#leftWords');
   const rightWordsEl = $<HTMLDivElement>('#rightWords');
+  const wordsContainerEl = $<HTMLDivElement>('#wordsContainer');
   const topicSelect = $<HTMLSelectElement>('#topicSelect');
   const scoreEl = $<HTMLSpanElement>('#score');
   const mistakesEl = $<HTMLSpanElement>('#mistakes');
   const multiplierEl = $<HTMLSpanElement>('#multiplier');
   const timerEl = $<HTMLSpanElement>('#timer');
   const pageEl = $<HTMLSpanElement>('#page');
+  const resultPanel = $<HTMLElement>('#resultPanel');
+  const finalScoreEl = $<HTMLElement>('#finalScore');
+  const sessionRecordEl = $<HTMLParagraphElement>('#sessionRecord');
+  const completionDetailsEl = $<HTMLParagraphElement>('#completionDetails');
+  const sessionRecordKey = 'words-session-high-score';
+  let sessionHighScore = 0;
 
   function shuffle<T>(items: T[]): T[] {
     return [...items].sort(() => Math.random() - 0.5);
@@ -86,6 +108,34 @@ import '../styles/global.css';
     const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
     const seconds = (totalSeconds % 60).toString().padStart(2, '0');
     return `${minutes}:${seconds}`;
+  }
+
+  function loadSessionHighScore(): number {
+    try {
+      return Number(sessionStorage.getItem(sessionRecordKey)) || 0;
+    } catch {
+      return 0;
+    }
+  }
+
+  function showResultPanel() {
+    sessionHighScore = Math.max(sessionHighScore, score);
+    try {
+      sessionStorage.setItem(sessionRecordKey, String(sessionHighScore));
+    } catch {
+      // The game still works when browser storage is unavailable.
+    }
+
+    finalScoreEl.textContent = String(score);
+    sessionRecordEl.textContent = `Session record: ${sessionHighScore}`;
+    completionDetailsEl.textContent = `Time: ${formatTime(Date.now() - gameStartedAt)} · Mistakes: ${mistakes}`;
+    wordsContainerEl.hidden = true;
+    resultPanel.hidden = false;
+  }
+
+  function hideResultPanel() {
+    resultPanel.hidden = true;
+    wordsContainerEl.hidden = false;
   }
 
   function makeButton(word: string, onClick: () => void): HTMLButtonElement {
@@ -155,6 +205,7 @@ import '../styles/global.css';
     gameActive = false;
     pageEl.textContent = `Complete in ${formatTime(Date.now() - gameStartedAt)}`;
     updateUI();
+    showResultPanel();
   }
 
   function getPointsForCorrectAnswer(): number {
@@ -251,6 +302,7 @@ import '../styles/global.css';
   }
 
   async function loadWords() {
+    hideResultPanel();
     score = 0;
     mistakes = 0;
     comboMultiplier = 1;
@@ -328,7 +380,9 @@ import '../styles/global.css';
 
   topicSelect.addEventListener('change', loadWords);
   $('#reloadBtn').addEventListener('click', loadWords);
+  $('#playAgainBtn').addEventListener('click', loadWords);
 
+  sessionHighScore = loadSessionHighScore();
   window.setInterval(tickTimer, 1_000);
   init();
 </script>
@@ -369,6 +423,7 @@ import '../styles/global.css';
 
   .stats {
     display: flex;
+    flex-wrap: wrap;
     gap: 20px;
     font-family: var(--font-mono);
     font-size: 0.85rem;
@@ -389,9 +444,105 @@ import '../styles/global.css';
     flex: 1;
   }
 
+  .result-panel {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    padding: 48px 24px 32px;
+    text-align: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .result-panel > :not(.confetti) {
+    position: relative;
+    z-index: 1;
+  }
+  .result-kicker {
+    margin: 0 0 8px;
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .result-panel h1 {
+    margin: 0;
+    font-size: clamp(1.6rem, 5vw, 2.2rem);
+  }
+  .final-score {
+    display: grid;
+    gap: 2px;
+    margin: 28px 0 14px;
+    font-family: var(--font-mono);
+  }
+  .final-score span,
+  .session-record,
+  .completion-details {
+    color: var(--text-dim);
+  }
+  .final-score strong {
+    color: var(--accent);
+    font-size: clamp(4rem, 16vw, 6.5rem);
+    line-height: 1;
+    letter-spacing: -0.06em;
+  }
+  .session-record,
+  .completion-details {
+    margin: 8px 0;
+    font-family: var(--font-mono);
+  }
+  .result-panel .btn {
+    margin-top: 18px;
+  }
+  .confetti {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .confetti i {
+    position: absolute;
+    top: -14px;
+    width: 9px;
+    height: 16px;
+    border-radius: 2px;
+    background: var(--accent);
+    animation: confetti-fall 3.2s linear infinite;
+  }
+  .confetti i:nth-child(4n + 2) { background: #f08080; }
+  .confetti i:nth-child(4n + 3) { background: #f5cf5d; }
+  .confetti i:nth-child(4n) { background: #7bc6ff; }
+  .confetti i:nth-child(1) { left: 5%; animation-delay: -0.8s; }
+  .confetti i:nth-child(2) { left: 13%; animation-delay: -2.5s; }
+  .confetti i:nth-child(3) { left: 20%; animation-delay: -1.4s; }
+  .confetti i:nth-child(4) { left: 29%; animation-delay: -3s; }
+  .confetti i:nth-child(5) { left: 36%; animation-delay: -0.2s; }
+  .confetti i:nth-child(6) { left: 44%; animation-delay: -2.1s; }
+  .confetti i:nth-child(7) { left: 51%; animation-delay: -1s; }
+  .confetti i:nth-child(8) { left: 58%; animation-delay: -2.8s; }
+  .confetti i:nth-child(9) { left: 65%; animation-delay: -0.6s; }
+  .confetti i:nth-child(10) { left: 71%; animation-delay: -1.8s; }
+  .confetti i:nth-child(11) { left: 77%; animation-delay: -2.3s; }
+  .confetti i:nth-child(12) { left: 83%; animation-delay: -0.4s; }
+  .confetti i:nth-child(13) { left: 89%; animation-delay: -1.5s; }
+  .confetti i:nth-child(14) { left: 95%; animation-delay: -2.7s; }
+  .confetti i:nth-child(15) { left: 48%; animation-delay: -2.4s; }
+  .confetti i:nth-child(16) { left: 32%; animation-delay: -1.2s; }
+
+  @keyframes confetti-fall {
+    from { transform: translateY(-12px) rotate(0deg); opacity: 0; }
+    12% { opacity: 1; }
+    to { transform: translateY(380px) rotate(540deg); opacity: 0; }
+  }
+
   @media (max-width: 520px) {
     .controls { flex-direction: column; }
     .stats { flex-wrap: wrap; gap: 12px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .confetti i { animation: none; }
   }
 </style>
 
