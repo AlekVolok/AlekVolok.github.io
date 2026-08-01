@@ -1,0 +1,90 @@
+[
+  {
+    "slug": "comparison",
+    "label": "Степени сравнения",
+    "title": "Степени сравнения",
+    "summary": "Выучить формы и не путать beter с liever.",
+    "sections": [
+      {
+        "title": "Основная схема",
+        "rows": [
+          { "text": "klein → kleiner dan → het kleinst", "note": "маленький → меньше, чем → самый маленький" },
+          { "text": "mooi → mooier dan → het mooist", "note": "красивый → красивее, чем → самый красивый" }
+        ]
+      },
+      {
+        "title": "Окончания",
+        "rows": [
+          { "text": "Обычно: -er / -st" },
+          { "text": "lekker → lekkerder → het lekkerst" },
+          { "text": "duur → duurder → het duurst", "note": "после r сравнительная форма получает -der" }
+        ]
+      },
+      {
+        "title": "В предложении",
+        "rows": [
+          { "text": "Amsterdam is het mooist.", "note": "Амстердам — самый красивый." },
+          { "text": "Amsterdam is de mooiste stad.", "note": "Амстердам — самый красивый город." }
+        ]
+      },
+      {
+        "title": "goed ≠ graag",
+        "rows": [
+          { "text": "goed → beter → het best", "note": "качество" },
+          { "text": "Ik spreek beter Engels.", "note": "Я лучше говорю по-английски." },
+          { "text": "graag → liever → het liefst", "note": "желание или предпочтение" },
+          { "text": "Ik spreek liever Engels.", "note": "Я предпочитаю говорить по-английски." }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "time-adverbials",
+    "label": "Обстоятельства времени",
+    "title": "Обстоятельства времени",
+    "summary": "Предлог зависит от того, насколько точно указано время.",
+    "sections": [
+      {
+        "title": "Предлоги",
+        "rows": [
+          { "text": "op + день / дата", "note": "op maandag · Ik ben geboren op 4 april." },
+          { "text": "om + точное время", "note": "Ik kom om twee uur." },
+          { "text": "in + период", "note": "in het weekend · in mei · in de lente · in 2026" },
+          { "text": "om twee uur 's nachts", "note": "точное время + часть суток" },
+          { "text": "in het jaar 2026", "note": "если используется слово het jaar" }
+        ]
+      },
+      {
+        "title": "Без предлога",
+        "rows": [
+          { "text": "volgend jaar · deze week · vorige maand", "note": "с уточняющим словом предлог не нужен" }
+        ]
+      },
+      {
+        "title": "Порядок и частота",
+        "rows": [
+          { "text": "voor / na", "note": "до / после" },
+          { "text": "ooit · nooit · regelmatig", "note": "когда-либо · никогда · регулярно" },
+          { "text": "eerst", "note": "сначала" },
+          { "text": "dan · daarna · hierna · verder · vervolgens", "note": "потом / затем" },
+          { "text": "ten slotte", "note": "в конце концов / наконец" },
+          { "text": "Het is nu acht uur.", "note": "Сейчас восемь часов." }
+        ]
+      },
+      {
+        "title": "Время на часах",
+        "rows": [
+          { "text": "8:28 — twee voor half negen" },
+          { "text": "8:30 — half negen" },
+          { "text": "8:32 — twee over half negen" }
+        ]
+      },
+      {
+        "title": "Отрицание",
+        "rows": [
+          { "text": "Ik werk vandaag niet.", "note": "обстоятельство времени ставится перед niet" }
+        ]
+      }
+    ]
+  }
+]

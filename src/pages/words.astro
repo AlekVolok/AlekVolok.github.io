@@ -14,35 +14,54 @@ import '../styles/global.css';
   <body>
     <main class="game-page">
       <div class="game" id="game">
-        <div class="controls">
-          <select id="topicSelect"></select>
-          <button id="reloadBtn" class="btn">Reload</button>
-        </div>
-        <div class="stats">
-          <span id="score">Score: 0</span>
-          <span id="mistakes">Mistakes: 0</span>
-          <span id="multiplier">Multiplier: x1</span>
-          <span id="timer">Time: 00:00</span>
-          <span id="page" aria-live="polite">Page: 0/0</span>
-        </div>
-        <div id="wordsContainer" class="words-container">
-          <div id="leftWords" class="word-col"></div>
-          <div id="rightWords" class="word-col"></div>
-        </div>
-        <section id="resultPanel" class="result-panel" hidden aria-live="polite">
-          <div class="confetti" aria-hidden="true">
-            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        <nav class="mode-tabs" aria-label="Words sections" role="tablist">
+          <button id="practiceModeBtn" class="mode-tab active" type="button" role="tab" aria-selected="true">
+            Words
+          </button>
+          <button id="rulesModeBtn" class="mode-tab" type="button" role="tab" aria-selected="false">
+            Rules
+          </button>
+        </nav>
+
+        <section id="practiceMode" role="tabpanel">
+          <div class="controls">
+            <select id="topicSelect" aria-label="Word topic"></select>
+            <button id="reloadBtn" class="btn">Reload</button>
           </div>
-          <p class="result-kicker">Congratulations!</p>
-          <h1>Exercise complete</h1>
-          <div class="final-score">
-            <span>Score</span>
-            <strong id="finalScore">0</strong>
+          <div class="stats">
+            <span id="score">Score: 0</span>
+            <span id="mistakes">Mistakes: 0</span>
+            <span id="multiplier">Multiplier: x1</span>
+            <span id="timer">Time: 00:00</span>
+            <span id="page" aria-live="polite">Page: 0/0</span>
           </div>
-          <p id="sessionRecord" class="session-record">Session record: 0</p>
-          <p id="completionDetails" class="completion-details"></p>
-          <button id="playAgainBtn" class="btn">Play again</button>
+          <div id="wordsContainer" class="words-container">
+            <div id="leftWords" class="word-col"></div>
+            <div id="rightWords" class="word-col"></div>
+          </div>
+          <section id="resultPanel" class="result-panel" hidden aria-live="polite">
+            <div class="confetti" aria-hidden="true">
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            </div>
+            <p class="result-kicker">Congratulations!</p>
+            <h1>Exercise complete</h1>
+            <div class="final-score">
+              <span>Score</span>
+              <strong id="finalScore">0</strong>
+            </div>
+            <p id="sessionRecord" class="session-record">Session record: 0</p>
+            <p id="completionDetails" class="completion-details"></p>
+            <button id="playAgainBtn" class="btn">Play again</button>
+          </section>
+        </section>
+
+        <section id="rulesMode" role="tabpanel" hidden>
+          <div class="rules-controls">
+            <label for="ruleTopicSelect">Тема шпаргалки</label>
+            <select id="ruleTopicSelect"></select>
+          </div>
+          <article id="ruleCard" class="rule-card" aria-live="polite"></article>
         </section>
       </div>
     </main>
@@ -53,6 +72,15 @@ import '../styles/global.css';
   type Pairs = Record<string, string>;
   type Pair = [string, string];
   type PageType = 'regular' | 'penalty';
+  type RuleRow = { text: string; note?: string };
+  type RuleSection = { title: string; rows: RuleRow[] };
+  type RuleTopic = {
+    slug: string;
+    label: string;
+    title: string;
+    summary: string;
+    sections: RuleSection[];
+  };
 
   let selectedLeft: string | null = null;
   let selectedRight: string | null = null;
@@ -79,6 +107,8 @@ import '../styles/global.css';
   let lastActionAt = 0;
   let inactivitySteps = 0;
   let gameActive = false;
+  let pauseStartedAt: number | null = null;
+  let ruleTopics: RuleTopic[] = [];
 
   const $ = <T extends Element>(sel: string) =>
     document.querySelector<T>(sel)!;
@@ -96,6 +126,12 @@ import '../styles/global.css';
   const finalScoreEl = $<HTMLElement>('#finalScore');
   const sessionRecordEl = $<HTMLParagraphElement>('#sessionRecord');
   const completionDetailsEl = $<HTMLParagraphElement>('#completionDetails');
+  const practiceModeEl = $<HTMLElement>('#practiceMode');
+  const rulesModeEl = $<HTMLElement>('#rulesMode');
+  const practiceModeBtn = $<HTMLButtonElement>('#practiceModeBtn');
+  const rulesModeBtn = $<HTMLButtonElement>('#rulesModeBtn');
+  const ruleTopicSelect = $<HTMLSelectElement>('#ruleTopicSelect');
+  const ruleCard = $<HTMLElement>('#ruleCard');
   const sessionRecordKey = 'words-session-high-score';
   let sessionHighScore = 0;
 
@@ -136,6 +172,79 @@ import '../styles/global.css';
   function hideResultPanel() {
     resultPanel.hidden = true;
     wordsContainerEl.hidden = false;
+  }
+
+  function pauseGame() {
+    if (gameActive && pauseStartedAt === null) {
+      pauseStartedAt = Date.now();
+    }
+  }
+
+  function resumeGame() {
+    if (pauseStartedAt === null) return;
+
+    const pausedFor = Date.now() - pauseStartedAt;
+    gameStartedAt += pausedFor;
+    pageStartedAt += pausedFor;
+    lastActionAt += pausedFor;
+    pauseStartedAt = null;
+    updateUI();
+  }
+
+  function switchMode(mode: 'practice' | 'rules') {
+    const showRules = mode === 'rules';
+    practiceModeEl.hidden = showRules;
+    rulesModeEl.hidden = !showRules;
+    practiceModeBtn.classList.toggle('active', !showRules);
+    rulesModeBtn.classList.toggle('active', showRules);
+    practiceModeBtn.setAttribute('aria-selected', String(!showRules));
+    rulesModeBtn.setAttribute('aria-selected', String(showRules));
+
+    if (showRules) {
+      pauseGame();
+    } else {
+      resumeGame();
+    }
+  }
+
+  function renderRuleTopic(slug: string) {
+    const topic = ruleTopics.find((item) => item.slug === slug);
+    if (!topic) return;
+
+    ruleCard.replaceChildren();
+
+    const heading = document.createElement('h1');
+    heading.textContent = topic.title;
+    const summary = document.createElement('p');
+    summary.className = 'rule-summary';
+    summary.textContent = topic.summary;
+    ruleCard.append(heading, summary);
+
+    topic.sections.forEach((ruleSection) => {
+      const section = document.createElement('section');
+      section.className = 'rule-section';
+      const sectionHeading = document.createElement('h2');
+      sectionHeading.textContent = ruleSection.title;
+      section.appendChild(sectionHeading);
+
+      ruleSection.rows.forEach((row) => {
+        const rowEl = document.createElement('div');
+        rowEl.className = 'rule-row';
+        const textEl = document.createElement('p');
+        textEl.className = 'rule-example';
+        textEl.textContent = row.text;
+        rowEl.appendChild(textEl);
+
+        if (row.note) {
+          const noteEl = document.createElement('p');
+          noteEl.className = 'rule-note';
+          noteEl.textContent = row.note;
+          rowEl.appendChild(noteEl);
+        }
+        section.appendChild(rowEl);
+      });
+      ruleCard.appendChild(section);
+    });
   }
 
   function makeButton(word: string, onClick: () => void): HTMLButtonElement {
@@ -291,7 +400,7 @@ import '../styles/global.css';
   }
 
   function tickTimer() {
-    if (!gameActive) return;
+    if (!gameActive || pauseStartedAt !== null) return;
 
     const idleSteps = Math.floor((Date.now() - lastActionAt) / pointsDecayIntervalMs);
     if (idleSteps > inactivitySteps) {
@@ -334,6 +443,7 @@ import '../styles/global.css';
     lastActionAt = gameStartedAt;
     inactivitySteps = 0;
     gameActive = regularPages.length > 0;
+    pauseStartedAt = gameActive && !rulesModeEl.hidden ? Date.now() : null;
 
     if (gameActive) {
       loadPage(regularPages[0], 'regular');
@@ -360,8 +470,12 @@ import '../styles/global.css';
   }
 
   async function init() {
-    const res = await fetch('/words/topics.json');
-    const topics: { slug: string; label: string }[] = await res.json();
+    const [topicsRes, rulesRes] = await Promise.all([
+      fetch('/words/topics.json'),
+      fetch('/words/rules.json')
+    ]);
+    const topics: { slug: string; label: string }[] = await topicsRes.json();
+    ruleTopics = await rulesRes.json();
     allTopicSlugs = topics.map((t) => t.slug);
 
     const randomOpt = document.createElement('option');
@@ -375,10 +489,21 @@ import '../styles/global.css';
       opt.textContent = label;
       topicSelect.appendChild(opt);
     });
+
+    ruleTopics.forEach(({ slug, label }) => {
+      const opt = document.createElement('option');
+      opt.value = slug;
+      opt.textContent = label;
+      ruleTopicSelect.appendChild(opt);
+    });
+    if (ruleTopics[0]) renderRuleTopic(ruleTopics[0].slug);
     await loadWords();
   }
 
   topicSelect.addEventListener('change', loadWords);
+  ruleTopicSelect.addEventListener('change', () => renderRuleTopic(ruleTopicSelect.value));
+  practiceModeBtn.addEventListener('click', () => switchMode('practice'));
+  rulesModeBtn.addEventListener('click', () => switchMode('rules'));
   $('#reloadBtn').addEventListener('click', loadWords);
   $('#playAgainBtn').addEventListener('click', loadWords);
 
@@ -399,6 +524,31 @@ import '../styles/global.css';
   .game {
     width: 100%;
     max-width: 640px;
+  }
+
+  .mode-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    padding: 4px;
+    margin-bottom: 20px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .mode-tab {
+    appearance: none;
+    padding: 10px 16px;
+    color: var(--text-dim);
+    background: transparent;
+    border: 0;
+    border-radius: 7px;
+    font: 0.9rem var(--font-sans);
+    cursor: pointer;
+  }
+  .mode-tab.active {
+    color: var(--accent);
+    background: var(--accent-dim);
   }
 
   .controls {
@@ -442,6 +592,73 @@ import '../styles/global.css';
     flex-direction: column;
     gap: 10px;
     flex: 1;
+  }
+
+  .rules-controls {
+    display: grid;
+    gap: 7px;
+    margin-bottom: 14px;
+  }
+  .rules-controls label {
+    color: var(--text-dim);
+    font: 0.78rem var(--font-mono);
+  }
+  .rules-controls select {
+    width: 100%;
+    padding: 10px 12px;
+    color: var(--text);
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font: 0.9rem var(--font-sans);
+  }
+  .rule-card {
+    max-height: calc(100vh - 210px);
+    overflow-y: auto;
+    padding: 18px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    scrollbar-width: thin;
+  }
+  .rule-card h1 {
+    margin: 0 0 4px;
+    font-size: clamp(1.35rem, 5vw, 1.8rem);
+  }
+  .rule-summary {
+    margin: 0 0 16px;
+    color: var(--text-dim);
+    font-size: 0.84rem;
+  }
+  .rule-section {
+    padding: 13px 0;
+    border-top: 1px solid var(--border);
+  }
+  .rule-section:last-child {
+    padding-bottom: 0;
+  }
+  .rule-section h2 {
+    margin: 0 0 9px;
+    color: var(--accent);
+    font: 0.78rem var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .rule-row + .rule-row {
+    margin-top: 9px;
+  }
+  .rule-example,
+  .rule-note {
+    margin: 0;
+  }
+  .rule-example {
+    font: 0.86rem/1.35 var(--font-mono);
+  }
+  .rule-note {
+    margin-top: 2px;
+    color: var(--text-dim);
+    font-size: 0.76rem;
+    line-height: 1.35;
   }
 
   .result-panel {
@@ -537,8 +754,14 @@ import '../styles/global.css';
   }
 
   @media (max-width: 520px) {
+    .game-page { padding: 18px 14px; align-items: flex-start; }
+    .mode-tabs { margin-bottom: 14px; }
     .controls { flex-direction: column; }
     .stats { flex-wrap: wrap; gap: 12px; }
+    .rule-card {
+      max-height: calc(100vh - 160px);
+      padding: 14px;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
