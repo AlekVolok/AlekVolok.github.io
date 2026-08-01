@@ -86,5 +86,211 @@
         ]
       }
     ]
+  },
+  {
+    "slug": "modal-verbs",
+    "label": "Модальные глаголы",
+    "title": "Модальные глаголы",
+    "summary": "После модального глагола инфинитив ставится в конец без te.",
+    "sections": [
+      {
+        "title": "kunnen — мочь",
+        "rows": [
+          { "text": "Ik kan zwemmen.", "note": "Я умею / могу плавать: способность или возможность." },
+          { "text": "Kan ik je helpen?", "note": "Могу ли я помочь: проверяю, возможна ли помощь." }
+        ]
+      },
+      {
+        "title": "moeten — быть должным",
+        "rows": [
+          { "text": "Ik moet werken.", "note": "Мне нужно работать." },
+          { "text": "Je moet dat echt kopen! Het staat je zo leuk!", "note": "Дружеская настойчивая рекомендация." },
+          { "text": "Wil je dat alsjeblieft doen?", "note": "С коллегой звучит мягче, чем Je moet…" },
+          { "text": "Zou je dat alsjeblieft willen doen?", "note": "Ещё более вежливая просьба." }
+        ]
+      },
+      {
+        "title": "mogen — разрешение",
+        "rows": [
+          { "text": "Mag ik hier parkeren?", "note": "Можно мне здесь парковаться?" },
+          { "text": "Je mag hier niet parkeren.", "note": "Здесь нельзя парковаться." }
+        ]
+      },
+      {
+        "title": "zullen — будущее и предложение",
+        "rows": [
+          { "text": "Wij zullen bezuinigen.", "note": "Мы будем экономить." },
+          { "text": "Ik zal dat voor je doen.", "note": "Я сделаю это для тебя: обещание или решение." },
+          { "text": "Zullen we vandaag in een café gaan eten?", "note": "Давай сегодня поедим в кафе?" }
+        ]
+      },
+      {
+        "title": "Предложить помощь",
+        "rows": [
+          { "text": "Kan ik je helpen?", "note": "Возможна ли помощь вообще?" },
+          { "text": "Zal ik je helpen?", "note": "Конкретное предложение: помочь?" },
+          { "text": "Mag ik u helpen?", "note": "Прошу разрешения помочь; вежливо и формально." }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "inseparable-prefixes",
+    "label": "Неотделяемые приставки",
+    "title": "Неотделяемые приставки",
+    "summary": "ge-, be-, ont-, her-, ver- часто сильно меняют значение корня.",
+    "sections": [
+      {
+        "title": "Смысл слова",
+        "rows": [
+          { "text": "houden van", "note": "любить" },
+          { "text": "onthouden", "note": "запоминать" },
+          { "text": "behouden", "note": "сохранять / оставлять себе" },
+          { "text": "Не переводите только по корню.", "note": "Смотрите значение всего глагола и контекст предложения." }
+        ]
+      },
+      {
+        "title": "Примеры",
+        "rows": [
+          { "text": "Ik onthoud dat wel.", "note": "Я это запомню." },
+          { "text": "Ik kan dat niet onthouden.", "note": "Я не могу это запомнить." },
+          { "text": "Ik heb dat onthouden.", "note": "В причастии не добавляется второе ge-." }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "articles",
+    "label": "Артикли",
+    "title": "Артикли",
+    "summary": "Неопределённый: een. Определённые: de и het. Артикль лучше учить вместе со словом.",
+    "sections": [
+      {
+        "title": "een / geen",
+        "rows": [
+          { "text": "Ik heb een auto.", "note": "У меня есть какая-то / одна машина." },
+          { "text": "Ik heb geen auto.", "note": "У меня нет машины." }
+        ]
+      },
+      {
+        "title": "de",
+        "rows": [
+          { "text": "Все слова во множественном числе: de huizen" },
+          { "text": "Люди и профессии обычно de: de vrouw, de dokter" },
+          { "text": "Суффиксы -ing, -heid, -teit, -ij обычно de", "note": "de woning · de vrijheid · de universiteit" },
+          { "text": "Если сомневаетесь, de вероятнее, но исключений много." }
+        ]
+      },
+      {
+        "title": "het",
+        "rows": [
+          { "text": "Все уменьшительные на -je: het tafeltje, het meisje" },
+          { "text": "Языки и стороны света: het Nederlands, het noorden" },
+          { "text": "Глагол как существительное: het eten, het zwemmen" },
+          { "text": "Некоторые собирательные слова на ge-: het gezin", "note": "Это подсказка, а не правило на 99%." }
+        ]
+      },
+      {
+        "title": "Заимствования",
+        "rows": [
+          { "text": "de computer · de printer · de monitor" },
+          { "text": "het restaurant · het café", "note": "Артикль также нужно проверять по словарю." }
+        ]
+      },
+      {
+        "title": "Притяжательные слова",
+        "rows": [
+          { "text": "mijn · je/jouw · zijn · haar · ons/onze · jullie · hun · uw" },
+          { "text": "mijn auto · ons huis · onze auto", "note": "de/het перед притяжательным словом не ставится." }
+        ]
+      },
+      {
+        "title": "Еда",
+        "rows": [
+          { "text": "Ik eet een appel.", "note": "Один исчисляемый предмет требует een." },
+          { "text": "Ik eet appels. · Ik drink koffie.", "note": "Без артикля: множественное или вещество в общем смысле." },
+          { "text": "Уменьшительное всегда het, но меняет оттенок значения.", "note": "Не стоит добавлять -je только ради удобного артикля." }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "plural-and-adjectives",
+    "label": "Окончания",
+    "title": "Множественное число и прилагательные",
+    "summary": "У существительных выбираем -en или -s; у прилагательных чаще всего появляется -e.",
+    "sections": [
+      {
+        "title": "Множественное число",
+        "rows": [
+          { "text": "Обычно -en: boek → boeken · huis → huizen" },
+          { "text": "Часто -s после безударных -el, -em, -en, -er, -je", "note": "tafel → tafels · computer → computers · meisje → meisjes" },
+          { "text": "После долгой гласной часто 's", "note": "auto → auto's · menu → menu's" }
+        ]
+      },
+      {
+        "title": "Указательные слова",
+        "rows": [
+          { "text": "de / мн. число: deze — die — welke?" },
+          { "text": "het, ед. число: dit — dat — welk?" },
+          { "text": "Deze vrouw is mooi. · Dit huis is klein." }
+        ]
+      },
+      {
+        "title": "Прилагательное без -e",
+        "rows": [
+          { "text": "Mijn huis is klein.", "note": "После is/wordt/blijft прилагательное стоит без -e." },
+          { "text": "een klein huis · geen klein huis", "note": "Без -e перед неопределённым het-словом в единственном числе." }
+        ]
+      },
+      {
+        "title": "Прилагательное с -e",
+        "rows": [
+          { "text": "de kleine auto · het kleine huis" },
+          { "text": "mijn kleine auto · mijn kleine huis" },
+          { "text": "Ik zoek dit kleine huis.", "note": "После de/het, dit/dat, deze/die и притяжательных слов обычно ставим -e." }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "negation",
+    "label": "Отрицание",
+    "title": "Отрицание: nee, niet, geen",
+    "summary": "Nee — самостоятельный ответ. Geen отрицает неопределённое существительное; niet — всё остальное.",
+    "sections": [
+      {
+        "title": "nee",
+        "rows": [
+          { "text": "Kom je? — Nee.", "note": "Nee не используется как частица внутри предложения." }
+        ]
+      },
+      {
+        "title": "geen",
+        "rows": [
+          { "text": "een / без артикля → geen" },
+          { "text": "Ik heb een huis. → Ik heb geen huis." },
+          { "text": "Ik eet appels. → Ik eet geen appels.", "note": "После geen отдельный артикль не ставится." },
+          { "text": "Dit is geen huis maar een hotel." }
+        ]
+      },
+      {
+        "title": "niet",
+        "rows": [
+          { "text": "de/het, dit/dat, mijn/jouw → niet" },
+          { "text": "Ik eet de appel niet.", "note": "Определённое дополнение сохраняет артикль." },
+          { "text": "Mijn huis is vandaag niet mooi.", "note": "Перед прилагательным или наречием." },
+          { "text": "Ik ga niet naar Amsterdam.", "note": "Перед предложной группой." },
+          { "text": "Ik kan vandaag niet werken.", "note": "Перед инфинитивом или группой глаголов в конце." }
+        ]
+      },
+      {
+        "title": "niet … maar …",
+        "rows": [
+          { "text": "Dit is niet mijn auto maar jouw auto." },
+          { "text": "Niet hier maar daar.", "note": "Не здесь, а там." }
+        ]
+      }
+    ]
   }
 ]
