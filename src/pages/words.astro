@@ -73,7 +73,13 @@ import '../styles/global.css';
   type Pair = [string, string];
   type PageType = 'regular' | 'penalty';
   type RuleRow = { text: string; note?: string };
-  type RuleSection = { title: string; rows: RuleRow[] };
+  type RuleTableRow = { cells: string[] };
+  type RuleSection = {
+    title: string;
+    rows?: RuleRow[];
+    columns?: string[];
+    tableRows?: RuleTableRow[];
+  };
   type RuleTopic = {
     slug: string;
     label: string;
@@ -227,7 +233,38 @@ import '../styles/global.css';
       sectionHeading.textContent = ruleSection.title;
       section.appendChild(sectionHeading);
 
-      ruleSection.rows.forEach((row) => {
+      if (ruleSection.columns && ruleSection.tableRows) {
+        const tableWrap = document.createElement('div');
+        tableWrap.className = 'rule-table-wrap';
+        const table = document.createElement('table');
+        table.className = 'rule-table';
+
+        const thead = document.createElement('thead');
+        const headRow = document.createElement('tr');
+        ruleSection.columns.forEach((column) => {
+          const th = document.createElement('th');
+          th.textContent = column;
+          headRow.appendChild(th);
+        });
+        thead.appendChild(headRow);
+        table.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+        ruleSection.tableRows.forEach((row) => {
+          const tr = document.createElement('tr');
+          row.cells.forEach((cell) => {
+            const td = document.createElement('td');
+            td.textContent = cell;
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        tableWrap.appendChild(table);
+        section.appendChild(tableWrap);
+      }
+
+      ruleSection.rows?.forEach((row) => {
         const rowEl = document.createElement('div');
         rowEl.className = 'rule-row';
         const textEl = document.createElement('p');
@@ -646,6 +683,38 @@ import '../styles/global.css';
   }
   .rule-row + .rule-row {
     margin-top: 9px;
+  }
+  .rule-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .rule-table {
+    width: 100%;
+    min-width: 520px;
+    border-collapse: collapse;
+    font-size: 0.78rem;
+    line-height: 1.32;
+  }
+  .rule-table th,
+  .rule-table td {
+    padding: 7px 9px;
+    vertical-align: top;
+    border-bottom: 1px solid var(--border);
+  }
+  .rule-table th {
+    color: var(--accent);
+    background: var(--bg-raised);
+    font: 0.72rem var(--font-mono);
+    text-align: left;
+    text-transform: uppercase;
+  }
+  .rule-table td {
+    color: var(--text);
+    font-family: var(--font-mono);
+  }
+  .rule-table tr:last-child td {
+    border-bottom: 0;
   }
   .rule-example,
   .rule-note {
