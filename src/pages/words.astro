@@ -938,4 +938,69 @@ import '../styles/global.css';
     background: rgba(240, 128, 128, 0.12);
     color: #f08080;
   }
+
+  /* Rule content is created in JavaScript, so it must not rely on Astro's
+     scoped attributes, which only exist on elements written in the template. */
+  .rule-card h1 { margin: 0 0 4px; font-size: clamp(1.35rem, 5vw, 1.8rem); }
+  .rule-summary { margin: 0 0 16px; color: var(--text-dim); font-size: 0.84rem; }
+  .rule-section { padding: 13px 0; border-top: 1px solid var(--border); }
+  .rule-section:last-child { padding-bottom: 0; }
+  .rule-section h2 {
+    margin: 0 0 9px;
+    color: var(--accent);
+    font: 0.78rem var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .rule-row + .rule-row { margin-top: 9px; }
+  .rule-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border-hover);
+    border-radius: 8px;
+    box-shadow: inset 0 0 0 1px rgba(79, 214, 190, 0.06);
+  }
+  .rule-table { width: 100%; min-width: 520px; border-collapse: collapse; font-size: 0.78rem; line-height: 1.32; }
+  .rule-table th, .rule-table td { padding: 7px 9px; vertical-align: top; border-bottom: 1px solid #536273; }
+  .rule-table th + th, .rule-table td + td { border-left: 1px solid #536273; }
+  .rule-table th {
+    color: #8cf1dc;
+    background: #151b24;
+    font: 0.72rem var(--font-mono);
+    text-align: left;
+    text-transform: uppercase;
+  }
+  .rule-table tbody tr:nth-child(even) { background: rgba(255, 255, 255, 0.025); }
+  .rule-table td { color: var(--text); font-family: var(--font-mono); }
+  .rule-table tr:last-child td { border-bottom: 0; }
+  .rule-example, .rule-note { margin: 0; }
+  .rule-example { font: 0.86rem/1.35 var(--font-mono); }
+  .rule-note { margin-top: 2px; color: var(--text-dim); font-size: 0.76rem; line-height: 1.35; }
+
+  @media (max-width: 520px) {
+    .rule-table-wrap { overflow: visible; border: 0; border-radius: 0; box-shadow: none; }
+    .rule-table { min-width: 0; font-size: 0.8rem; }
+    .rule-table thead { display: none; }
+    .rule-table, .rule-table tbody, .rule-table tr, .rule-table td { display: block; width: 100%; }
+    .rule-table tbody { display: grid; gap: 9px; }
+    .rule-table tr { overflow: hidden; border: 1px solid #607188; border-radius: 8px; background: #151b24; }
+    .rule-table tbody tr:nth-child(even) { background: #151b24; }
+    .rule-table td {
+      display: grid;
+      grid-template-columns: minmax(6.4rem, 38%) minmax(0, 1fr);
+      gap: 8px;
+      padding: 8px 9px;
+      border: 0;
+      border-bottom: 1px solid #536273;
+      overflow-wrap: anywhere;
+    }
+    .rule-table td + td { border-left: 0; }
+    .rule-table tr:last-child td:last-child { border-bottom: 0; }
+    .rule-table td::before {
+      content: attr(data-label);
+      color: #8cf1dc;
+      font: 0.68rem/1.35 var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+  }
 </style>
