@@ -252,9 +252,12 @@ import '../styles/global.css';
         const tbody = document.createElement('tbody');
         ruleSection.tableRows.forEach((row) => {
           const tr = document.createElement('tr');
-          row.cells.forEach((cell) => {
+          row.cells.forEach((cell, index) => {
             const td = document.createElement('td');
             td.textContent = cell;
+            // On narrow screens CSS turns each table row into a labelled card.
+            // Keeping the column name on the cell makes the compact layout clear.
+            td.dataset.label = ruleSection.columns![index] ?? '';
             tr.appendChild(td);
           });
           tbody.appendChild(tr);
@@ -701,11 +704,11 @@ import '../styles/global.css';
   .rule-table td {
     padding: 7px 9px;
     vertical-align: top;
-    border-bottom: 1px solid #2a3340;
+    border-bottom: 1px solid #536273;
   }
   .rule-table th + th,
   .rule-table td + td {
-    border-left: 1px solid #2a3340;
+    border-left: 1px solid #536273;
   }
   .rule-table th {
     color: #8cf1dc;
@@ -838,6 +841,61 @@ import '../styles/global.css';
     .rule-card {
       max-height: calc(100vh - 160px);
       padding: 14px;
+    }
+    .rule-table-wrap {
+      overflow: visible;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+    .rule-table {
+      min-width: 0;
+      font-size: 0.8rem;
+    }
+    .rule-table thead {
+      display: none;
+    }
+    .rule-table,
+    .rule-table tbody,
+    .rule-table tr,
+    .rule-table td {
+      display: block;
+      width: 100%;
+    }
+    .rule-table tbody {
+      display: grid;
+      gap: 9px;
+    }
+    .rule-table tr {
+      overflow: hidden;
+      border: 1px solid #607188;
+      border-radius: 8px;
+      background: #151b24;
+    }
+    .rule-table tbody tr:nth-child(even) {
+      background: #151b24;
+    }
+    .rule-table td {
+      display: grid;
+      grid-template-columns: minmax(6.4rem, 38%) minmax(0, 1fr);
+      gap: 8px;
+      padding: 8px 9px;
+      border: 0;
+      border-bottom: 1px solid #536273;
+      overflow-wrap: anywhere;
+    }
+    .rule-table td + td {
+      border-left: 0;
+    }
+    .rule-table tr:last-child td:last-child {
+      border-bottom: 0;
+    }
+    .rule-table td::before {
+      content: attr(data-label);
+      color: #8cf1dc;
+      font: 0.68rem/1.35 var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
   }
 
