@@ -13,7 +13,25 @@ import '../styles/global.css';
   </head>
   <body>
     <main class="game-page">
-      <div class="game" id="game">
+      <section id="learningModeChooser" class="learning-mode-chooser" aria-labelledby="learningModeTitle">
+        <p class="chooser-kicker">Practice</p>
+        <h1 id="learningModeTitle">Choose a learning mode</h1>
+        <div class="learning-mode-grid">
+          <button id="dutchLearningBtn" class="learning-mode-card" type="button">
+            <span class="mode-icon" aria-hidden="true">NL</span>
+            <strong>Nederlands</strong>
+            <span>Words, translations and grammar rules</span>
+          </button>
+          <a class="learning-mode-card" href="/chess">
+            <span class="mode-icon chess-icon" aria-hidden="true">♞</span>
+            <strong>Chess openings</strong>
+            <span>Learn opening lines move by move</span>
+          </a>
+        </div>
+      </section>
+
+      <div class="game" id="game" hidden>
+        <button id="backToLearningModes" class="mode-back" type="button">← Learning modes</button>
         <nav class="mode-tabs" aria-label="Words sections" role="tablist">
           <button id="practiceModeBtn" class="mode-tab active" type="button" role="tab" aria-selected="true">
             Words
@@ -141,6 +159,8 @@ import '../styles/global.css';
   const rulesModeBtn = $<HTMLButtonElement>('#rulesModeBtn');
   const ruleTopicSelect = $<HTMLSelectElement>('#ruleTopicSelect');
   const ruleCard = $<HTMLElement>('#ruleCard');
+  const gameEl = $<HTMLDivElement>('#game');
+  const learningModeChooser = $<HTMLElement>('#learningModeChooser');
   const sessionRecordKey = 'words-session-high-score';
   const confidenceStorageKey = 'words-confidence-v1';
   const defaultConfidence = 50;
@@ -149,6 +169,19 @@ import '../styles/global.css';
 
   function shuffle<T>(items: T[]): T[] {
     return [...items].sort(() => Math.random() - 0.5);
+  }
+
+  function showDutchLearning() {
+    learningModeChooser.hidden = true;
+    gameEl.hidden = false;
+    history.replaceState(null, '', `${location.pathname}?mode=dutch`);
+  }
+
+  function showLearningModes() {
+    pauseGame();
+    gameEl.hidden = true;
+    learningModeChooser.hidden = false;
+    history.replaceState(null, '', location.pathname);
   }
 
   function confidenceKey([left, right]: Pair): string {
@@ -605,7 +638,7 @@ import '../styles/global.css';
     lastActionAt = gameStartedAt;
     inactivitySteps = 0;
     gameActive = regularPages.length > 0;
-    pauseStartedAt = gameActive && !rulesModeEl.hidden ? Date.now() : null;
+    pauseStartedAt = gameActive && (!rulesModeEl.hidden || gameEl.hidden) ? Date.now() : null;
 
     if (gameActive) {
       loadPage(regularPages[0], 'regular');
@@ -668,14 +701,90 @@ import '../styles/global.css';
   rulesModeBtn.addEventListener('click', () => switchMode('rules'));
   $('#reloadBtn').addEventListener('click', loadWords);
   $('#playAgainBtn').addEventListener('click', loadWords);
+  $('#dutchLearningBtn').addEventListener('click', () => {
+    showDutchLearning();
+    resumeGame();
+  });
+  $('#backToLearningModes').addEventListener('click', showLearningModes);
 
   sessionHighScore = loadSessionHighScore();
   wordConfidence = loadWordConfidence();
+  if (new URLSearchParams(location.search).get('mode') === 'dutch') showDutchLearning();
   window.setInterval(tickTimer, 1_000);
   init();
 </script>
 
 <style>
+  .learning-mode-chooser {
+    width: min(720px, 100%);
+    text-align: center;
+  }
+  .chooser-kicker {
+    margin: 0 0 8px;
+    color: var(--accent);
+    font: 0.8rem var(--font-mono);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .learning-mode-chooser h1 {
+    margin: 0 0 28px;
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+  }
+  .learning-mode-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .learning-mode-card {
+    display: flex;
+    min-height: 230px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 28px;
+    color: var(--text);
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    font: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+  }
+  .learning-mode-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent);
+    background: var(--accent-dim);
+  }
+  .learning-mode-card strong { font-size: 1.2rem; }
+  .learning-mode-card > span:last-child {
+    max-width: 220px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+  .mode-icon {
+    display: grid;
+    width: 64px;
+    height: 64px;
+    place-items: center;
+    color: var(--bg);
+    background: var(--accent);
+    border-radius: 50%;
+    font: 700 1.1rem var(--font-mono);
+  }
+  .chess-icon { font-size: 2.4rem; }
+  .mode-back {
+    margin: 0 0 16px;
+    padding: 0;
+    color: var(--text-dim);
+    background: none;
+    border: 0;
+    font: 0.85rem var(--font-mono);
+    cursor: pointer;
+  }
+  .mode-back:hover { color: var(--accent); }
+
   .game-page {
     min-height: 100vh;
     display: flex;
@@ -687,6 +796,11 @@ import '../styles/global.css';
   .game {
     width: 100%;
     max-width: 640px;
+  }
+
+  @media (max-width: 560px) {
+    .learning-mode-grid { grid-template-columns: 1fr; }
+    .learning-mode-card { min-height: 180px; }
   }
 
   .mode-tabs {

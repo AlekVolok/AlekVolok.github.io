@@ -14,6 +14,7 @@ import '../styles/global.css';
   <body>
     <main class="game-page">
       <div class="game" id="game">
+        <a class="mode-back" href="/words">← Learning modes</a>
         <div class="controls">
           <select id="openingSelect"></select>
           <button id="reloadBtn" class="btn">Reload</button>
@@ -336,6 +337,15 @@ import '../styles/global.css';
 </script>
 
 <style>
+  .mode-back {
+    display: inline-block;
+    margin-bottom: 16px;
+    color: var(--text-dim);
+    font: 0.85rem var(--font-mono);
+    text-decoration: none;
+  }
+  .mode-back:hover { color: var(--accent); }
+
   .game-page {
     min-height: 100vh;
     display: flex;
