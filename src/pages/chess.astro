@@ -62,6 +62,7 @@ import '../styles/global.css';
     children: Move[];
   };
   type Node = { children: Move[] };
+  type VariationMove = Omit<Move, 'children'>;
   type Side = 'white' | 'black';
 
   const FILES = 'abcdefgh';
@@ -109,6 +110,20 @@ import '../styles/global.css';
       pos[`${FILES[f]}8`] = `b${back[f]}`;
     }
     return pos;
+  }
+
+  function addVariation(root: Node, variation: VariationMove[]) {
+    let node = root;
+    variation.forEach((move) => {
+      let next = node.children.find((candidate) =>
+        candidate.from === move.from && candidate.to === move.to
+      );
+      if (!next) {
+        next = { ...move, children: [] };
+        node.children.push(next);
+      }
+      node = next;
+    });
   }
 
   function squareEl(sq: string) {
@@ -286,8 +301,13 @@ import '../styles/global.css';
     clearHint();
 
     const slug = openingSelect.value;
-    const res = await fetch(`/chess/openings/${encodeURIComponent(slug)}.json`);
-    const data = await res.json();
+    const [openingRes, sidelinesRes] = await Promise.all([
+      fetch(`/chess/openings/${encodeURIComponent(slug)}.json`),
+      fetch('/chess/sidelines.json')
+    ]);
+    const data = await openingRes.json();
+    const sidelines: Record<string, VariationMove[][]> = await sidelinesRes.json();
+    sidelines[slug]?.forEach((variation) => addVariation(data.root, variation));
 
     playerSide = data.side;
     currentNode = data.root;
