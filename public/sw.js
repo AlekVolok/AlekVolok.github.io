@@ -1,4 +1,4 @@
-const CACHE_NAME = 'learning-trainer-v1';
+const CACHE_NAME = 'learning-trainer-v2';
 
 const CORE_URLS = [
   '/words',
@@ -9,6 +9,7 @@ const CORE_URLS = [
   '/favicon.svg',
   '/words/topics.json',
   '/words/rules.json',
+  '/words/exercises.json',
   '/words/topics/calendar-study.json',
   '/words/topics/cinema-theater.json',
   '/words/topics/city-hotel-post-currency.json',

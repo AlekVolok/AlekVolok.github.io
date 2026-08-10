@@ -43,6 +43,9 @@ import '../styles/global.css';
           <button id="rulesModeBtn" class="mode-tab" type="button" role="tab" aria-selected="false">
             Rules
           </button>
+          <button id="exercisesModeBtn" class="mode-tab" type="button" role="tab" aria-selected="false">
+            Exercises
+          </button>
         </nav>
 
         <section id="practiceMode" role="tabpanel">
@@ -85,6 +88,29 @@ import '../styles/global.css';
           </div>
           <article id="ruleCard" class="rule-card" aria-live="polite"></article>
         </section>
+
+        <section id="exercisesMode" class="exercises-mode" role="tabpanel" hidden>
+          <div class="exercise-heading">
+            <div>
+              <p class="exercise-kicker">A2 · Schrijven</p>
+              <h1>Составьте предложение</h1>
+            </div>
+            <span id="exerciseProgress">0 correct</span>
+          </div>
+          <article class="exercise-card">
+            <p id="exerciseSituation" class="exercise-situation"></p>
+            <p id="exercisePrompt" class="exercise-prompt"></p>
+            <div id="sentenceBuilder" class="sentence-builder" aria-label="Составленное предложение"></div>
+            <div id="wordBank" class="word-bank" aria-label="Доступные слова"></div>
+            <p id="exerciseFeedback" class="exercise-feedback" aria-live="polite"></p>
+            <div class="exercise-actions">
+              <button id="clearExerciseBtn" class="btn" type="button">Очистить</button>
+              <button id="checkExerciseBtn" class="btn primary" type="button">Проверить</button>
+              <button id="nextExerciseBtn" class="btn" type="button" hidden>Следующее</button>
+            </div>
+          </article>
+          <button id="exerciseRuleBtn" class="exercise-rule-link" type="button">Открыть связанное правило →</button>
+        </section>
       </div>
     </main>
   </body>
@@ -111,6 +137,15 @@ import '../styles/global.css';
     summary: string;
     sections: RuleSection[];
   };
+  type GrammarExercise = {
+    id: string;
+    rule: string;
+    situation: string;
+    prompt: string;
+    answer: string[];
+    explanation: string;
+  };
+  type ExerciseToken = { id: number; token: string };
 
   let selectedLeft: string | null = null;
   let selectedRight: SelectedRight | null = null;
@@ -140,6 +175,12 @@ import '../styles/global.css';
   let gameActive = false;
   let pauseStartedAt: number | null = null;
   let ruleTopics: RuleTopic[] = [];
+  let grammarExercises: GrammarExercise[] = [];
+  let currentExercise: GrammarExercise | null = null;
+  let exerciseTokens: ExerciseToken[] = [];
+  let selectedExerciseTokenIds: number[] = [];
+  let exerciseCorrectCount = 0;
+  let exerciseWeakness: Record<string, number> = {};
 
   const $ = <T extends Element>(sel: string) =>
     document.querySelector<T>(sel)!;
@@ -159,14 +200,24 @@ import '../styles/global.css';
   const completionDetailsEl = $<HTMLParagraphElement>('#completionDetails');
   const practiceModeEl = $<HTMLElement>('#practiceMode');
   const rulesModeEl = $<HTMLElement>('#rulesMode');
+  const exercisesModeEl = $<HTMLElement>('#exercisesMode');
   const practiceModeBtn = $<HTMLButtonElement>('#practiceModeBtn');
   const rulesModeBtn = $<HTMLButtonElement>('#rulesModeBtn');
+  const exercisesModeBtn = $<HTMLButtonElement>('#exercisesModeBtn');
   const ruleTopicSelect = $<HTMLSelectElement>('#ruleTopicSelect');
   const ruleCard = $<HTMLElement>('#ruleCard');
+  const exerciseSituationEl = $<HTMLParagraphElement>('#exerciseSituation');
+  const exercisePromptEl = $<HTMLParagraphElement>('#exercisePrompt');
+  const sentenceBuilderEl = $<HTMLDivElement>('#sentenceBuilder');
+  const wordBankEl = $<HTMLDivElement>('#wordBank');
+  const exerciseFeedbackEl = $<HTMLParagraphElement>('#exerciseFeedback');
+  const exerciseProgressEl = $<HTMLSpanElement>('#exerciseProgress');
+  const nextExerciseBtn = $<HTMLButtonElement>('#nextExerciseBtn');
   const gameEl = $<HTMLDivElement>('#game');
   const learningModeChooser = $<HTMLElement>('#learningModeChooser');
   const sessionRecordKey = 'words-session-high-score';
   const confidenceStorageKey = 'words-confidence-v1';
+  const exerciseWeaknessKey = 'grammar-exercise-weakness-v1';
   const defaultConfidence = 50;
   let wordConfidence: WordConfidence = {};
   let sessionHighScore = 0;
@@ -345,20 +396,119 @@ import '../styles/global.css';
     updateUI();
   }
 
-  function switchMode(mode: 'practice' | 'rules') {
+  function switchMode(mode: 'practice' | 'rules' | 'exercises') {
     const showRules = mode === 'rules';
-    practiceModeEl.hidden = showRules;
+    const showExercises = mode === 'exercises';
+    practiceModeEl.hidden = showRules || showExercises;
     rulesModeEl.hidden = !showRules;
-    practiceModeBtn.classList.toggle('active', !showRules);
+    exercisesModeEl.hidden = !showExercises;
+    practiceModeBtn.classList.toggle('active', mode === 'practice');
     rulesModeBtn.classList.toggle('active', showRules);
-    practiceModeBtn.setAttribute('aria-selected', String(!showRules));
+    exercisesModeBtn.classList.toggle('active', showExercises);
+    practiceModeBtn.setAttribute('aria-selected', String(mode === 'practice'));
     rulesModeBtn.setAttribute('aria-selected', String(showRules));
+    exercisesModeBtn.setAttribute('aria-selected', String(showExercises));
 
-    if (showRules) {
+    if (showRules || showExercises) {
       pauseGame();
     } else {
       resumeGame();
     }
+  }
+
+  function loadExerciseWeakness(): Record<string, number> {
+    try {
+      const value = JSON.parse(localStorage.getItem(exerciseWeaknessKey) ?? '{}');
+      return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+    } catch {
+      return {};
+    }
+  }
+
+  function saveExerciseWeakness() {
+    try {
+      localStorage.setItem(exerciseWeaknessKey, JSON.stringify(exerciseWeakness));
+    } catch {
+      // Exercises remain usable without persistent browser storage.
+    }
+  }
+
+  function formatSentence(tokens: string[]): string {
+    return tokens.join(' ').replace(/\s+([,.?!])/g, '$1');
+  }
+
+  function renderExerciseBuilder() {
+    const selectedSet = new Set(selectedExerciseTokenIds);
+    sentenceBuilderEl.replaceChildren();
+    wordBankEl.replaceChildren();
+
+    if (selectedExerciseTokenIds.length === 0) {
+      sentenceBuilderEl.textContent = 'Нажимайте слова в нужном порядке…';
+      sentenceBuilderEl.classList.add('empty');
+    } else {
+      sentenceBuilderEl.classList.remove('empty');
+      selectedExerciseTokenIds.forEach((id) => {
+        const item = exerciseTokens.find((token) => token.id === id)!;
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = item.token;
+        button.addEventListener('click', () => {
+          selectedExerciseTokenIds = selectedExerciseTokenIds.filter((selectedId) => selectedId !== id);
+          renderExerciseBuilder();
+        });
+        sentenceBuilderEl.appendChild(button);
+      });
+    }
+
+    exerciseTokens.forEach((item) => {
+      if (selectedSet.has(item.id)) return;
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = item.token;
+      button.addEventListener('click', () => {
+        selectedExerciseTokenIds.push(item.id);
+        renderExerciseBuilder();
+      });
+      wordBankEl.appendChild(button);
+    });
+  }
+
+  function chooseExercise() {
+    if (grammarExercises.length === 0) return;
+    const candidates = grammarExercises.filter((exercise) => exercise.id !== currentExercise?.id);
+    const weighted = candidates.flatMap((exercise) =>
+      Array(Math.max(1, 1 + (exerciseWeakness[exercise.rule] ?? 0))).fill(exercise)
+    );
+    currentExercise = weighted[Math.floor(Math.random() * weighted.length)];
+    exerciseTokens = shuffle(currentExercise.answer.map((token, id) => ({ id, token })));
+    selectedExerciseTokenIds = [];
+    exerciseSituationEl.textContent = currentExercise.situation;
+    exercisePromptEl.textContent = currentExercise.prompt;
+    exerciseFeedbackEl.textContent = '';
+    exerciseFeedbackEl.className = 'exercise-feedback';
+    nextExerciseBtn.hidden = true;
+    $('#checkExerciseBtn').removeAttribute('hidden');
+    renderExerciseBuilder();
+  }
+
+  function checkExercise() {
+    if (!currentExercise) return;
+    const selected = selectedExerciseTokenIds.map((id) => exerciseTokens.find((token) => token.id === id)!.token);
+    const isCorrect = selected.join('\u0000') === currentExercise.answer.join('\u0000');
+    if (isCorrect) {
+      exerciseCorrectCount += 1;
+      exerciseWeakness[currentExercise.rule] = Math.max(0, (exerciseWeakness[currentExercise.rule] ?? 0) - 1);
+      exerciseFeedbackEl.textContent = `Верно! ${currentExercise.explanation}`;
+      exerciseFeedbackEl.classList.add('correct');
+      exerciseProgressEl.textContent = `${exerciseCorrectCount} correct`;
+      $('#checkExerciseBtn').setAttribute('hidden', '');
+      nextExerciseBtn.hidden = false;
+    } else {
+      exerciseWeakness[currentExercise.rule] = Math.min(5, (exerciseWeakness[currentExercise.rule] ?? 0) + 1);
+      exerciseFeedbackEl.textContent = `Попробуйте ещё раз. Подсказка: ${currentExercise.explanation}`;
+      exerciseFeedbackEl.classList.add('incorrect');
+    }
+    saveExerciseWeakness();
   }
 
   function renderRuleTopic(slug: string) {
@@ -669,12 +819,14 @@ import '../styles/global.css';
   }
 
   async function init() {
-    const [topicsRes, rulesRes] = await Promise.all([
+    const [topicsRes, rulesRes, exercisesRes] = await Promise.all([
       fetch('/words/topics.json'),
-      fetch('/words/rules.json')
+      fetch('/words/rules.json'),
+      fetch('/words/exercises.json')
     ]);
     const topics: { slug: string; label: string }[] = await topicsRes.json();
     ruleTopics = await rulesRes.json();
+    grammarExercises = await exercisesRes.json();
     allTopicSlugs = topics.map((t) => t.slug);
 
     const randomOpt = document.createElement('option');
@@ -696,6 +848,8 @@ import '../styles/global.css';
       ruleTopicSelect.appendChild(opt);
     });
     if (ruleTopics[0]) renderRuleTopic(ruleTopics[0].slug);
+    exerciseWeakness = loadExerciseWeakness();
+    chooseExercise();
     await loadWords();
   }
 
@@ -703,6 +857,19 @@ import '../styles/global.css';
   ruleTopicSelect.addEventListener('change', () => renderRuleTopic(ruleTopicSelect.value));
   practiceModeBtn.addEventListener('click', () => switchMode('practice'));
   rulesModeBtn.addEventListener('click', () => switchMode('rules'));
+  exercisesModeBtn.addEventListener('click', () => switchMode('exercises'));
+  $('#clearExerciseBtn').addEventListener('click', () => {
+    selectedExerciseTokenIds = [];
+    renderExerciseBuilder();
+  });
+  $('#checkExerciseBtn').addEventListener('click', checkExercise);
+  nextExerciseBtn.addEventListener('click', chooseExercise);
+  $('#exerciseRuleBtn').addEventListener('click', () => {
+    if (!currentExercise) return;
+    ruleTopicSelect.value = currentExercise.rule;
+    renderRuleTopic(currentExercise.rule);
+    switchMode('rules');
+  });
   $('#reloadBtn').addEventListener('click', loadWords);
   $('#playAgainBtn').addEventListener('click', loadWords);
   $('#dutchLearningBtn').addEventListener('click', () => {
@@ -809,7 +976,7 @@ import '../styles/global.css';
 
   .mode-tabs {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
     gap: 4px;
     padding: 4px;
     margin-bottom: 20px;
@@ -863,6 +1030,100 @@ import '../styles/global.css';
   }
   #score.negative { color: #f08080; }
   #score.high { color: var(--accent); }
+
+  .exercises-mode { padding-top: 4px; }
+  .exercise-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+  .exercise-heading h1 { margin: 2px 0 0; font-size: 1.35rem; }
+  .exercise-heading > span {
+    color: var(--text-dim);
+    font: 0.78rem var(--font-mono);
+  }
+  .exercise-kicker {
+    margin: 0;
+    color: var(--accent);
+    font: 0.72rem var(--font-mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .exercise-card {
+    padding: 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+  }
+  .exercise-situation {
+    margin: 0 0 8px;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+  }
+  .exercise-prompt {
+    margin: 0 0 22px;
+    color: var(--text);
+    font-weight: 600;
+  }
+  .sentence-builder,
+  .word-bank {
+    display: flex;
+    min-height: 58px;
+    flex-wrap: wrap;
+    align-content: center;
+    gap: 8px;
+    padding: 10px;
+    border-radius: 10px;
+  }
+  .sentence-builder {
+    margin-bottom: 14px;
+    background: var(--bg);
+    border: 1px dashed var(--border-hover);
+  }
+  .sentence-builder.empty {
+    color: var(--text-faint);
+    font-size: 0.88rem;
+  }
+  .word-bank { background: var(--bg-raised); }
+  .sentence-builder button,
+  .word-bank button {
+    padding: 7px 11px;
+    color: var(--text);
+    background: var(--bg-card);
+    border: 1px solid var(--border-hover);
+    border-radius: 7px;
+    font: 0.9rem var(--font-sans);
+    cursor: pointer;
+  }
+  .sentence-builder button { border-color: var(--accent); }
+  .exercise-feedback {
+    min-height: 48px;
+    margin: 16px 0 0;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  .exercise-feedback.correct { color: var(--accent); }
+  .exercise-feedback.incorrect { color: #f0a080; }
+  .exercise-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .exercise-rule-link {
+    display: block;
+    margin: 14px auto 0;
+    padding: 6px;
+    color: var(--text-dim);
+    background: none;
+    border: 0;
+    font: 0.8rem var(--font-mono);
+    cursor: pointer;
+  }
+  .exercise-rule-link:hover { color: var(--accent); }
 
   .words-container {
     display: flex;
