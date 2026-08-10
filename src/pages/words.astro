@@ -71,6 +71,7 @@ import '../styles/global.css';
 <script>
   type Pairs = Record<string, string>;
   type Pair = [string, string];
+  type SelectedRight = { word: string; button: HTMLButtonElement };
   type PageType = 'regular' | 'penalty';
   type RuleRow = { text: string; note?: string };
   type RuleTableRow = { cells: string[] };
@@ -89,7 +90,7 @@ import '../styles/global.css';
   };
 
   let selectedLeft: string | null = null;
-  let selectedRight: string | null = null;
+  let selectedRight: SelectedRight | null = null;
   let pairs: Pairs = {};
   let regularPages: Pair[][] = [];
   let currentPagePairs: Pair[] = [];
@@ -143,6 +144,60 @@ import '../styles/global.css';
 
   function shuffle<T>(items: T[]): T[] {
     return [...items].sort(() => Math.random() - 0.5);
+  }
+
+  function buildRegularPages(selectedPairs: Pair[]): Pair[][] {
+    const pageCount = Math.ceil(selectedPairs.length / numberRows);
+    const pages = Array.from({ length: pageCount }, () => [] as Pair[]);
+    const groups = new Map<string, Pair[]>();
+
+    selectedPairs.forEach((pair) => {
+      const group = groups.get(pair[1]) ?? [];
+      group.push(pair);
+      groups.set(pair[1], group);
+    });
+
+    // Place the largest translation groups first. When there are no more
+    // occurrences than pages, this guarantees that equal translations are
+    // shown on separate pages.
+    [...groups.values()]
+      .sort((a, b) => b.length - a.length)
+      .forEach((group) => {
+        shuffle(group).forEach((pair) => {
+          const candidates = pages.filter(
+            (page) => page.length < numberRows && !page.some(([, right]) => right === pair[1])
+          );
+          const targetPages = candidates.length > 0
+            ? candidates
+            : pages.filter((page) => page.length < numberRows);
+          targetPages.sort((a, b) => a.length - b.length)[0]?.push(pair);
+        });
+      });
+
+    return pages.map(shuffle);
+  }
+
+  function takePenaltyPage(): Pair[] {
+    const page: Pair[] = [];
+    const usedTranslations = new Set<string>();
+
+    for (let index = 0; index < pendingPenaltyPairs.length && page.length < numberRows;) {
+      const pair = pendingPenaltyPairs[index];
+      if (usedTranslations.has(pair[1])) {
+        index += 1;
+        continue;
+      }
+      page.push(pair);
+      usedTranslations.add(pair[1]);
+      pendingPenaltyPairs.splice(index, 1);
+    }
+
+    // This is only needed when every remaining pair has a translation that is
+    // already on the page. The click handling below still makes that playable.
+    while (page.length < numberRows && pendingPenaltyPairs.length > 0 && page.length === 0) {
+      page.push(pendingPenaltyPairs.shift()!);
+    }
+    return page;
   }
 
   function formatTime(milliseconds: number): string {
@@ -287,11 +342,11 @@ import '../styles/global.css';
     });
   }
 
-  function makeButton(word: string, onClick: () => void): HTMLButtonElement {
+  function makeButton(word: string, onClick: (button: HTMLButtonElement) => void): HTMLButtonElement {
     const btn = document.createElement('button');
     btn.textContent = word;
     btn.dataset.word = word;
-    btn.addEventListener('click', onClick);
+    btn.addEventListener('click', () => onClick(btn));
     return btn;
   }
 
@@ -314,7 +369,7 @@ import '../styles/global.css';
     });
 
     rightWords.forEach((word) => {
-      rightWordsEl.appendChild(makeButton(word, () => onRightClick(word)));
+      rightWordsEl.appendChild(makeButton(word, (button) => onRightClick(word, button)));
     });
 
     updateUI();
@@ -344,7 +399,7 @@ import '../styles/global.css';
     }
 
     if (pendingPenaltyPairs.length > 0) {
-      const nextPenaltyPage = pendingPenaltyPairs.splice(0, numberRows);
+      const nextPenaltyPage = takePenaltyPage();
       nextPenaltyPage.forEach(([left]) => queuedPenaltyKeys.delete(left));
       currentPenaltyPage += 1;
       loadPage(nextPenaltyPage, 'penalty');
@@ -363,12 +418,12 @@ import '../styles/global.css';
     return timeAdjustedPoints * comboMultiplier;
   }
 
-  function checkPair(leftWord: string, rightWord: string) {
+  function checkPair(leftWord: string, rightWord: string, rightButton: HTMLButtonElement) {
     document.querySelectorAll('.selected').forEach((el) => el.classList.remove('selected'));
     if (pairs[leftWord] === rightWord) {
       correctlyGuessedPairs += 1;
       score += getPointsForCorrectAnswer();
-      markCorrect(leftWord, rightWord);
+      markCorrect(leftWord, rightButton);
       if (correctlyGuessedPairs === currentPagePairs.length) {
         loadNextPage();
       }
@@ -389,9 +444,9 @@ import '../styles/global.css';
     updateUI();
   }
 
-  function markCorrect(leftWord: string, rightWord: string) {
+  function markCorrect(leftWord: string, rightButton: HTMLButtonElement) {
     leftWordsEl.querySelector(`[data-word="${CSS.escape(leftWord)}"]`)?.classList.add('correct');
-    rightWordsEl.querySelector(`[data-word="${CSS.escape(rightWord)}"]`)?.classList.add('correct');
+    rightButton.classList.add('correct');
     comboCount += 1;
     if (comboCount % 3 === 0) comboMultiplier += 1;
   }
@@ -412,22 +467,22 @@ import '../styles/global.css';
     recordAction();
     document.querySelectorAll('.selected').forEach((el) => el.classList.remove('selected'));
     if (selectedRight) {
-      checkPair(word, selectedRight);
+      checkPair(word, selectedRight.word, selectedRight.button);
     } else {
       selectedLeft = word;
       leftWordsEl.querySelector(`[data-word="${CSS.escape(word)}"]`)?.classList.add('selected');
     }
   }
 
-  function onRightClick(word: string) {
-    if (rightWordsEl.querySelector(`[data-word="${CSS.escape(word)}"]`)?.classList.contains('correct')) return;
+  function onRightClick(word: string, button: HTMLButtonElement) {
+    if (button.classList.contains('correct')) return;
     recordAction();
     document.querySelectorAll('.selected').forEach((el) => el.classList.remove('selected'));
     if (selectedLeft) {
-      checkPair(selectedLeft, word);
+      checkPair(selectedLeft, word, button);
     } else {
-      selectedRight = word;
-      rightWordsEl.querySelector(`[data-word="${CSS.escape(word)}"]`)?.classList.add('selected');
+      selectedRight = { word, button };
+      button.classList.add('selected');
     }
   }
 
@@ -471,10 +526,7 @@ import '../styles/global.css';
     }
 
     const selectedPairs = shuffle(Object.entries(pairs)).slice(0, numberRows * maxRegularPages);
-    regularPages = Array.from(
-      { length: Math.ceil(selectedPairs.length / numberRows) },
-      (_, index) => selectedPairs.slice(index * numberRows, (index + 1) * numberRows)
-    );
+    regularPages = buildRegularPages(selectedPairs);
     currentRegularPageIndex = 0;
     currentPenaltyPage = 0;
     pendingPenaltyPairs = [];
