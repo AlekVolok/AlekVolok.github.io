@@ -72,6 +72,7 @@ import '../styles/global.css';
   type Pairs = Record<string, string>;
   type Pair = [string, string];
   type SelectedRight = { word: string; button: HTMLButtonElement };
+  type WordConfidence = Record<string, number>;
   type PageType = 'regular' | 'penalty';
   type RuleRow = { text: string; note?: string };
   type RuleTableRow = { cells: string[] };
@@ -91,6 +92,7 @@ import '../styles/global.css';
 
   let selectedLeft: string | null = null;
   let selectedRight: SelectedRight | null = null;
+  let pairAttemptStartedAt: number | null = null;
   let pairs: Pairs = {};
   let regularPages: Pair[][] = [];
   let currentPagePairs: Pair[] = [];
@@ -140,10 +142,64 @@ import '../styles/global.css';
   const ruleTopicSelect = $<HTMLSelectElement>('#ruleTopicSelect');
   const ruleCard = $<HTMLElement>('#ruleCard');
   const sessionRecordKey = 'words-session-high-score';
+  const confidenceStorageKey = 'words-confidence-v1';
+  const defaultConfidence = 50;
+  let wordConfidence: WordConfidence = {};
   let sessionHighScore = 0;
 
   function shuffle<T>(items: T[]): T[] {
     return [...items].sort(() => Math.random() - 0.5);
+  }
+
+  function confidenceKey([left, right]: Pair): string {
+    return `${left}\u0000${right}`;
+  }
+
+  function loadWordConfidence(): WordConfidence {
+    try {
+      const stored = JSON.parse(localStorage.getItem(confidenceStorageKey) ?? '{}');
+      if (!stored || typeof stored !== 'object' || Array.isArray(stored)) return {};
+      return Object.fromEntries(
+        Object.entries(stored).filter(([, value]) => typeof value === 'number' && Number.isFinite(value))
+      ) as WordConfidence;
+    } catch {
+      return {};
+    }
+  }
+
+  function updateConfidence(pair: Pair, change: number) {
+    const key = confidenceKey(pair);
+    const current = wordConfidence[key] ?? defaultConfidence;
+    wordConfidence[key] = Math.max(0, Math.min(100, current + change));
+    try {
+      localStorage.setItem(confidenceStorageKey, JSON.stringify(wordConfidence));
+    } catch {
+      // Learning remains available for the current page when storage is unavailable.
+    }
+  }
+
+  function selectPairsForPractice(availablePairs: Pair[], count: number): Pair[] {
+    const candidates = [...availablePairs];
+    const selected: Pair[] = [];
+
+    while (selected.length < count && candidates.length > 0) {
+      // Even words at 100 confidence retain a small chance to return for revision.
+      const weights = candidates.map((pair) =>
+        Math.max(0.15, 1 - (wordConfidence[confidenceKey(pair)] ?? defaultConfidence) / 100)
+      );
+      const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
+      let roll = Math.random() * totalWeight;
+      let chosenIndex = weights.length - 1;
+      for (let index = 0; index < weights.length; index += 1) {
+        roll -= weights[index];
+        if (roll <= 0) {
+          chosenIndex = index;
+          break;
+        }
+      }
+      selected.push(candidates.splice(chosenIndex, 1)[0]);
+    }
+    return selected;
   }
 
   function buildRegularPages(selectedPairs: Pair[]): Pair[][] {
@@ -356,6 +412,7 @@ import '../styles/global.css';
     rightWordsEl.innerHTML = '';
     selectedLeft = null;
     selectedRight = null;
+    pairAttemptStartedAt = null;
     missedPairsOnCurrentPage = new Set<string>();
     currentPagePairs = page;
     pageType = nextPageType;
@@ -420,10 +477,16 @@ import '../styles/global.css';
 
   function checkPair(leftWord: string, rightWord: string, rightButton: HTMLButtonElement) {
     document.querySelectorAll('.selected').forEach((el) => el.classList.remove('selected'));
+    const attemptedPair = currentPagePairs.find(([left]) => left === leftWord);
+    const answerTime = pairAttemptStartedAt === null ? 0 : Date.now() - pairAttemptStartedAt;
     if (pairs[leftWord] === rightWord) {
       correctlyGuessedPairs += 1;
       score += getPointsForCorrectAnswer();
       markCorrect(leftWord, rightButton);
+      if (attemptedPair && !missedPairsOnCurrentPage.has(leftWord)) {
+        const confidenceGain = answerTime <= 2_000 ? 8 : answerTime <= 5_000 ? 4 : answerTime <= 10_000 ? 1 : -3;
+        updateConfidence(attemptedPair, confidenceGain);
+      }
       if (correctlyGuessedPairs === currentPagePairs.length) {
         loadNextPage();
       }
@@ -434,6 +497,10 @@ import '../styles/global.css';
       comboMultiplier = 1;
       markPairForPenalty(leftWord);
       const pairWithSelectedTranslation = currentPagePairs.find(([, right]) => right === rightWord);
+      if (attemptedPair) updateConfidence(attemptedPair, -10);
+      if (pairWithSelectedTranslation && pairWithSelectedTranslation[0] !== leftWord) {
+        updateConfidence(pairWithSelectedTranslation, -10);
+      }
       if (pairWithSelectedTranslation) {
         markPairForPenalty(pairWithSelectedTranslation[0]);
       }
@@ -441,6 +508,7 @@ import '../styles/global.css';
     }
     selectedLeft = null;
     selectedRight = null;
+    pairAttemptStartedAt = null;
     updateUI();
   }
 
@@ -470,6 +538,7 @@ import '../styles/global.css';
       checkPair(word, selectedRight.word, selectedRight.button);
     } else {
       selectedLeft = word;
+      pairAttemptStartedAt = Date.now();
       leftWordsEl.querySelector(`[data-word="${CSS.escape(word)}"]`)?.classList.add('selected');
     }
   }
@@ -482,6 +551,7 @@ import '../styles/global.css';
       checkPair(selectedLeft, word, button);
     } else {
       selectedRight = { word, button };
+      pairAttemptStartedAt = Date.now();
       button.classList.add('selected');
     }
   }
@@ -525,7 +595,7 @@ import '../styles/global.css';
       pairs = await res.json();
     }
 
-    const selectedPairs = shuffle(Object.entries(pairs)).slice(0, numberRows * maxRegularPages);
+    const selectedPairs = selectPairsForPractice(Object.entries(pairs), numberRows * maxRegularPages);
     regularPages = buildRegularPages(selectedPairs);
     currentRegularPageIndex = 0;
     currentPenaltyPage = 0;
@@ -600,6 +670,7 @@ import '../styles/global.css';
   $('#playAgainBtn').addEventListener('click', loadWords);
 
   sessionHighScore = loadSessionHighScore();
+  wordConfidence = loadWordConfidence();
   window.setInterval(tickTimer, 1_000);
   init();
 </script>
