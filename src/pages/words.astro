@@ -480,7 +480,9 @@ import '../styles/global.css';
       Array(Math.max(1, 1 + (exerciseWeakness[exercise.rule] ?? 0))).fill(exercise)
     );
     currentExercise = weighted[Math.floor(Math.random() * weighted.length)];
-    exerciseTokens = shuffle(currentExercise.answer.map((token, id) => ({ id, token })));
+    exerciseTokens = shuffle(
+      currentExercise.answer.filter((token) => token !== '.').map((token, id) => ({ id, token }))
+    );
     selectedExerciseTokenIds = [];
     exerciseSituationEl.textContent = currentExercise.situation;
     exercisePromptEl.textContent = currentExercise.prompt;
@@ -494,7 +496,8 @@ import '../styles/global.css';
   function checkExercise() {
     if (!currentExercise) return;
     const selected = selectedExerciseTokenIds.map((id) => exerciseTokens.find((token) => token.id === id)!.token);
-    const isCorrect = selected.join('\u0000') === currentExercise.answer.join('\u0000');
+    const expected = currentExercise.answer.filter((token) => token !== '.');
+    const isCorrect = selected.join('\u0000') === expected.join('\u0000');
     if (isCorrect) {
       exerciseCorrectCount += 1;
       exerciseWeakness[currentExercise.rule] = Math.max(0, (exerciseWeakness[currentExercise.rule] ?? 0) - 1);
