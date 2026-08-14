@@ -166,50 +166,43 @@
     "summary": "Неопределённый: een. Определённые: de и het. Артикль лучше учить вместе со словом.",
     "sections": [
       {
-        "title": "een / geen",
-        "rows": [
-          { "text": "Ik heb een auto.", "note": "У меня есть какая-то / одна машина." },
-          { "text": "Ik heb geen auto.", "note": "У меня нет машины." }
+        "title": "База",
+        "columns": ["Форма", "Когда", "Примеры"],
+        "tableRows": [
+          { "cells": ["een", "неопределённый предмет или один предмет", "Ik heb een auto."] },
+          { "cells": ["geen", "отрицание вместо een или без артикля", "Ik heb geen auto."] },
+          { "cells": ["de / het", "конкретный или уже известный предмет", "de auto · het huis"] },
+          { "cells": ["притяжательные", "de/het не ставится", "mijn auto · ons huis · onze auto"] }
         ]
       },
       {
         "title": "de",
-        "rows": [
-          { "text": "Все слова во множественном числе: de huizen" },
-          { "text": "Люди и профессии обычно de: de vrouw, de dokter" },
-          { "text": "Суффиксы -ing, -heid, -teit, -ij обычно de", "note": "de woning · de vrijheid · de universiteit" },
-          { "text": "Если сомневаетесь, de вероятнее, но исключений много." }
+        "columns": ["Подсказка", "Примеры", "Заметка"],
+        "tableRows": [
+          { "cells": ["множественное число", "de huizen", "все plural-формы получают de"] },
+          { "cells": ["люди и профессии", "de vrouw · de dokter", "обычно de"] },
+          { "cells": ["-ing, -heid, -teit, -ij", "de woning · de vrijheid · de universiteit", "частые de-суффиксы"] },
+          { "cells": ["сомнение", "de", "вероятнее, но исключений много"] }
         ]
       },
       {
         "title": "het",
-        "rows": [
-          { "text": "Все уменьшительные на -je: het tafeltje, het meisje" },
-          { "text": "Языки и стороны света: het Nederlands, het noorden" },
-          { "text": "Глагол как существительное: het eten, het zwemmen" },
-          { "text": "Некоторые собирательные слова на ge-: het gezin", "note": "Это подсказка, а не правило на 99%." }
+        "columns": ["Подсказка", "Примеры", "Заметка"],
+        "tableRows": [
+          { "cells": ["уменьшительные -je", "het tafeltje · het meisje", "всегда het"] },
+          { "cells": ["языки и стороны света", "het Nederlands · het noorden", "частая группа"] },
+          { "cells": ["глагол как существительное", "het eten · het zwemmen", "инфинитив-существительное"] },
+          { "cells": ["некоторые ge-слова", "het gezin", "подсказка, не железное правило"] }
         ]
       },
       {
-        "title": "Заимствования",
-        "rows": [
-          { "text": "de computer · de printer · de monitor" },
-          { "text": "het restaurant · het café", "note": "Артикль также нужно проверять по словарю." }
-        ]
-      },
-      {
-        "title": "Притяжательные слова",
-        "rows": [
-          { "text": "mijn · je/jouw · zijn · haar · ons/onze · jullie · hun · uw" },
-          { "text": "mijn auto · ons huis · onze auto", "note": "de/het перед притяжательным словом не ставится." }
-        ]
-      },
-      {
-        "title": "Еда",
-        "rows": [
-          { "text": "Ik eet een appel.", "note": "Один исчисляемый предмет требует een." },
-          { "text": "Ik eet appels. · Ik drink koffie.", "note": "Без артикля: множественное или вещество в общем смысле." },
-          { "text": "Уменьшительное всегда het, но меняет оттенок значения.", "note": "Не стоит добавлять -je только ради удобного артикля." }
+        "title": "Особые случаи",
+        "columns": ["Случай", "Примеры", "Что помнить"],
+        "tableRows": [
+          { "cells": ["заимствования", "de computer · de printer · het restaurant · het café", "проверять по словарю"] },
+          { "cells": ["еда: один предмет", "Ik eet een appel.", "исчисляемое в единственном числе требует een"] },
+          { "cells": ["еда: общее значение", "Ik eet appels. · Ik drink koffie.", "plural или вещество часто без артикля"] },
+          { "cells": ["уменьшительное ради het", "het kopje · het koekje", "меняет оттенок; не добавлять -je только ради артикля"] }
         ]
       }
     ]

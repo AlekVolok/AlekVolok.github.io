@@ -9,17 +9,42 @@ import '../styles/global.css';
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Word Pairs</title>
     <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#0a0c10" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script src="/register-sw.js" defer></script>
   </head>
   <body>
     <main class="game-page">
-      <div class="game" id="game">
+      <section id="learningModeChooser" class="learning-mode-chooser" aria-labelledby="learningModeTitle">
+        <p class="chooser-kicker">Practice</p>
+        <h1 id="learningModeTitle">Choose a learning mode</h1>
+        <div class="learning-mode-grid">
+          <button id="dutchLearningBtn" class="learning-mode-card" type="button">
+            <span class="mode-icon" aria-hidden="true">NL</span>
+            <strong>Nederlands</strong>
+            <span>Words, translations and grammar rules</span>
+          </button>
+          <a class="learning-mode-card" href="/chess">
+            <span class="mode-icon chess-icon" aria-hidden="true">♞</span>
+            <strong>Chess openings</strong>
+            <span>Learn opening lines move by move</span>
+          </a>
+        </div>
+      </section>
+
+      <div class="game" id="game" hidden>
+        <button id="backToLearningModes" class="mode-back" type="button">← Learning modes</button>
         <nav class="mode-tabs" aria-label="Words sections" role="tablist">
           <button id="practiceModeBtn" class="mode-tab active" type="button" role="tab" aria-selected="true">
             Words
           </button>
           <button id="rulesModeBtn" class="mode-tab" type="button" role="tab" aria-selected="false">
             Rules
+          </button>
+          <button id="exercisesModeBtn" class="mode-tab" type="button" role="tab" aria-selected="false">
+            Exercises
           </button>
         </nav>
 
@@ -63,6 +88,29 @@ import '../styles/global.css';
           </div>
           <article id="ruleCard" class="rule-card" aria-live="polite"></article>
         </section>
+
+        <section id="exercisesMode" class="exercises-mode" role="tabpanel" hidden>
+          <div class="exercise-heading">
+            <div>
+              <p class="exercise-kicker">A2 · Schrijven</p>
+              <h1>Составьте предложение</h1>
+            </div>
+            <span id="exerciseProgress">0 correct</span>
+          </div>
+          <article class="exercise-card">
+            <p id="exerciseSituation" class="exercise-situation"></p>
+            <p id="exercisePrompt" class="exercise-prompt"></p>
+            <div id="sentenceBuilder" class="sentence-builder" aria-label="Составленное предложение"></div>
+            <div id="wordBank" class="word-bank" aria-label="Доступные слова"></div>
+            <p id="exerciseFeedback" class="exercise-feedback" aria-live="polite"></p>
+            <div class="exercise-actions">
+              <button id="clearExerciseBtn" class="btn" type="button">Очистить</button>
+              <button id="checkExerciseBtn" class="btn primary" type="button">Проверить</button>
+              <button id="nextExerciseBtn" class="btn" type="button" hidden>Следующее</button>
+            </div>
+          </article>
+          <button id="exerciseRuleBtn" class="exercise-rule-link" type="button">Открыть связанное правило →</button>
+        </section>
       </div>
     </main>
   </body>
@@ -71,9 +119,17 @@ import '../styles/global.css';
 <script>
   type Pairs = Record<string, string>;
   type Pair = [string, string];
+  type SelectedRight = { word: string; button: HTMLButtonElement };
+  type WordConfidence = Record<string, number>;
   type PageType = 'regular' | 'penalty';
   type RuleRow = { text: string; note?: string };
-  type RuleSection = { title: string; rows: RuleRow[] };
+  type RuleTableRow = { cells: string[] };
+  type RuleSection = {
+    title: string;
+    rows?: RuleRow[];
+    columns?: string[];
+    tableRows?: RuleTableRow[];
+  };
   type RuleTopic = {
     slug: string;
     label: string;
@@ -81,9 +137,19 @@ import '../styles/global.css';
     summary: string;
     sections: RuleSection[];
   };
+  type GrammarExercise = {
+    id: string;
+    rule: string;
+    situation: string;
+    prompt: string;
+    answer: string[];
+    explanation: string;
+  };
+  type ExerciseToken = { id: number; token: string };
 
   let selectedLeft: string | null = null;
-  let selectedRight: string | null = null;
+  let selectedRight: SelectedRight | null = null;
+  let pairAttemptStartedAt: number | null = null;
   let pairs: Pairs = {};
   let regularPages: Pair[][] = [];
   let currentPagePairs: Pair[] = [];
@@ -109,6 +175,12 @@ import '../styles/global.css';
   let gameActive = false;
   let pauseStartedAt: number | null = null;
   let ruleTopics: RuleTopic[] = [];
+  let grammarExercises: GrammarExercise[] = [];
+  let currentExercise: GrammarExercise | null = null;
+  let exerciseTokens: ExerciseToken[] = [];
+  let selectedExerciseTokenIds: number[] = [];
+  let exerciseCorrectCount = 0;
+  let exerciseWeakness: Record<string, number> = {};
 
   const $ = <T extends Element>(sel: string) =>
     document.querySelector<T>(sel)!;
@@ -128,15 +200,148 @@ import '../styles/global.css';
   const completionDetailsEl = $<HTMLParagraphElement>('#completionDetails');
   const practiceModeEl = $<HTMLElement>('#practiceMode');
   const rulesModeEl = $<HTMLElement>('#rulesMode');
+  const exercisesModeEl = $<HTMLElement>('#exercisesMode');
   const practiceModeBtn = $<HTMLButtonElement>('#practiceModeBtn');
   const rulesModeBtn = $<HTMLButtonElement>('#rulesModeBtn');
+  const exercisesModeBtn = $<HTMLButtonElement>('#exercisesModeBtn');
   const ruleTopicSelect = $<HTMLSelectElement>('#ruleTopicSelect');
   const ruleCard = $<HTMLElement>('#ruleCard');
+  const exerciseSituationEl = $<HTMLParagraphElement>('#exerciseSituation');
+  const exercisePromptEl = $<HTMLParagraphElement>('#exercisePrompt');
+  const sentenceBuilderEl = $<HTMLDivElement>('#sentenceBuilder');
+  const wordBankEl = $<HTMLDivElement>('#wordBank');
+  const exerciseFeedbackEl = $<HTMLParagraphElement>('#exerciseFeedback');
+  const exerciseProgressEl = $<HTMLSpanElement>('#exerciseProgress');
+  const nextExerciseBtn = $<HTMLButtonElement>('#nextExerciseBtn');
+  const gameEl = $<HTMLDivElement>('#game');
+  const learningModeChooser = $<HTMLElement>('#learningModeChooser');
   const sessionRecordKey = 'words-session-high-score';
+  const confidenceStorageKey = 'words-confidence-v1';
+  const exerciseWeaknessKey = 'grammar-exercise-weakness-v1';
+  const defaultConfidence = 50;
+  let wordConfidence: WordConfidence = {};
   let sessionHighScore = 0;
 
   function shuffle<T>(items: T[]): T[] {
     return [...items].sort(() => Math.random() - 0.5);
+  }
+
+  function showDutchLearning() {
+    learningModeChooser.hidden = true;
+    gameEl.hidden = false;
+    history.replaceState(null, '', `${location.pathname}?mode=dutch`);
+  }
+
+  function showLearningModes() {
+    pauseGame();
+    gameEl.hidden = true;
+    learningModeChooser.hidden = false;
+    history.replaceState(null, '', location.pathname);
+  }
+
+  function confidenceKey([left, right]: Pair): string {
+    return `${left}\u0000${right}`;
+  }
+
+  function loadWordConfidence(): WordConfidence {
+    try {
+      const stored = JSON.parse(localStorage.getItem(confidenceStorageKey) ?? '{}');
+      if (!stored || typeof stored !== 'object' || Array.isArray(stored)) return {};
+      return Object.fromEntries(
+        Object.entries(stored).filter(([, value]) => typeof value === 'number' && Number.isFinite(value))
+      ) as WordConfidence;
+    } catch {
+      return {};
+    }
+  }
+
+  function updateConfidence(pair: Pair, change: number) {
+    const key = confidenceKey(pair);
+    const current = wordConfidence[key] ?? defaultConfidence;
+    wordConfidence[key] = Math.max(0, Math.min(100, current + change));
+    try {
+      localStorage.setItem(confidenceStorageKey, JSON.stringify(wordConfidence));
+    } catch {
+      // Learning remains available for the current page when storage is unavailable.
+    }
+  }
+
+  function selectPairsForPractice(availablePairs: Pair[], count: number): Pair[] {
+    const candidates = [...availablePairs];
+    const selected: Pair[] = [];
+
+    while (selected.length < count && candidates.length > 0) {
+      // Even words at 100 confidence retain a small chance to return for revision.
+      const weights = candidates.map((pair) =>
+        Math.max(0.15, 1 - (wordConfidence[confidenceKey(pair)] ?? defaultConfidence) / 100)
+      );
+      const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
+      let roll = Math.random() * totalWeight;
+      let chosenIndex = weights.length - 1;
+      for (let index = 0; index < weights.length; index += 1) {
+        roll -= weights[index];
+        if (roll <= 0) {
+          chosenIndex = index;
+          break;
+        }
+      }
+      selected.push(candidates.splice(chosenIndex, 1)[0]);
+    }
+    return selected;
+  }
+
+  function buildRegularPages(selectedPairs: Pair[]): Pair[][] {
+    const pageCount = Math.ceil(selectedPairs.length / numberRows);
+    const pages = Array.from({ length: pageCount }, () => [] as Pair[]);
+    const groups = new Map<string, Pair[]>();
+
+    selectedPairs.forEach((pair) => {
+      const group = groups.get(pair[1]) ?? [];
+      group.push(pair);
+      groups.set(pair[1], group);
+    });
+
+    // Place the largest translation groups first. When there are no more
+    // occurrences than pages, this guarantees that equal translations are
+    // shown on separate pages.
+    [...groups.values()]
+      .sort((a, b) => b.length - a.length)
+      .forEach((group) => {
+        shuffle(group).forEach((pair) => {
+          const candidates = pages.filter(
+            (page) => page.length < numberRows && !page.some(([, right]) => right === pair[1])
+          );
+          const targetPages = candidates.length > 0
+            ? candidates
+            : pages.filter((page) => page.length < numberRows);
+          targetPages.sort((a, b) => a.length - b.length)[0]?.push(pair);
+        });
+      });
+
+    return pages.map(shuffle);
+  }
+
+  function takePenaltyPage(): Pair[] {
+    const page: Pair[] = [];
+    const usedTranslations = new Set<string>();
+
+    for (let index = 0; index < pendingPenaltyPairs.length && page.length < numberRows;) {
+      const pair = pendingPenaltyPairs[index];
+      if (usedTranslations.has(pair[1])) {
+        index += 1;
+        continue;
+      }
+      page.push(pair);
+      usedTranslations.add(pair[1]);
+      pendingPenaltyPairs.splice(index, 1);
+    }
+
+    // This is only needed when every remaining pair has a translation that is
+    // already on the page. The click handling below still makes that playable.
+    while (page.length < numberRows && pendingPenaltyPairs.length > 0 && page.length === 0) {
+      page.push(pendingPenaltyPairs.shift()!);
+    }
+    return page;
   }
 
   function formatTime(milliseconds: number): string {
@@ -191,20 +396,122 @@ import '../styles/global.css';
     updateUI();
   }
 
-  function switchMode(mode: 'practice' | 'rules') {
+  function switchMode(mode: 'practice' | 'rules' | 'exercises') {
     const showRules = mode === 'rules';
-    practiceModeEl.hidden = showRules;
+    const showExercises = mode === 'exercises';
+    practiceModeEl.hidden = showRules || showExercises;
     rulesModeEl.hidden = !showRules;
-    practiceModeBtn.classList.toggle('active', !showRules);
+    exercisesModeEl.hidden = !showExercises;
+    practiceModeBtn.classList.toggle('active', mode === 'practice');
     rulesModeBtn.classList.toggle('active', showRules);
-    practiceModeBtn.setAttribute('aria-selected', String(!showRules));
+    exercisesModeBtn.classList.toggle('active', showExercises);
+    practiceModeBtn.setAttribute('aria-selected', String(mode === 'practice'));
     rulesModeBtn.setAttribute('aria-selected', String(showRules));
+    exercisesModeBtn.setAttribute('aria-selected', String(showExercises));
 
-    if (showRules) {
+    if (showRules || showExercises) {
       pauseGame();
     } else {
       resumeGame();
     }
+  }
+
+  function loadExerciseWeakness(): Record<string, number> {
+    try {
+      const value = JSON.parse(localStorage.getItem(exerciseWeaknessKey) ?? '{}');
+      return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+    } catch {
+      return {};
+    }
+  }
+
+  function saveExerciseWeakness() {
+    try {
+      localStorage.setItem(exerciseWeaknessKey, JSON.stringify(exerciseWeakness));
+    } catch {
+      // Exercises remain usable without persistent browser storage.
+    }
+  }
+
+  function formatSentence(tokens: string[]): string {
+    return tokens.join(' ').replace(/\s+([,.?!])/g, '$1');
+  }
+
+  function renderExerciseBuilder() {
+    const selectedSet = new Set(selectedExerciseTokenIds);
+    sentenceBuilderEl.replaceChildren();
+    wordBankEl.replaceChildren();
+
+    if (selectedExerciseTokenIds.length === 0) {
+      sentenceBuilderEl.textContent = 'Нажимайте слова в нужном порядке…';
+      sentenceBuilderEl.classList.add('empty');
+    } else {
+      sentenceBuilderEl.classList.remove('empty');
+      selectedExerciseTokenIds.forEach((id) => {
+        const item = exerciseTokens.find((token) => token.id === id)!;
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = item.token;
+        button.addEventListener('click', () => {
+          selectedExerciseTokenIds = selectedExerciseTokenIds.filter((selectedId) => selectedId !== id);
+          renderExerciseBuilder();
+        });
+        sentenceBuilderEl.appendChild(button);
+      });
+    }
+
+    exerciseTokens.forEach((item) => {
+      if (selectedSet.has(item.id)) return;
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = item.token;
+      button.addEventListener('click', () => {
+        selectedExerciseTokenIds.push(item.id);
+        renderExerciseBuilder();
+      });
+      wordBankEl.appendChild(button);
+    });
+  }
+
+  function chooseExercise() {
+    if (grammarExercises.length === 0) return;
+    const candidates = grammarExercises.filter((exercise) => exercise.id !== currentExercise?.id);
+    const weighted = candidates.flatMap((exercise) =>
+      Array(Math.max(1, 1 + (exerciseWeakness[exercise.rule] ?? 0))).fill(exercise)
+    );
+    currentExercise = weighted[Math.floor(Math.random() * weighted.length)];
+    exerciseTokens = shuffle(
+      currentExercise.answer.filter((token) => token !== '.').map((token, id) => ({ id, token }))
+    );
+    selectedExerciseTokenIds = [];
+    exerciseSituationEl.textContent = currentExercise.situation;
+    exercisePromptEl.textContent = currentExercise.prompt;
+    exerciseFeedbackEl.textContent = '';
+    exerciseFeedbackEl.className = 'exercise-feedback';
+    nextExerciseBtn.hidden = true;
+    $('#checkExerciseBtn').removeAttribute('hidden');
+    renderExerciseBuilder();
+  }
+
+  function checkExercise() {
+    if (!currentExercise) return;
+    const selected = selectedExerciseTokenIds.map((id) => exerciseTokens.find((token) => token.id === id)!.token);
+    const expected = currentExercise.answer.filter((token) => token !== '.');
+    const isCorrect = selected.join('\u0000') === expected.join('\u0000');
+    if (isCorrect) {
+      exerciseCorrectCount += 1;
+      exerciseWeakness[currentExercise.rule] = Math.max(0, (exerciseWeakness[currentExercise.rule] ?? 0) - 1);
+      exerciseFeedbackEl.textContent = `Верно! ${currentExercise.explanation}`;
+      exerciseFeedbackEl.classList.add('correct');
+      exerciseProgressEl.textContent = `${exerciseCorrectCount} correct`;
+      $('#checkExerciseBtn').setAttribute('hidden', '');
+      nextExerciseBtn.hidden = false;
+    } else {
+      exerciseWeakness[currentExercise.rule] = Math.min(5, (exerciseWeakness[currentExercise.rule] ?? 0) + 1);
+      exerciseFeedbackEl.textContent = `Попробуйте ещё раз. Подсказка: ${currentExercise.explanation}`;
+      exerciseFeedbackEl.classList.add('incorrect');
+    }
+    saveExerciseWeakness();
   }
 
   function renderRuleTopic(slug: string) {
@@ -227,7 +534,41 @@ import '../styles/global.css';
       sectionHeading.textContent = ruleSection.title;
       section.appendChild(sectionHeading);
 
-      ruleSection.rows.forEach((row) => {
+      if (ruleSection.columns && ruleSection.tableRows) {
+        const tableWrap = document.createElement('div');
+        tableWrap.className = 'rule-table-wrap';
+        const table = document.createElement('table');
+        table.className = 'rule-table';
+
+        const thead = document.createElement('thead');
+        const headRow = document.createElement('tr');
+        ruleSection.columns.forEach((column) => {
+          const th = document.createElement('th');
+          th.textContent = column;
+          headRow.appendChild(th);
+        });
+        thead.appendChild(headRow);
+        table.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+        ruleSection.tableRows.forEach((row) => {
+          const tr = document.createElement('tr');
+          row.cells.forEach((cell, index) => {
+            const td = document.createElement('td');
+            td.textContent = cell;
+            // On narrow screens CSS turns each table row into a labelled card.
+            // Keeping the column name on the cell makes the compact layout clear.
+            td.dataset.label = ruleSection.columns![index] ?? '';
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        tableWrap.appendChild(table);
+        section.appendChild(tableWrap);
+      }
+
+      ruleSection.rows?.forEach((row) => {
         const rowEl = document.createElement('div');
         rowEl.className = 'rule-row';
         const textEl = document.createElement('p');
@@ -247,11 +588,11 @@ import '../styles/global.css';
     });
   }
 
-  function makeButton(word: string, onClick: () => void): HTMLButtonElement {
+  function makeButton(word: string, onClick: (button: HTMLButtonElement) => void): HTMLButtonElement {
     const btn = document.createElement('button');
     btn.textContent = word;
     btn.dataset.word = word;
-    btn.addEventListener('click', onClick);
+    btn.addEventListener('click', () => onClick(btn));
     return btn;
   }
 
@@ -261,6 +602,7 @@ import '../styles/global.css';
     rightWordsEl.innerHTML = '';
     selectedLeft = null;
     selectedRight = null;
+    pairAttemptStartedAt = null;
     missedPairsOnCurrentPage = new Set<string>();
     currentPagePairs = page;
     pageType = nextPageType;
@@ -274,7 +616,7 @@ import '../styles/global.css';
     });
 
     rightWords.forEach((word) => {
-      rightWordsEl.appendChild(makeButton(word, () => onRightClick(word)));
+      rightWordsEl.appendChild(makeButton(word, (button) => onRightClick(word, button)));
     });
 
     updateUI();
@@ -304,7 +646,7 @@ import '../styles/global.css';
     }
 
     if (pendingPenaltyPairs.length > 0) {
-      const nextPenaltyPage = pendingPenaltyPairs.splice(0, numberRows);
+      const nextPenaltyPage = takePenaltyPage();
       nextPenaltyPage.forEach(([left]) => queuedPenaltyKeys.delete(left));
       currentPenaltyPage += 1;
       loadPage(nextPenaltyPage, 'penalty');
@@ -323,12 +665,18 @@ import '../styles/global.css';
     return timeAdjustedPoints * comboMultiplier;
   }
 
-  function checkPair(leftWord: string, rightWord: string) {
+  function checkPair(leftWord: string, rightWord: string, rightButton: HTMLButtonElement) {
     document.querySelectorAll('.selected').forEach((el) => el.classList.remove('selected'));
+    const attemptedPair = currentPagePairs.find(([left]) => left === leftWord);
+    const answerTime = pairAttemptStartedAt === null ? 0 : Date.now() - pairAttemptStartedAt;
     if (pairs[leftWord] === rightWord) {
       correctlyGuessedPairs += 1;
       score += getPointsForCorrectAnswer();
-      markCorrect(leftWord, rightWord);
+      markCorrect(leftWord, rightButton);
+      if (attemptedPair && !missedPairsOnCurrentPage.has(leftWord)) {
+        const confidenceGain = answerTime <= 2_000 ? 8 : answerTime <= 5_000 ? 4 : answerTime <= 10_000 ? 1 : -3;
+        updateConfidence(attemptedPair, confidenceGain);
+      }
       if (correctlyGuessedPairs === currentPagePairs.length) {
         loadNextPage();
       }
@@ -339,6 +687,10 @@ import '../styles/global.css';
       comboMultiplier = 1;
       markPairForPenalty(leftWord);
       const pairWithSelectedTranslation = currentPagePairs.find(([, right]) => right === rightWord);
+      if (attemptedPair) updateConfidence(attemptedPair, -10);
+      if (pairWithSelectedTranslation && pairWithSelectedTranslation[0] !== leftWord) {
+        updateConfidence(pairWithSelectedTranslation, -10);
+      }
       if (pairWithSelectedTranslation) {
         markPairForPenalty(pairWithSelectedTranslation[0]);
       }
@@ -346,12 +698,13 @@ import '../styles/global.css';
     }
     selectedLeft = null;
     selectedRight = null;
+    pairAttemptStartedAt = null;
     updateUI();
   }
 
-  function markCorrect(leftWord: string, rightWord: string) {
+  function markCorrect(leftWord: string, rightButton: HTMLButtonElement) {
     leftWordsEl.querySelector(`[data-word="${CSS.escape(leftWord)}"]`)?.classList.add('correct');
-    rightWordsEl.querySelector(`[data-word="${CSS.escape(rightWord)}"]`)?.classList.add('correct');
+    rightButton.classList.add('correct');
     comboCount += 1;
     if (comboCount % 3 === 0) comboMultiplier += 1;
   }
@@ -372,22 +725,24 @@ import '../styles/global.css';
     recordAction();
     document.querySelectorAll('.selected').forEach((el) => el.classList.remove('selected'));
     if (selectedRight) {
-      checkPair(word, selectedRight);
+      checkPair(word, selectedRight.word, selectedRight.button);
     } else {
       selectedLeft = word;
+      pairAttemptStartedAt = Date.now();
       leftWordsEl.querySelector(`[data-word="${CSS.escape(word)}"]`)?.classList.add('selected');
     }
   }
 
-  function onRightClick(word: string) {
-    if (rightWordsEl.querySelector(`[data-word="${CSS.escape(word)}"]`)?.classList.contains('correct')) return;
+  function onRightClick(word: string, button: HTMLButtonElement) {
+    if (button.classList.contains('correct')) return;
     recordAction();
     document.querySelectorAll('.selected').forEach((el) => el.classList.remove('selected'));
     if (selectedLeft) {
-      checkPair(selectedLeft, word);
+      checkPair(selectedLeft, word, button);
     } else {
-      selectedRight = word;
-      rightWordsEl.querySelector(`[data-word="${CSS.escape(word)}"]`)?.classList.add('selected');
+      selectedRight = { word, button };
+      pairAttemptStartedAt = Date.now();
+      button.classList.add('selected');
     }
   }
 
@@ -430,11 +785,8 @@ import '../styles/global.css';
       pairs = await res.json();
     }
 
-    const selectedPairs = shuffle(Object.entries(pairs)).slice(0, numberRows * maxRegularPages);
-    regularPages = Array.from(
-      { length: Math.ceil(selectedPairs.length / numberRows) },
-      (_, index) => selectedPairs.slice(index * numberRows, (index + 1) * numberRows)
-    );
+    const selectedPairs = selectPairsForPractice(Object.entries(pairs), numberRows * maxRegularPages);
+    regularPages = buildRegularPages(selectedPairs);
     currentRegularPageIndex = 0;
     currentPenaltyPage = 0;
     pendingPenaltyPairs = [];
@@ -443,7 +795,7 @@ import '../styles/global.css';
     lastActionAt = gameStartedAt;
     inactivitySteps = 0;
     gameActive = regularPages.length > 0;
-    pauseStartedAt = gameActive && !rulesModeEl.hidden ? Date.now() : null;
+    pauseStartedAt = gameActive && (!rulesModeEl.hidden || gameEl.hidden) ? Date.now() : null;
 
     if (gameActive) {
       loadPage(regularPages[0], 'regular');
@@ -470,12 +822,14 @@ import '../styles/global.css';
   }
 
   async function init() {
-    const [topicsRes, rulesRes] = await Promise.all([
+    const [topicsRes, rulesRes, exercisesRes] = await Promise.all([
       fetch('/words/topics.json'),
-      fetch('/words/rules.json')
+      fetch('/words/rules.json'),
+      fetch('/words/exercises.json')
     ]);
     const topics: { slug: string; label: string }[] = await topicsRes.json();
     ruleTopics = await rulesRes.json();
+    grammarExercises = await exercisesRes.json();
     allTopicSlugs = topics.map((t) => t.slug);
 
     const randomOpt = document.createElement('option');
@@ -497,6 +851,8 @@ import '../styles/global.css';
       ruleTopicSelect.appendChild(opt);
     });
     if (ruleTopics[0]) renderRuleTopic(ruleTopics[0].slug);
+    exerciseWeakness = loadExerciseWeakness();
+    chooseExercise();
     await loadWords();
   }
 
@@ -504,15 +860,105 @@ import '../styles/global.css';
   ruleTopicSelect.addEventListener('change', () => renderRuleTopic(ruleTopicSelect.value));
   practiceModeBtn.addEventListener('click', () => switchMode('practice'));
   rulesModeBtn.addEventListener('click', () => switchMode('rules'));
+  exercisesModeBtn.addEventListener('click', () => switchMode('exercises'));
+  $('#clearExerciseBtn').addEventListener('click', () => {
+    selectedExerciseTokenIds = [];
+    renderExerciseBuilder();
+  });
+  $('#checkExerciseBtn').addEventListener('click', checkExercise);
+  nextExerciseBtn.addEventListener('click', chooseExercise);
+  $('#exerciseRuleBtn').addEventListener('click', () => {
+    if (!currentExercise) return;
+    ruleTopicSelect.value = currentExercise.rule;
+    renderRuleTopic(currentExercise.rule);
+    switchMode('rules');
+  });
   $('#reloadBtn').addEventListener('click', loadWords);
   $('#playAgainBtn').addEventListener('click', loadWords);
+  $('#dutchLearningBtn').addEventListener('click', () => {
+    showDutchLearning();
+    resumeGame();
+  });
+  $('#backToLearningModes').addEventListener('click', showLearningModes);
 
   sessionHighScore = loadSessionHighScore();
+  wordConfidence = loadWordConfidence();
+  if (new URLSearchParams(location.search).get('mode') === 'dutch') showDutchLearning();
   window.setInterval(tickTimer, 1_000);
   init();
 </script>
 
 <style>
+  .learning-mode-chooser {
+    width: min(720px, 100%);
+    text-align: center;
+  }
+  .chooser-kicker {
+    margin: 0 0 8px;
+    color: var(--accent);
+    font: 0.8rem var(--font-mono);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .learning-mode-chooser h1 {
+    margin: 0 0 28px;
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+  }
+  .learning-mode-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .learning-mode-card {
+    display: flex;
+    min-height: 230px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 28px;
+    color: var(--text);
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    font: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+  }
+  .learning-mode-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent);
+    background: var(--accent-dim);
+  }
+  .learning-mode-card strong { font-size: 1.2rem; }
+  .learning-mode-card > span:last-child {
+    max-width: 220px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+  .mode-icon {
+    display: grid;
+    width: 64px;
+    height: 64px;
+    place-items: center;
+    color: var(--bg);
+    background: var(--accent);
+    border-radius: 50%;
+    font: 700 1.1rem var(--font-mono);
+  }
+  .chess-icon { font-size: 2.4rem; }
+  .mode-back {
+    margin: 0 0 16px;
+    padding: 0;
+    color: var(--text-dim);
+    background: none;
+    border: 0;
+    font: 0.85rem var(--font-mono);
+    cursor: pointer;
+  }
+  .mode-back:hover { color: var(--accent); }
+
   .game-page {
     min-height: 100vh;
     display: flex;
@@ -526,9 +972,14 @@ import '../styles/global.css';
     max-width: 640px;
   }
 
+  @media (max-width: 560px) {
+    .learning-mode-grid { grid-template-columns: 1fr; }
+    .learning-mode-card { min-height: 180px; }
+  }
+
   .mode-tabs {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
     gap: 4px;
     padding: 4px;
     margin-bottom: 20px;
@@ -582,6 +1033,100 @@ import '../styles/global.css';
   }
   #score.negative { color: #f08080; }
   #score.high { color: var(--accent); }
+
+  .exercises-mode { padding-top: 4px; }
+  .exercise-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+  .exercise-heading h1 { margin: 2px 0 0; font-size: 1.35rem; }
+  .exercise-heading > span {
+    color: var(--text-dim);
+    font: 0.78rem var(--font-mono);
+  }
+  .exercise-kicker {
+    margin: 0;
+    color: var(--accent);
+    font: 0.72rem var(--font-mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .exercise-card {
+    padding: 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+  }
+  .exercise-situation {
+    margin: 0 0 8px;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+  }
+  .exercise-prompt {
+    margin: 0 0 22px;
+    color: var(--text);
+    font-weight: 600;
+  }
+  .sentence-builder,
+  .word-bank {
+    display: flex;
+    min-height: 58px;
+    flex-wrap: wrap;
+    align-content: center;
+    gap: 8px;
+    padding: 10px;
+    border-radius: 10px;
+  }
+  .sentence-builder {
+    margin-bottom: 14px;
+    background: var(--bg);
+    border: 1px dashed var(--border-hover);
+  }
+  .sentence-builder.empty {
+    color: var(--text-faint);
+    font-size: 0.88rem;
+  }
+  .word-bank { background: var(--bg-raised); }
+  .sentence-builder button,
+  .word-bank button {
+    padding: 7px 11px;
+    color: var(--text);
+    background: var(--bg-card);
+    border: 1px solid var(--border-hover);
+    border-radius: 7px;
+    font: 0.9rem var(--font-sans);
+    cursor: pointer;
+  }
+  .sentence-builder button { border-color: var(--accent); }
+  .exercise-feedback {
+    min-height: 48px;
+    margin: 16px 0 0;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  .exercise-feedback.correct { color: var(--accent); }
+  .exercise-feedback.incorrect { color: #f0a080; }
+  .exercise-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .exercise-rule-link {
+    display: block;
+    margin: 14px auto 0;
+    padding: 6px;
+    color: var(--text-dim);
+    background: none;
+    border: 0;
+    font: 0.8rem var(--font-mono);
+    cursor: pointer;
+  }
+  .exercise-rule-link:hover { color: var(--accent); }
 
   .words-container {
     display: flex;
@@ -646,6 +1191,46 @@ import '../styles/global.css';
   }
   .rule-row + .rule-row {
     margin-top: 9px;
+  }
+  .rule-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border-hover);
+    border-radius: 8px;
+    box-shadow: inset 0 0 0 1px rgba(79, 214, 190, 0.06);
+  }
+  .rule-table {
+    width: 100%;
+    min-width: 520px;
+    border-collapse: collapse;
+    font-size: 0.78rem;
+    line-height: 1.32;
+  }
+  .rule-table th,
+  .rule-table td {
+    padding: 7px 9px;
+    vertical-align: top;
+    border-bottom: 1px solid #536273;
+  }
+  .rule-table th + th,
+  .rule-table td + td {
+    border-left: 1px solid #536273;
+  }
+  .rule-table th {
+    color: #8cf1dc;
+    background: #151b24;
+    font: 0.72rem var(--font-mono);
+    text-align: left;
+    text-transform: uppercase;
+  }
+  .rule-table tbody tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.025);
+  }
+  .rule-table td {
+    color: var(--text);
+    font-family: var(--font-mono);
+  }
+  .rule-table tr:last-child td {
+    border-bottom: 0;
   }
   .rule-example,
   .rule-note {
@@ -762,6 +1347,61 @@ import '../styles/global.css';
       max-height: calc(100vh - 160px);
       padding: 14px;
     }
+    .rule-table-wrap {
+      overflow: visible;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+    .rule-table {
+      min-width: 0;
+      font-size: 0.8rem;
+    }
+    .rule-table thead {
+      display: none;
+    }
+    .rule-table,
+    .rule-table tbody,
+    .rule-table tr,
+    .rule-table td {
+      display: block;
+      width: 100%;
+    }
+    .rule-table tbody {
+      display: grid;
+      gap: 9px;
+    }
+    .rule-table tr {
+      overflow: hidden;
+      border: 1px solid #607188;
+      border-radius: 8px;
+      background: #151b24;
+    }
+    .rule-table tbody tr:nth-child(even) {
+      background: #151b24;
+    }
+    .rule-table td {
+      display: grid;
+      grid-template-columns: minmax(6.4rem, 38%) minmax(0, 1fr);
+      gap: 8px;
+      padding: 8px 9px;
+      border: 0;
+      border-bottom: 1px solid #536273;
+      overflow-wrap: anywhere;
+    }
+    .rule-table td + td {
+      border-left: 0;
+    }
+    .rule-table tr:last-child td:last-child {
+      border-bottom: 0;
+    }
+    .rule-table td::before {
+      content: attr(data-label);
+      color: #8cf1dc;
+      font: 0.68rem/1.35 var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -802,5 +1442,70 @@ import '../styles/global.css';
     border-color: #f08080;
     background: rgba(240, 128, 128, 0.12);
     color: #f08080;
+  }
+
+  /* Rule content is created in JavaScript, so it must not rely on Astro's
+     scoped attributes, which only exist on elements written in the template. */
+  .rule-card h1 { margin: 0 0 4px; font-size: clamp(1.35rem, 5vw, 1.8rem); }
+  .rule-summary { margin: 0 0 16px; color: var(--text-dim); font-size: 0.84rem; }
+  .rule-section { padding: 13px 0; border-top: 1px solid var(--border); }
+  .rule-section:last-child { padding-bottom: 0; }
+  .rule-section h2 {
+    margin: 0 0 9px;
+    color: var(--accent);
+    font: 0.78rem var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .rule-row + .rule-row { margin-top: 9px; }
+  .rule-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border-hover);
+    border-radius: 8px;
+    box-shadow: inset 0 0 0 1px rgba(79, 214, 190, 0.06);
+  }
+  .rule-table { width: 100%; min-width: 520px; border-collapse: collapse; font-size: 0.78rem; line-height: 1.32; }
+  .rule-table th, .rule-table td { padding: 7px 9px; vertical-align: top; border-bottom: 1px solid #536273; }
+  .rule-table th + th, .rule-table td + td { border-left: 1px solid #536273; }
+  .rule-table th {
+    color: #8cf1dc;
+    background: #151b24;
+    font: 0.72rem var(--font-mono);
+    text-align: left;
+    text-transform: uppercase;
+  }
+  .rule-table tbody tr:nth-child(even) { background: rgba(255, 255, 255, 0.025); }
+  .rule-table td { color: var(--text); font-family: var(--font-mono); }
+  .rule-table tr:last-child td { border-bottom: 0; }
+  .rule-example, .rule-note { margin: 0; }
+  .rule-example { font: 0.86rem/1.35 var(--font-mono); }
+  .rule-note { margin-top: 2px; color: var(--text-dim); font-size: 0.76rem; line-height: 1.35; }
+
+  @media (max-width: 520px) {
+    .rule-table-wrap { overflow: visible; border: 0; border-radius: 0; box-shadow: none; }
+    .rule-table { min-width: 0; font-size: 0.8rem; }
+    .rule-table thead { display: none; }
+    .rule-table, .rule-table tbody, .rule-table tr, .rule-table td { display: block; width: 100%; }
+    .rule-table tbody { display: grid; gap: 9px; }
+    .rule-table tr { overflow: hidden; border: 1px solid #607188; border-radius: 8px; background: #151b24; }
+    .rule-table tbody tr:nth-child(even) { background: #151b24; }
+    .rule-table td {
+      display: grid;
+      grid-template-columns: minmax(6.4rem, 38%) minmax(0, 1fr);
+      gap: 8px;
+      padding: 8px 9px;
+      border: 0;
+      border-bottom: 1px solid #536273;
+      overflow-wrap: anywhere;
+    }
+    .rule-table td + td { border-left: 0; }
+    .rule-table tr:last-child td:last-child { border-bottom: 0; }
+    .rule-table td::before {
+      content: attr(data-label);
+      color: #8cf1dc;
+      font: 0.68rem/1.35 var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
   }
 </style>

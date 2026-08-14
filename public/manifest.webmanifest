@@ -1,0 +1,19 @@
+{
+  "id": "/words",
+  "name": "Learning Trainer",
+  "short_name": "Trainer",
+  "description": "Dutch vocabulary and chess opening trainer",
+  "start_url": "/words",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0a0c10",
+  "theme_color": "#0a0c10",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

@@ -9,11 +9,16 @@ import '../styles/global.css';
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Openings</title>
     <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#0a0c10" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script src="/register-sw.js" defer></script>
   </head>
   <body>
     <main class="game-page">
       <div class="game" id="game">
+        <a class="mode-back" href="/words">← Learning modes</a>
         <div class="controls">
           <select id="openingSelect"></select>
           <button id="reloadBtn" class="btn">Reload</button>
@@ -45,6 +50,12 @@ import '../styles/global.css';
           <span id="turnLabel"></span>
         </div>
       </div>
+      <dialog id="theoryDialog" class="theory-dialog">
+        <button id="closeTheoryBtn" class="theory-close" type="button" aria-label="Закрыть">×</button>
+        <p class="theory-kicker">Идея хода</p>
+        <h2 id="theoryMove"></h2>
+        <p id="theoryText"></p>
+      </dialog>
     </main>
   </body>
 </html>
@@ -61,6 +72,7 @@ import '../styles/global.css';
     children: Move[];
   };
   type Node = { children: Move[] };
+  type VariationMove = Omit<Move, 'children'>;
   type Side = 'white' | 'black';
 
   const FILES = 'abcdefgh';
@@ -84,6 +96,8 @@ import '../styles/global.css';
   let mistakes = 0;
   let comboMultiplier = 1;
   let comboCount = 0;
+  let currentOpeningSlug = '';
+  let openingTheory: Record<string, Record<string, string>> = {};
 
   const $ = <T extends Element>(sel: string) =>
     document.querySelector<T>(sel)!;
@@ -97,6 +111,9 @@ import '../styles/global.css';
   const winOverlay = $<HTMLDivElement>('#winOverlay');
   const finalStatsEl = $<HTMLParagraphElement>('#finalStats');
   const turnLabel = $<HTMLSpanElement>('#turnLabel');
+  const theoryDialog = $<HTMLDialogElement>('#theoryDialog');
+  const theoryMoveEl = $<HTMLHeadingElement>('#theoryMove');
+  const theoryTextEl = $<HTMLParagraphElement>('#theoryText');
 
   function startPosition(): Record<string, string> {
     const pos: Record<string, string> = {};
@@ -108,6 +125,20 @@ import '../styles/global.css';
       pos[`${FILES[f]}8`] = `b${back[f]}`;
     }
     return pos;
+  }
+
+  function addVariation(root: Node, variation: VariationMove[]) {
+    let node = root;
+    variation.forEach((move) => {
+      let next = node.children.find((candidate) =>
+        candidate.from === move.from && candidate.to === move.to
+      );
+      if (!next) {
+        next = { ...move, children: [] };
+        node.children.push(next);
+      }
+      node = next;
+    });
   }
 
   function squareEl(sq: string) {
@@ -243,6 +274,12 @@ import '../styles/global.css';
     if (phase !== 'player' || currentNode.children.length === 0) return;
     clearHint();
     const m = currentNode.children[0];
+    const theoryKey = `${m.from}-${m.to}`;
+    theoryMoveEl.textContent = m.san;
+    theoryTextEl.textContent = openingTheory[currentOpeningSlug]?.[theoryKey]
+      ?? 'Этот ход улучшает расположение фигур и помогает выполнить стратегические задачи дебюта.';
+    if (theoryDialog.open) theoryDialog.close();
+    theoryDialog.showModal();
     const flip = playerSide === 'black';
     const coord = (sq: string) => {
       const f = FILES.indexOf(sq[0]);
@@ -285,8 +322,16 @@ import '../styles/global.css';
     clearHint();
 
     const slug = openingSelect.value;
-    const res = await fetch(`/chess/openings/${encodeURIComponent(slug)}.json`);
-    const data = await res.json();
+    currentOpeningSlug = slug;
+    const [openingRes, sidelinesRes, theoryRes] = await Promise.all([
+      fetch(`/chess/openings/${encodeURIComponent(slug)}.json`),
+      fetch('/chess/sidelines.json'),
+      fetch('/chess/theory.ru.json')
+    ]);
+    const data = await openingRes.json();
+    const sidelines: Record<string, VariationMove[][]> = await sidelinesRes.json();
+    openingTheory = await theoryRes.json();
+    sidelines[slug]?.forEach((variation) => addVariation(data.root, variation));
 
     playerSide = data.side;
     currentNode = data.root;
@@ -330,12 +375,59 @@ import '../styles/global.css';
   openingSelect.addEventListener('change', loadOpening);
   $('#reloadBtn').addEventListener('click', loadOpening);
   $('#hintBtn').addEventListener('click', showHint);
+  $('#closeTheoryBtn').addEventListener('click', () => theoryDialog.close());
+  theoryDialog.addEventListener('click', (event) => {
+    if (event.target === theoryDialog) theoryDialog.close();
+  });
   $('#playAgainBtn').addEventListener('click', loadOpening);
 
   init();
 </script>
 
 <style>
+  .mode-back {
+    display: inline-block;
+    margin-bottom: 16px;
+    color: var(--text-dim);
+    font: 0.85rem var(--font-mono);
+    text-decoration: none;
+  }
+  .mode-back:hover { color: var(--accent); }
+
+  .theory-dialog {
+    width: min(440px, calc(100% - 32px));
+    padding: 28px;
+    color: var(--text);
+    background: var(--bg-raised);
+    border: 1px solid var(--accent);
+    border-radius: 16px;
+    box-shadow: 0 24px 80px rgb(0 0 0 / 45%);
+  }
+  .theory-dialog::backdrop {
+    background: rgb(0 0 0 / 62%);
+    backdrop-filter: blur(3px);
+  }
+  .theory-close {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    padding: 4px 8px;
+    color: var(--text-dim);
+    background: none;
+    border: 0;
+    font-size: 1.6rem;
+    cursor: pointer;
+  }
+  .theory-kicker {
+    margin: 0 0 6px;
+    color: var(--accent);
+    font: 0.75rem var(--font-mono);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .theory-dialog h2 { margin: 0 0 12px; font-size: 1.8rem; }
+  .theory-dialog p:last-child { margin: 0; color: var(--text-dim); line-height: 1.65; }
+
   .game-page {
     min-height: 100vh;
     display: flex;
