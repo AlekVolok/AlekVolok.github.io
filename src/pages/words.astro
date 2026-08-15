@@ -143,6 +143,7 @@ import '../styles/global.css';
     situation: string;
     prompt: string;
     answer: string[];
+    distractors?: string[];
     explanation: string;
   };
   type ExerciseToken = { id: number; token: string };
@@ -480,8 +481,9 @@ import '../styles/global.css';
       Array(Math.max(1, 1 + (exerciseWeakness[exercise.rule] ?? 0))).fill(exercise)
     );
     currentExercise = weighted[Math.floor(Math.random() * weighted.length)];
+    const answerTokens = currentExercise.answer.filter((token) => token !== '.');
     exerciseTokens = shuffle(
-      currentExercise.answer.filter((token) => token !== '.').map((token, id) => ({ id, token }))
+      [...answerTokens, ...(currentExercise.distractors ?? [])].map((token, id) => ({ id, token }))
     );
     selectedExerciseTokenIds = [];
     exerciseSituationEl.textContent = currentExercise.situation;

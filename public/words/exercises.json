@@ -5,6 +5,7 @@
     "situation": "Вы сравниваете транспорт.",
     "prompt": "Скажите: «Поезд быстрее автобуса».",
     "answer": ["De", "trein", "is", "sneller", "dan", "de", "bus", "."],
+    "distractors": ["als", "snel", "het"],
     "explanation": "Сравнительная степень получает -er и используется с dan."
   },
   {
@@ -13,6 +14,7 @@
     "situation": "Вы выбираете жильё из нескольких вариантов.",
     "prompt": "Скажите: «Этот дом — самый маленький».",
     "answer": ["Dit", "huis", "is", "het", "kleinst", "."],
+    "distractors": ["de", "kleinste", "kleiner"],
     "explanation": "После is превосходная степень употребляется как het + форма на -st."
   },
   {
@@ -21,6 +23,7 @@
     "situation": "На языковых курсах вас спрашивают о предпочтении.",
     "prompt": "Скажите: «Я предпочитаю говорить по-нидерландски».",
     "answer": ["Ik", "spreek", "liever", "Nederlands", "."],
+    "distractors": ["beter", "graag", "liefst"],
     "explanation": "Liever выражает предпочтение; beter означало бы «лучше по качеству»."
   },
   {
@@ -29,6 +32,7 @@
     "situation": "Вы сравниваете две куртки в магазине.",
     "prompt": "Скажите: «Эта куртка дешевле той куртки».",
     "answer": ["Deze", "jas", "is", "goedkoper", "dan", "die", "jas", "."],
+    "distractors": ["Dit", "dat", "als", "goedkoop"],
     "explanation": "У de-слова используются deze и die; сравнение строится через dan."
   },
   {
@@ -37,6 +41,7 @@
     "situation": "Вы подтверждаете время встречи.",
     "prompt": "Скажите: «Я приду в понедельник в девять часов».",
     "answer": ["Ik", "kom", "op", "maandag", "om", "negen", "uur", "."],
+    "distractors": ["in", "voor", "naar"],
     "explanation": "С днём используется op, с точным временем — om."
   },
   {
@@ -45,6 +50,7 @@
     "situation": "Вы рассказываете о планах на отпуск.",
     "prompt": "Скажите: «Мы едем летом в Амстердам».",
     "answer": ["Wij", "reizen", "in", "de", "zomer", "naar", "Amsterdam", "."],
+    "distractors": ["op", "om", "het"],
     "explanation": "Для периода или времени года используется in."
   },
   {
@@ -53,6 +59,7 @@
     "situation": "Вы сообщаете работодателю о расписании.",
     "prompt": "Скажите: «Я не работаю на следующей неделе».",
     "answer": ["Ik", "werk", "volgende", "week", "niet", "."],
+    "distractors": ["in", "op", "geen"],
     "explanation": "После volgende предлог не нужен; обстоятельство времени стоит перед niet."
   },
   {
@@ -61,6 +68,7 @@
     "situation": "Вы сообщаете время визита врача.",
     "prompt": "Скажите: «Врач придёт в половине третьего».",
     "answer": ["De", "dokter", "komt", "om", "half", "drie", "."],
+    "distractors": ["op", "in", "het"],
     "explanation": "Точное время требует om; half drie означает 2:30."
   },
   {
@@ -69,6 +77,7 @@
     "situation": "Вы объясняете обязательный план на завтра.",
     "prompt": "Скажите: «Завтра я должен пойти к врачу».",
     "answer": ["Ik", "moet", "morgen", "naar", "de", "dokter", "gaan", "."],
+    "distractors": ["kan", "mag", "zal", "het"],
     "explanation": "После moeten смысловой инфинитив gaan ставится в конец без te."
   },
   {
@@ -77,6 +86,7 @@
     "situation": "Вы спрашиваете разрешение у сотрудника муниципалитета.",
     "prompt": "Спросите: «Можно мне здесь парковаться?»",
     "answer": ["Mag", "ik", "hier", "parkeren", "?"],
+    "distractors": ["Kan", "Zal", "Moet"],
     "explanation": "Mogen спрашивает о разрешении; в вопросе личная форма стоит первой."
   },
   {
@@ -85,6 +95,7 @@
     "situation": "Вы предлагаете помощь незнакомому человеку.",
     "prompt": "Спросите вежливо: «Вам помочь?»",
     "answer": ["Zal", "ik", "u", "helpen", "?"],
+    "distractors": ["Kan", "Mag", "Moet", "je"],
     "explanation": "Zal ik…? — конкретное предложение что-либо сделать."
   },
   {
@@ -93,6 +104,7 @@
     "situation": "Вы обсуждаете планы семьи.",
     "prompt": "Скажите: «Мы можем сегодня сделать покупки».",
     "answer": ["Wij", "kunnen", "vandaag", "boodschappen", "doen", "."],
+    "distractors": ["moeten", "mogen", "zullen"],
     "explanation": "После kunnen инфинитив doen уходит в конец предложения."
   },
   {
@@ -101,6 +113,7 @@
     "situation": "Вам трудно запомнить информацию.",
     "prompt": "Скажите: «Я не могу это запомнить».",
     "answer": ["Ik", "kan", "dat", "niet", "onthouden", "."],
+    "distractors": ["onhouden", "geonthouden", "behouden", "geen"],
     "explanation": "Onthouden — цельный глагол; после kan инфинитив стоит в конце."
   },
   {
@@ -109,6 +122,7 @@
     "situation": "Вы подтверждаете, что запомнили адрес.",
     "prompt": "Скажите: «Я запомнил ваш адрес».",
     "answer": ["Ik", "heb", "uw", "adres", "onthouden", "."],
+    "distractors": ["geonthouden", "onhouden", "behouden", "u"],
     "explanation": "У onthouden в причастии не появляется дополнительная приставка ge-."
   },
   {
@@ -117,6 +131,7 @@
     "situation": "Вы рассказываете о завтрашней экскурсии.",
     "prompt": "Скажите: «Завтра мы посещаем музей».",
     "answer": ["Wij", "bezoeken", "morgen", "het", "museum", "."],
+    "distractors": ["gebezoeken", "bezoek", "de"],
     "explanation": "Приставка be- не отделяется: bezoeken остаётся одним словом."
   },
   {
@@ -125,6 +140,7 @@
     "situation": "Вас спрашивают, нравится ли поездка.",
     "prompt": "Скажите: «Поездка мне очень нравится».",
     "answer": ["De", "reis", "bevalt", "mij", "goed", "."],
+    "distractors": ["valt", "vervalt", "ik", "het"],
     "explanation": "Bevallen употребляется с тем, что нравится, в роли подлежащего."
   },
   {
@@ -133,6 +149,7 @@
     "situation": "В анкете вас спрашивают о транспорте.",
     "prompt": "Скажите: «У меня нет автомобиля».",
     "answer": ["Ik", "heb", "geen", "auto", "."],
+    "distractors": ["een", "niet", "de", "het"],
     "explanation": "Geen заменяет een при отрицании неопределённого существительного."
   },
   {
@@ -141,6 +158,7 @@
     "situation": "Вы показываете фотографию жилья.",
     "prompt": "Скажите: «Это дом моей семьи».",
     "answer": ["Dit", "is", "het", "huis", "van", "mijn", "familie", "."],
+    "distractors": ["de", "een", "geen", "dat"],
     "explanation": "Huis — het-слово; перед притяжательным mijn отдельный артикль не нужен."
   },
   {
@@ -149,6 +167,7 @@
     "situation": "Вы рассказываете о профессии знакомого.",
     "prompt": "Скажите: «Врач работает в больнице».",
     "answer": ["De", "dokter", "werkt", "in", "het", "ziekenhuis", "."],
+    "distractors": ["Het", "de", "een", "op"],
     "explanation": "Dokter обычно de-слово, а ziekenhuis — het-слово."
   },
   {
@@ -157,6 +176,7 @@
     "situation": "Вы делаете заказ в кафе.",
     "prompt": "Скажите: «Мы пьём кофе без сахара».",
     "answer": ["Wij", "drinken", "koffie", "zonder", "suiker", "."],
+    "distractors": ["de", "het", "een", "geen"],
     "explanation": "Названия веществ в общем значении часто употребляются без артикля."
   },
   {
@@ -165,6 +185,7 @@
     "situation": "Вы объясняете риелтору, какое жильё ищете.",
     "prompt": "Скажите: «Я ищу небольшой дом».",
     "answer": ["Ik", "zoek", "een", "klein", "huis", "."],
+    "distractors": ["kleine", "het", "de"],
     "explanation": "Перед неопределённым het-словом единственного числа прилагательное без -e."
   },
   {
@@ -173,6 +194,7 @@
     "situation": "Вы описываете конкретный дом.",
     "prompt": "Скажите: «Этот маленький дом имеет две комнаты».",
     "answer": ["Dit", "kleine", "huis", "heeft", "twee", "kamers", "."],
+    "distractors": ["Deze", "klein", "kamer", "Dat"],
     "explanation": "После dit прилагательное получает -e; множественное число kamer — kamers."
   },
   {
@@ -181,6 +203,7 @@
     "situation": "Вы выбираете цветы в магазине.",
     "prompt": "Скажите: «Эти красивые цветы недорогие».",
     "answer": ["Deze", "mooie", "bloemen", "zijn", "goedkoop", "."],
+    "distractors": ["Dit", "Die", "mooi", "goedkope"],
     "explanation": "Во множественном числе deze и прилагательное на -e; после zijn — goedkoop без -e."
   },
   {
@@ -189,6 +212,7 @@
     "situation": "Вы рассказываете о новом доме.",
     "prompt": "Скажите: «Мои новые соседи милые».",
     "answer": ["Mijn", "nieuwe", "buren", "zijn", "aardig", "."],
+    "distractors": ["nieuw", "aardige", "ons", "buur"],
     "explanation": "После притяжательного слова прилагательное получает -e; после zijn — без -e."
   },
   {
@@ -197,6 +221,7 @@
     "situation": "Вы сообщаете коллеге об изменении планов.",
     "prompt": "Скажите: «Сегодня я не иду в офис».",
     "answer": ["Ik", "ga", "vandaag", "niet", "naar", "kantoor", "."],
+    "distractors": ["geen", "nee", "in", "op"],
     "explanation": "Niet ставится перед предложной группой naar kantoor."
   },
   {
@@ -205,6 +230,7 @@
     "situation": "В регистратуре не находят вашу запись.",
     "prompt": "Скажите: «У нас нет записи».",
     "answer": ["Wij", "hebben", "geen", "afspraak", "."],
+    "distractors": ["niet", "nee", "een", "de"],
     "explanation": "Неопределённое существительное afspraak отрицается с geen."
   },
   {
@@ -213,6 +239,7 @@
     "situation": "В гардеробе вам дали чужую куртку.",
     "prompt": "Скажите: «Это не моя куртка, а ваша куртка».",
     "answer": ["Dit", "is", "niet", "mijn", "jas", "maar", "uw", "jas", "."],
+    "distractors": ["geen", "nee", "de", "het"],
     "explanation": "Противопоставление строится конструкцией niet … maar …"
   },
   {
@@ -221,6 +248,7 @@
     "situation": "Вы объясняете расписание поликлиники.",
     "prompt": "Скажите: «Врач завтра не работает».",
     "answer": ["De", "dokter", "werkt", "morgen", "niet", "."],
+    "distractors": ["geen", "nee", "op", "in", "het"],
     "explanation": "Обстоятельство времени morgen ставится перед niet."
   }
 ]
