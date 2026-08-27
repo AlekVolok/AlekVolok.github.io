@@ -1,4 +1,4 @@
-const CACHE_NAME = 'learning-trainer-v2';
+const CACHE_NAME = 'learning-trainer-v3';
 
 const CORE_URLS = [
   '/words',
