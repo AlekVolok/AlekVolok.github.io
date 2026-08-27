@@ -285,5 +285,59 @@
         ]
       }
     ]
+  },
+  {
+    "slug": "reflexive-verbs",
+    "label": "Возвратные глаголы",
+    "title": "Возвратные глаголы: me, je, zich",
+    "summary": "Возвратное местоимение меняется вместе с подлежащим: ik was me, jij wast je, hij wast zich.",
+    "sections": [
+      {
+        "title": "Основные формы",
+        "columns": ["Подлежащее", "Возвратное местоимение", "Пример"],
+        "tableRows": [
+          { "cells": ["ik", "me", "Ik was me. — Я умываюсь."] },
+          { "cells": ["jij / je", "je", "Jij wast je. — Ты умываешься."] },
+          { "cells": ["u", "zich", "U wast zich. — Вы умываетесь."] },
+          { "cells": ["hij / zij / het", "zich", "Hij wast zich. — Он умывается."] },
+          { "cells": ["wij / we", "ons", "Wij wassen ons. — Мы умываемся."] },
+          { "cells": ["jullie", "je", "Jullie wassen je. — Вы умываетесь."] },
+          { "cells": ["zij / ze", "zich", "Zij wassen zich. — Они умываются."] }
+        ]
+      },
+      {
+        "title": "Порядок слов",
+        "rows": [
+          { "text": "Ik voel me goed.", "note": "В обычном предложении местоимение стоит после спрягаемого глагола." },
+          { "text": "Ik kleed me aan.", "note": "У отделяемого глагола возвратное местоимение ставится перед отделяемой частью." },
+          { "text": "Ik moet me haasten.", "note": "С модальным глаголом местоимение стоит перед инфинитивом в конце." },
+          { "text": "Omdat ik me haast, neem ik een taxi.", "note": "В придаточном предложении me / je / zich остаётся рядом с подлежащим и группой глагола." },
+          { "text": "Ik heb me vergist.", "note": "В прошедшем времени возвратное местоимение ставится перед причастием." }
+        ]
+      },
+      {
+        "title": "Частые глаголы",
+        "columns": ["Глагол", "Значение", "Пример"],
+        "tableRows": [
+          { "cells": ["zich wassen", "умываться / мыться", "Ik was me elke ochtend."] },
+          { "cells": ["zich aankleden", "одеваться", "Zij kleedt zich snel aan."] },
+          { "cells": ["zich haasten", "торопиться", "We moeten ons haasten."] },
+          { "cells": ["zich voelen", "чувствовать себя", "Voel je je beter?"] },
+          { "cells": ["zich herinneren", "помнить / вспоминать", "Ik herinner me die dag."] },
+          { "cells": ["zich vergissen", "ошибаться", "U vergist zich."] },
+          { "cells": ["zich schamen", "стыдиться", "Hij schaamt zich."] }
+        ]
+      },
+      {
+        "title": "me или mezelf?",
+        "rows": [
+          { "text": "Ik was me.", "note": "Обычная нейтральная возвратная форма." },
+          { "text": "Ik was mezelf, niet de baby.", "note": "mezelf подчёркивает: себя самого, а не кого-то другого." },
+          { "text": "mezelf · jezelf · zichzelf · onszelf · jezelf · zichzelf", "note": "Усиленные формы по лицам; для jullie также используется jezelf." },
+          { "text": "Je voelt je moe.", "note": "Первое je — подлежащее, второе je — возвратное местоимение." },
+          { "text": "Voel je je moe?", "note": "В вопросе два je рядом — это нормально." }
+        ]
+      }
+    ]
   }
 ]
