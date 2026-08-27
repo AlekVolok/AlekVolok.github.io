@@ -339,5 +339,94 @@
         ]
       }
     ]
+  },
+  {
+    "slug": "irregular-verbs",
+    "label": "Неправильные глаголы",
+    "title": "Неправильные глаголы",
+    "summary": "Основные формы часто употребляемых сильных и неправильных глаголов: infinitief, imperfectum и voltooid deelwoord.",
+    "sections": [
+      {
+        "title": "B–H",
+        "columns": ["Infinitief", "Перевод", "Imperfectum (ед. / мн.)", "Voltooid deelwoord"],
+        "tableRows": [
+          {"cells": ["beginnen", "начинать", "begon / begonnen", "begonnen"]},
+          {"cells": ["begrijpen", "понимать", "begreep / begrepen", "begrepen"]},
+          {"cells": ["bieden", "предлагать", "bood / boden", "geboden"]},
+          {"cells": ["binden", "связывать", "bond / bonden", "gebonden"]},
+          {"cells": ["blijken", "оказываться", "bleek / bleken", "gebleken"]},
+          {"cells": ["blijven", "оставаться", "bleef / bleven", "gebleven"]},
+          {"cells": ["breken", "ломать", "brak / braken", "gebroken"]},
+          {"cells": ["brengen", "приносить", "bracht / brachten", "gebracht"]},
+          {"cells": ["denken", "думать", "dacht / dachten", "gedacht"]},
+          {"cells": ["doen", "делать", "deed / deden", "gedaan"]},
+          {"cells": ["dragen", "нести / носить", "droeg / droegen", "gedragen"]},
+          {"cells": ["drinken", "пить", "dronk / dronken", "gedronken"]},
+          {"cells": ["eten", "есть", "at / aten", "gegeten"]},
+          {"cells": ["gaan", "идти / ехать", "ging / gingen", "gegaan"]},
+          {"cells": ["geven", "давать", "gaf / gaven", "gegeven"]},
+          {"cells": ["hangen", "висеть", "hing / hingen", "gehangen"]},
+          {"cells": ["hebben", "иметь", "had / hadden", "gehad"]},
+          {"cells": ["helpen", "помогать", "hielp / hielpen", "geholpen"]},
+          {"cells": ["heten", "называться", "heette / heetten", "geheten"]},
+          {"cells": ["houden", "держать / любить", "hield / hielden", "gehouden"]}
+        ]
+      },
+      {
+        "title": "K–R",
+        "columns": ["Infinitief", "Перевод", "Imperfectum (ед. / мн.)", "Voltooid deelwoord"],
+        "tableRows": [
+          {"cells": ["kijken", "смотреть", "keek / keken", "gekeken"]},
+          {"cells": ["komen", "приходить", "kwam / kwamen", "gekomen"]},
+          {"cells": ["kopen", "покупать", "kocht / kochten", "gekocht"]},
+          {"cells": ["krijgen", "получать", "kreeg / kregen", "gekregen"]},
+          {"cells": ["kunnen", "мочь / уметь", "kon / konden", "gekund"]},
+          {"cells": ["lachen", "смеяться", "lachte / lachten", "gelachen"]},
+          {"cells": ["laten", "позволять / оставлять", "liet / lieten", "gelaten"]},
+          {"cells": ["lezen", "читать", "las / lazen", "gelezen"]},
+          {"cells": ["liggen", "лежать", "lag / lagen", "gelegen"]},
+          {"cells": ["lopen", "ходить / бежать", "liep / liepen", "gelopen"]},
+          {"cells": ["moeten", "быть должным", "moest / moesten", "gemoeten"]},
+          {"cells": ["mogen", "мочь / иметь разрешение", "mocht / mochten", "gemogen"]},
+          {"cells": ["nemen", "брать", "nam / namen", "genomen"]},
+          {"cells": ["raden", "советовать / угадывать", "ried / rieden; raadde / raadden", "geraden"]},
+          {"cells": ["rijden", "ехать", "reed / reden", "gereden"]},
+          {"cells": ["roepen", "звать / кричать", "riep / riepen", "geroepen"]}
+        ]
+      },
+      {
+        "title": "S–W",
+        "columns": ["Infinitief", "Перевод", "Imperfectum (ед. / мн.)", "Voltooid deelwoord"],
+        "tableRows": [
+          {"cells": ["schrijven", "писать", "schreef / schreven", "geschreven"]},
+          {"cells": ["slaan", "бить", "sloeg / sloegen", "geslagen"]},
+          {"cells": ["slapen", "спать", "sliep / sliepen", "geslapen"]},
+          {"cells": ["smijten", "швырять", "smeet / smeten", "gesmeten"]},
+          {"cells": ["snijden", "резать", "sneed / sneden", "gesneden"]},
+          {"cells": ["spreken", "говорить", "sprak / spraken", "gesproken"]},
+          {"cells": ["springen", "прыгать", "sprong / sprongen", "gesprongen"]},
+          {"cells": ["staan", "стоять", "stond / stonden", "gestaan"]},
+          {"cells": ["stelen", "красть", "stal / stalen", "gestolen"]},
+          {"cells": ["sterven", "умирать", "stierf / stierven", "gestorven"]},
+          {"cells": ["stinken", "вонять", "stonk / stonken", "gestonken"]},
+          {"cells": ["trekken", "тянуть", "trok / trokken", "getrokken"]},
+          {"cells": ["vallen", "падать", "viel / vielen", "gevallen"]},
+          {"cells": ["vangen", "ловить", "ving / vingen", "gevangen"]},
+          {"cells": ["vergeten", "забывать", "vergat / vergaten", "vergeten"]},
+          {"cells": ["verliezen", "терять", "verloor / verloren", "verloren"]},
+          {"cells": ["vinden", "находить", "vond / vonden", "gevonden"]},
+          {"cells": ["vragen", "спрашивать", "vroeg / vroegen", "gevraagd"]},
+          {"cells": ["wassen", "мыть", "waste / wasten", "gewassen"]}
+        ]
+      },
+      {
+        "title": "Как читать таблицу",
+        "rows": [
+          {"text": "Ik schreef gisteren een brief.", "note": "Imperfectum: вчера я написал письмо."},
+          {"text": "Ik heb een brief geschreven.", "note": "Perfectum: я написал письмо."},
+          {"text": "Hij ging naar huis.", "note": "С глаголами движения perfectum часто строится с zijn: Hij is naar huis gegaan."}
+        ]
+      }
+    ]
   }
 ]
