@@ -1,4 +1,4 @@
-const CACHE_NAME = 'learning-trainer-v3';
+const CACHE_NAME = 'learning-trainer-v4';
 
 const CORE_URLS = [
   '/words',
@@ -89,6 +89,23 @@ self.addEventListener('fetch', (event) => {
           (await caches.match(event.request, { ignoreSearch: true }))
           || (await caches.match('/words'))
         )
+    );
+    return;
+  }
+
+  // Content JSON changes independently of the application shell. Prefer the
+  // network so an installed PWA does not keep rendering an older lesson list.
+  if (requestUrl.pathname.endsWith('.json')) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request))
     );
     return;
   }
