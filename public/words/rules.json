@@ -341,6 +341,106 @@
     ]
   },
   {
+    "slug": "perfectum",
+    "label": "Perfectum — завершённое прошлое",
+    "title": "Perfectum",
+    "summary": "Прошедшее время для завершённых событий: hebben или zijn + voltooid deelwoord.",
+    "sections": [
+      {
+        "title": "Главная формула",
+        "rows": [
+          { "text": "onderwerp + hebben/zijn + ... + voltooid deelwoord", "note": "В главном предложении причастие обычно стоит в конце." },
+          { "text": "Ik heb gisteren gewerkt.", "note": "Я вчера работал." },
+          { "text": "Wij zijn naar huis gegaan.", "note": "Мы пошли домой." },
+          { "text": "Heb je de dokter gebeld?", "note": "Ты позвонил врачу? В вопросе вспомогательный глагол идёт перед подлежащим." }
+        ]
+      },
+      {
+        "title": "Hebben или zijn?",
+        "columns": ["Выбор", "Когда", "Примеры"],
+        "tableRows": [
+          { "cells": ["hebben", "Большинство глаголов", "Ik heb gewerkt. · Zij heeft gegeten."] },
+          { "cells": ["zijn", "Движение с изменением места", "Hij is naar Amsterdam gereden."] },
+          { "cells": ["zijn", "Изменение состояния", "Het kind is wakker geworden."] },
+          { "cells": ["zijn", "blijven, komen, gaan, worden, zijn", "Wij zijn thuis gebleven."] }
+        ]
+      },
+      {
+        "title": "Как образовать voltooid deelwoord",
+        "rows": [
+          { "text": "ge + stam + d/t", "note": "werken → gewerkt; leren → geleerd." },
+          { "text": "'t ex-kofschip: t, x, k, f, s, ch, p", "note": "Если последняя согласная основы входит в правило — окончание -t; иначе -d." },
+          { "text": "Geen ge-: be-, ge-, her-, ont-, ver-", "note": "betalen → betaald; vertellen → verteld; ontmoeten → ontmoet." },
+          { "text": "Разделяемые глаголы: ge- между частями", "note": "opbellen → opgebeld; boodschappen doen → boodschappen gedaan." },
+          { "text": "Неправильные формы нужно учить", "note": "zien → gezien; schrijven → geschreven; brengen → gebracht." }
+        ]
+      },
+      {
+        "title": "Когда употреблять",
+        "rows": [
+          { "text": "Завершённое действие или результат", "note": "Ik heb mijn examen gehaald. — Я сдал экзамен." },
+          { "text": "Разговор о том, что произошло", "note": "Wat heb je gisteren gedaan?" },
+          { "text": "Маркеры: gisteren, al, nog niet, net, vorige week", "note": "Perfectum очень часто используется в разговорной речи." },
+          { "text": "В придаточном оба глагола уходят в конец", "note": "Ik weet dat hij naar huis is gegaan." }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "imperfectum",
+    "label": "Imperfectum — простое прошедшее",
+    "title": "Imperfectum",
+    "summary": "Простое прошедшее время для описания ситуации, привычки, процесса или последовательности событий в прошлом.",
+    "sections": [
+      {
+        "title": "Главная формула",
+        "rows": [
+          { "text": "Регулярный глагол: stam + de/te", "note": "Единственное число: ik/jij/hij werkte или woonde." },
+          { "text": "Множественное число: stam + den/ten", "note": "wij/jullie/zij werkten или woonden." },
+          { "text": "Ik werkte gisteren thuis.", "note": "Я вчера работал дома." },
+          { "text": "Vroeger woonden wij in Utrecht.", "note": "Раньше мы жили в Утрехте." }
+        ]
+      },
+      {
+        "title": "-te или -de?",
+        "rows": [
+          { "text": "'t ex-kofschip: t, x, k, f, s, ch, p → -te/-ten", "note": "werken → werkte/werkten; fietsen → fietste/fietsten." },
+          { "text": "Остальные согласные → -de/-den", "note": "wonen → woonde/woonden; bellen → belde/belden." },
+          { "text": "Проверяйте согласную в целом инфинитиве", "note": "leven → leefde, reizen → reisde: v и z видны в инфинитиве, поэтому используется -de." },
+          { "text": "Неправильные глаголы меняют корень", "note": "gaan → ging/gingen; zien → zag/zagen; weten → wist/wisten." }
+        ]
+      },
+      {
+        "title": "Когда употреблять",
+        "columns": ["Ситуация", "Пример", "Перевод"],
+        "tableRows": [
+          { "cells": ["Описание фона", "Het was koud en het regende.", "Было холодно, и шёл дождь."] },
+          { "cells": ["Привычка в прошлом", "Vroeger fietste ik elke dag.", "Раньше я каждый день ездил на велосипеде."] },
+          { "cells": ["Состояние или процесс", "Ik voelde me moe.", "Я чувствовал себя уставшим."] },
+          { "cells": ["Рассказ, последовательность", "Hij stond op, at en ging weg.", "Он встал, поел и ушёл."] }
+        ]
+      },
+      {
+        "title": "Частые неправильные формы",
+        "rows": [
+          { "text": "zijn → was / waren", "note": "Ik was ziek. · Wij waren thuis." },
+          { "text": "hebben → had / hadden", "note": "Zij had hoofdpijn." },
+          { "text": "kunnen → kon / konden", "note": "Ik kon niet komen." },
+          { "text": "moeten → moest / moesten", "note": "We moesten wachten." },
+          { "text": "willen → wilde / wilden", "note": "Hij wilde naar huis." }
+        ]
+      },
+      {
+        "title": "Perfectum или imperfectum?",
+        "rows": [
+          { "text": "Ik heb drie jaar in Rotterdam gewoond.", "note": "Perfectum: завершённый факт." },
+          { "text": "Toen ik jong was, woonde ik in Rotterdam.", "note": "Imperfectum: фон или период жизни." },
+          { "text": "В разговоре о завершённом событии чаще perfectum", "note": "В рассказе, описании и с vroeger/toen чаще imperfectum." }
+        ]
+      }
+    ]
+  },
+  {
     "slug": "irregular-verbs",
     "label": "Неправильные глаголы",
     "title": "Неправильные глаголы",
@@ -395,7 +495,7 @@
         ]
       },
       {
-        "title": "S–W",
+        "title": "S–Z",
         "columns": ["Infinitief", "Перевод", "Imperfectum (ед. / мн.)", "Voltooid deelwoord"],
         "tableRows": [
           {"cells": ["schrijven", "писать", "schreef / schreven", "geschreven"]},
@@ -416,7 +516,10 @@
           {"cells": ["verliezen", "терять", "verloor / verloren", "verloren"]},
           {"cells": ["vinden", "находить", "vond / vonden", "gevonden"]},
           {"cells": ["vragen", "спрашивать", "vroeg / vroegen", "gevraagd"]},
-          {"cells": ["wassen", "мыть", "waste / wasten", "gewassen"]}
+          {"cells": ["wassen", "мыть", "waste / wasten", "gewassen"]},
+          {"cells": ["weten", "знать", "wist / wisten", "geweten"]},
+          {"cells": ["zeggen", "говорить / сказать", "zei / zeiden", "gezegd"]},
+          {"cells": ["zien", "видеть", "zag / zagen", "gezien"]}
         ]
       },
       {

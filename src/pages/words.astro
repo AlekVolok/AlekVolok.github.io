@@ -43,6 +43,9 @@ import '../styles/global.css';
           <button id="rulesModeBtn" class="mode-tab" type="button" role="tab" aria-selected="false">
             Rules
           </button>
+          <button id="cheatsheetModeBtn" class="mode-tab" type="button" role="tab" aria-selected="false">
+            Cheat sheets
+          </button>
           <button id="exercisesModeBtn" class="mode-tab" type="button" role="tab" aria-selected="false">
             Exercises
           </button>
@@ -87,6 +90,14 @@ import '../styles/global.css';
             <select id="ruleTopicSelect"></select>
           </div>
           <article id="ruleCard" class="rule-card" aria-live="polite"></article>
+        </section>
+
+        <section id="cheatsheetMode" role="tabpanel" hidden>
+          <div class="rules-controls">
+            <label for="cheatsheetTopicSelect">Тема словаря</label>
+            <select id="cheatsheetTopicSelect"></select>
+          </div>
+          <div id="cheatsheetList" class="cheatsheet-list" aria-live="polite"></div>
         </section>
 
         <section id="exercisesMode" class="exercises-mode" role="tabpanel" hidden>
@@ -202,9 +213,13 @@ import '../styles/global.css';
   const practiceModeEl = $<HTMLElement>('#practiceMode');
   const rulesModeEl = $<HTMLElement>('#rulesMode');
   const exercisesModeEl = $<HTMLElement>('#exercisesMode');
+  const cheatsheetModeEl = $<HTMLElement>('#cheatsheetMode');
   const practiceModeBtn = $<HTMLButtonElement>('#practiceModeBtn');
   const rulesModeBtn = $<HTMLButtonElement>('#rulesModeBtn');
   const exercisesModeBtn = $<HTMLButtonElement>('#exercisesModeBtn');
+  const cheatsheetModeBtn = $<HTMLButtonElement>('#cheatsheetModeBtn');
+  const cheatsheetTopicSelect = $<HTMLSelectElement>('#cheatsheetTopicSelect');
+  const cheatsheetList = $<HTMLDivElement>('#cheatsheetList');
   const ruleTopicSelect = $<HTMLSelectElement>('#ruleTopicSelect');
   const ruleCard = $<HTMLElement>('#ruleCard');
   const exerciseSituationEl = $<HTMLParagraphElement>('#exerciseSituation');
@@ -397,20 +412,24 @@ import '../styles/global.css';
     updateUI();
   }
 
-  function switchMode(mode: 'practice' | 'rules' | 'exercises') {
+  function switchMode(mode: 'practice' | 'rules' | 'cheatsheet' | 'exercises') {
     const showRules = mode === 'rules';
+    const showCheatsheet = mode === 'cheatsheet';
     const showExercises = mode === 'exercises';
-    practiceModeEl.hidden = showRules || showExercises;
+    practiceModeEl.hidden = showRules || showCheatsheet || showExercises;
     rulesModeEl.hidden = !showRules;
+    cheatsheetModeEl.hidden = !showCheatsheet;
     exercisesModeEl.hidden = !showExercises;
     practiceModeBtn.classList.toggle('active', mode === 'practice');
     rulesModeBtn.classList.toggle('active', showRules);
+    cheatsheetModeBtn.classList.toggle('active', showCheatsheet);
     exercisesModeBtn.classList.toggle('active', showExercises);
     practiceModeBtn.setAttribute('aria-selected', String(mode === 'practice'));
     rulesModeBtn.setAttribute('aria-selected', String(showRules));
+    cheatsheetModeBtn.setAttribute('aria-selected', String(showCheatsheet));
     exercisesModeBtn.setAttribute('aria-selected', String(showExercises));
 
-    if (showRules || showExercises) {
+    if (showRules || showCheatsheet || showExercises) {
       pauseGame();
     } else {
       resumeGame();
@@ -749,6 +768,39 @@ import '../styles/global.css';
   }
 
   let allTopicSlugs: string[] = [];
+  let wordTopics: { slug: string; label: string }[] = [];
+
+  async function renderCheatsheet() {
+    const selected = cheatsheetTopicSelect.value;
+    const topics = selected === '__all__'
+      ? wordTopics
+      : wordTopics.filter(({ slug }) => slug === selected);
+    const dictionaries = await Promise.all(topics.map(async (topic) => {
+      const response = await fetch(`/words/topics/${encodeURIComponent(topic.slug)}.json`);
+      return { ...topic, pairs: await response.json() as Pairs };
+    }));
+
+    cheatsheetList.replaceChildren();
+    dictionaries.forEach(({ label, pairs }) => {
+      const section = document.createElement('section');
+      section.className = 'cheatsheet-topic';
+      const heading = document.createElement('h2');
+      heading.textContent = `${label} · ${Object.keys(pairs).length}`;
+      section.appendChild(heading);
+      const dl = document.createElement('dl');
+      Object.entries(pairs)
+        .sort(([a], [b]) => a.localeCompare(b, 'nl'))
+        .forEach(([word, translation]) => {
+          const dt = document.createElement('dt');
+          const dd = document.createElement('dd');
+          dt.textContent = word;
+          dd.textContent = translation;
+          dl.append(dt, dd);
+        });
+      section.appendChild(dl);
+      cheatsheetList.appendChild(section);
+    });
+  }
 
   function recordAction() {
     lastActionAt = Date.now();
@@ -830,6 +882,7 @@ import '../styles/global.css';
       fetch('/words/exercises.json')
     ]);
     const topics: { slug: string; label: string }[] = await topicsRes.json();
+    wordTopics = topics;
     ruleTopics = await rulesRes.json();
     grammarExercises = await exercisesRes.json();
     allTopicSlugs = topics.map((t) => t.slug);
@@ -845,6 +898,18 @@ import '../styles/global.css';
       opt.textContent = label;
       topicSelect.appendChild(opt);
     });
+
+    const allCheatsheetOpt = document.createElement('option');
+    allCheatsheetOpt.value = '__all__';
+    allCheatsheetOpt.textContent = 'Все темы';
+    cheatsheetTopicSelect.appendChild(allCheatsheetOpt);
+    topics.forEach(({ slug, label }) => {
+      const opt = document.createElement('option');
+      opt.value = slug;
+      opt.textContent = label;
+      cheatsheetTopicSelect.appendChild(opt);
+    });
+    await renderCheatsheet();
 
     ruleTopics.forEach(({ slug, label }) => {
       const opt = document.createElement('option');
@@ -862,6 +927,8 @@ import '../styles/global.css';
   ruleTopicSelect.addEventListener('change', () => renderRuleTopic(ruleTopicSelect.value));
   practiceModeBtn.addEventListener('click', () => switchMode('practice'));
   rulesModeBtn.addEventListener('click', () => switchMode('rules'));
+  cheatsheetModeBtn.addEventListener('click', () => switchMode('cheatsheet'));
+  cheatsheetTopicSelect.addEventListener('change', renderCheatsheet);
   exercisesModeBtn.addEventListener('click', () => switchMode('exercises'));
   $('#clearExerciseBtn').addEventListener('click', () => {
     selectedExerciseTokenIds = [];
@@ -981,7 +1048,7 @@ import '../styles/global.css';
 
   .mode-tabs {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 4px;
     padding: 4px;
     margin-bottom: 20px;
@@ -1168,6 +1235,38 @@ import '../styles/global.css';
     border-radius: 12px;
     scrollbar-width: thin;
   }
+  .cheatsheet-list {
+    display: grid;
+    gap: 14px;
+    max-height: calc(100vh - 210px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+  :global(.cheatsheet-topic) {
+    padding: 18px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  :global(.cheatsheet-topic h2) {
+    margin: 0 0 12px;
+    color: var(--accent);
+    font-size: 1rem;
+  }
+  :global(.cheatsheet-topic dl) {
+    display: grid;
+    grid-template-columns: minmax(120px, 1fr) minmax(150px, 1.4fr);
+    margin: 0;
+  }
+  :global(.cheatsheet-topic dt),
+  :global(.cheatsheet-topic dd) {
+    margin: 0;
+    padding: 8px 6px;
+    border-top: 1px solid var(--border);
+    line-height: 1.35;
+  }
+  :global(.cheatsheet-topic dt) { color: var(--text); font-weight: 600; }
+  :global(.cheatsheet-topic dd) { color: var(--text-dim); }
   .rule-card h1 {
     margin: 0 0 4px;
     font-size: clamp(1.35rem, 5vw, 1.8rem);
@@ -1342,7 +1441,7 @@ import '../styles/global.css';
 
   @media (max-width: 520px) {
     .game-page { padding: 18px 14px; align-items: flex-start; }
-    .mode-tabs { margin-bottom: 14px; }
+    .mode-tabs { grid-template-columns: repeat(2, 1fr); margin-bottom: 14px; }
     .controls { flex-direction: column; }
     .stats { flex-wrap: wrap; gap: 12px; }
     .rule-card {
