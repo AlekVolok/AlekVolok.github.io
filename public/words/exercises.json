@@ -250,5 +250,77 @@
     "answer": ["De", "dokter", "werkt", "morgen", "niet", "."],
     "distractors": ["geen", "nee", "op", "in", "het"],
     "explanation": "Обстоятельство времени morgen ставится перед niet."
+  },
+  {
+    "id": "perfectum-call-doctor",
+    "rule": "perfectum",
+    "situation": "Вас спрашивают, связались ли вы с семейным врачом.",
+    "prompt": "Скажите: «Я вчера позвонил семейному врачу».",
+    "answer": ["Ik", "heb", "gisteren", "de", "huisarts", "gebeld", "."],
+    "distractors": ["ben", "belde", "bellen", "gebleven"],
+    "explanation": "Perfectum глагола bellen строится с hebben; причастие gebeld стоит в конце."
+  },
+  {
+    "id": "perfectum-arrive-late",
+    "rule": "perfectum",
+    "situation": "Вы объясняете преподавателю причину пропуска начала урока.",
+    "prompt": "Скажите: «Мы пришли слишком поздно».",
+    "answer": ["Wij", "zijn", "te", "laat", "gekomen", "."],
+    "distractors": ["hebben", "komen", "kwamen", "gekomt"],
+    "explanation": "Komen образует perfectum с zijn: zijn gekomen."
+  },
+  {
+    "id": "perfectum-buy-medicine",
+    "rule": "perfectum",
+    "situation": "Вы рассказываете, что уже сходили в аптеку.",
+    "prompt": "Скажите: «Она купила лекарство».",
+    "answer": ["Zij", "heeft", "het", "medicijn", "gekocht", "."],
+    "distractors": ["is", "koopt", "kopen", "gekoopen"],
+    "explanation": "Kopen — неправильный глагол: kopen → kocht → gekocht; вспомогательный глагол hebben."
+  },
+  {
+    "id": "perfectum-sleep-question",
+    "rule": "perfectum",
+    "situation": "Утром вы спрашиваете близкого человека о самочувствии.",
+    "prompt": "Спросите: «Ты хорошо спал?»",
+    "answer": ["Heb", "je", "goed", "geslapen", "?"],
+    "distractors": ["Ben", "slaapt", "sliep", "geslaapt"],
+    "explanation": "В вопросе Heb стоит перед подлежащим; voltooid deelwoord от slapen — geslapen."
+  },
+  {
+    "id": "imperfectum-live-before",
+    "rule": "imperfectum",
+    "situation": "На собеседовании вы рассказываете о прежнем месте жительства.",
+    "prompt": "Скажите: «Раньше я жил в Роттердаме».",
+    "answer": ["Vroeger", "woonde", "ik", "in", "Rotterdam", "."],
+    "distractors": ["woon", "gewoond", "woonte", "heb"],
+    "explanation": "Wonen — регулярный глагол: imperfectum woonde. После Vroeger личная форма стоит второй."
+  },
+  {
+    "id": "imperfectum-cold-rain",
+    "rule": "imperfectum",
+    "situation": "Вы описываете вчерашнюю погоду.",
+    "prompt": "Скажите: «Было холодно, и шёл дождь».",
+    "answer": ["Het", "was", "koud", "en", "het", "regende", "."],
+    "distractors": ["is", "heeft", "geregend", "regente"],
+    "explanation": "Для описания фона используется imperfectum: zijn → was, regenen → regende."
+  },
+  {
+    "id": "imperfectum-wait-doctor",
+    "rule": "imperfectum",
+    "situation": "Вы рассказываете о визите в поликлинику.",
+    "prompt": "Скажите: «Мы должны были долго ждать».",
+    "answer": ["Wij", "moesten", "lang", "wachten", "."],
+    "distractors": ["moeten", "moest", "hebben", "gewacht"],
+    "explanation": "Во множественном числе imperfectum от moeten — moesten; wachten остаётся инфинитивом в конце."
+  },
+  {
+    "id": "imperfectum-sick-home",
+    "rule": "imperfectum",
+    "situation": "Вы объясняете отсутствие на работе.",
+    "prompt": "Скажите: «Когда я был болен, я оставался дома».",
+    "answer": ["Toen", "ik", "ziek", "was", ",", "bleef", "ik", "thuis", "."],
+    "distractors": ["ben", "blijf", "gebleven", "heb"],
+    "explanation": "В придаточном с toen форма was стоит в конце; blijven в imperfectum — bleef."
   }
 ]
