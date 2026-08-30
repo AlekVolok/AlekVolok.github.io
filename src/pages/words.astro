@@ -108,6 +108,10 @@ import '../styles/global.css';
             </div>
             <span id="exerciseProgress">0 correct</span>
           </div>
+          <div class="exercise-topic-controls">
+            <label for="exerciseTopicSelect">Тема упражнений</label>
+            <select id="exerciseTopicSelect"></select>
+          </div>
           <article class="exercise-card">
             <p id="exerciseSituation" class="exercise-situation"></p>
             <p id="exercisePrompt" class="exercise-prompt"></p>
@@ -228,6 +232,7 @@ import '../styles/global.css';
   const wordBankEl = $<HTMLDivElement>('#wordBank');
   const exerciseFeedbackEl = $<HTMLParagraphElement>('#exerciseFeedback');
   const exerciseProgressEl = $<HTMLSpanElement>('#exerciseProgress');
+  const exerciseTopicSelect = $<HTMLSelectElement>('#exerciseTopicSelect');
   const nextExerciseBtn = $<HTMLButtonElement>('#nextExerciseBtn');
   const gameEl = $<HTMLDivElement>('#game');
   const learningModeChooser = $<HTMLElement>('#learningModeChooser');
@@ -494,8 +499,14 @@ import '../styles/global.css';
   }
 
   function chooseExercise() {
-    if (grammarExercises.length === 0) return;
-    const candidates = grammarExercises.filter((exercise) => exercise.id !== currentExercise?.id);
+    const selectedRule = exerciseTopicSelect.value;
+    const exercisesForTopic = selectedRule === '__all__'
+      ? grammarExercises
+      : grammarExercises.filter((exercise) => exercise.rule === selectedRule);
+    if (exercisesForTopic.length === 0) return;
+    const candidates = exercisesForTopic.length > 1
+      ? exercisesForTopic.filter((exercise) => exercise.id !== currentExercise?.id)
+      : exercisesForTopic;
     const weighted = candidates.flatMap((exercise) =>
       Array(Math.max(1, 1 + (exerciseWeakness[exercise.rule] ?? 0))).fill(exercise)
     );
@@ -917,6 +928,20 @@ import '../styles/global.css';
       opt.textContent = label;
       ruleTopicSelect.appendChild(opt);
     });
+
+    const allExercisesOpt = document.createElement('option');
+    allExercisesOpt.value = '__all__';
+    allExercisesOpt.textContent = 'Все темы';
+    exerciseTopicSelect.appendChild(allExercisesOpt);
+    const exerciseRuleSlugs = new Set(grammarExercises.map(({ rule }) => rule));
+    ruleTopics
+      .filter(({ slug }) => exerciseRuleSlugs.has(slug))
+      .forEach(({ slug, label }) => {
+        const opt = document.createElement('option');
+        opt.value = slug;
+        opt.textContent = label;
+        exerciseTopicSelect.appendChild(opt);
+      });
     if (ruleTopics[0]) renderRuleTopic(ruleTopics[0].slug);
     exerciseWeakness = loadExerciseWeakness();
     chooseExercise();
@@ -930,6 +955,10 @@ import '../styles/global.css';
   cheatsheetModeBtn.addEventListener('click', () => switchMode('cheatsheet'));
   cheatsheetTopicSelect.addEventListener('change', renderCheatsheet);
   exercisesModeBtn.addEventListener('click', () => switchMode('exercises'));
+  exerciseTopicSelect.addEventListener('change', () => {
+    currentExercise = null;
+    chooseExercise();
+  });
   $('#clearExerciseBtn').addEventListener('click', () => {
     selectedExerciseTokenIds = [];
     renderExerciseBuilder();
@@ -1128,6 +1157,24 @@ import '../styles/global.css';
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: 14px;
+  }
+  .exercise-topic-controls {
+    display: grid;
+    gap: 7px;
+    margin-bottom: 14px;
+  }
+  .exercise-topic-controls label {
+    color: var(--text-dim);
+    font: 0.78rem var(--font-mono);
+  }
+  .exercise-topic-controls select {
+    width: 100%;
+    padding: 10px 12px;
+    color: var(--text);
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font: 0.9rem var(--font-sans);
   }
   .exercise-situation {
     margin: 0 0 8px;
