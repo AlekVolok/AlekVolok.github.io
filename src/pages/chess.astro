@@ -21,12 +21,19 @@ import '../styles/global.css';
         <a class="mode-back" href="/words">← Learning modes</a>
         <div class="controls">
           <select id="openingSelect"></select>
+          <select id="trainingModeSelect" aria-label="Training mode">
+            <option value="learn">Learn · hints</option>
+            <option value="challenge">Challenge · no hints</option>
+          </select>
           <button id="reloadBtn" class="btn">Reload</button>
         </div>
         <div class="stats">
           <span id="score">Score: 0</span>
           <span id="mistakes">Mistakes: 0</span>
           <span id="multiplier">Multiplier: x1</span>
+          <span id="accuracy">Accuracy: 100%</span>
+          <span id="lineProgress">Line: 0/0</span>
+          <span id="mastery">Mastery: new</span>
         </div>
         <div class="board-wrap">
           <div id="board" class="board"></div>
@@ -49,6 +56,14 @@ import '../styles/global.css';
           <button id="hintBtn" class="btn">Hint</button>
           <span id="turnLabel"></span>
         </div>
+        <p id="bookMoves" class="book-moves" aria-live="polite"></p>
+        <section class="move-history" aria-label="Move history">
+          <div class="move-history-head">
+            <strong>Move history</strong>
+            <span id="openingStatus"></span>
+          </div>
+          <div id="moveHistoryList" class="move-history-list">No moves yet</div>
+        </section>
       </div>
       <dialog id="theoryDialog" class="theory-dialog">
         <button id="closeTheoryBtn" class="theory-close" type="button" aria-label="Закрыть">×</button>
@@ -98,6 +113,14 @@ import '../styles/global.css';
   let comboCount = 0;
   let currentOpeningSlug = '';
   let openingTheory: Record<string, Record<string, string>> = {};
+  let moveHistory: string[] = [];
+  let maxLineDepth = 0;
+  let correctAttempts = 0;
+  let totalAttempts = 0;
+  let availableOpenings: { slug: string; label: string; side: Side }[] = [];
+  type Mastery = Record<string, { completions: number; bestAccuracy: number }>;
+  let mastery: Mastery = {};
+  const masteryStorageKey = 'chess-opening-mastery-v1';
 
   const $ = <T extends Element>(sel: string) =>
     document.querySelector<T>(sel)!;
@@ -107,6 +130,14 @@ import '../styles/global.css';
   const scoreEl = $<HTMLSpanElement>('#score');
   const mistakesEl = $<HTMLSpanElement>('#mistakes');
   const multiplierEl = $<HTMLSpanElement>('#multiplier');
+  const accuracyEl = $<HTMLSpanElement>('#accuracy');
+  const lineProgressEl = $<HTMLSpanElement>('#lineProgress');
+  const masteryEl = $<HTMLSpanElement>('#mastery');
+  const trainingModeSelect = $<HTMLSelectElement>('#trainingModeSelect');
+  const hintBtn = $<HTMLButtonElement>('#hintBtn');
+  const bookMovesEl = $<HTMLParagraphElement>('#bookMoves');
+  const moveHistoryListEl = $<HTMLDivElement>('#moveHistoryList');
+  const openingStatusEl = $<HTMLSpanElement>('#openingStatus');
   const hintOverlay = $<SVGSVGElement>('#hintOverlay');
   const winOverlay = $<HTMLDivElement>('#winOverlay');
   const finalStatsEl = $<HTMLParagraphElement>('#finalStats');
@@ -139,6 +170,41 @@ import '../styles/global.css';
       }
       node = next;
     });
+  }
+
+  function treeDepth(node: Node): number {
+    if (node.children.length === 0) return 0;
+    return 1 + Math.max(...node.children.map((child) => treeDepth(child)));
+  }
+
+  function loadMastery(): Mastery {
+    try {
+      const value = JSON.parse(localStorage.getItem(masteryStorageKey) ?? '{}');
+      return value && typeof value === 'object' ? value : {};
+    } catch {
+      return {};
+    }
+  }
+
+  function saveMastery() {
+    try { localStorage.setItem(masteryStorageKey, JSON.stringify(mastery)); } catch {}
+  }
+
+  function recordMove(move: Move) {
+    moveHistory.push(move.san);
+    renderMoveHistory();
+  }
+
+  function renderMoveHistory() {
+    if (moveHistory.length === 0) {
+      moveHistoryListEl.textContent = 'No moves yet';
+      return;
+    }
+    const turns: string[] = [];
+    for (let index = 0; index < moveHistory.length; index += 2) {
+      turns.push(`${index / 2 + 1}. ${moveHistory[index]}${moveHistory[index + 1] ? ` ${moveHistory[index + 1]}` : ''}`);
+    }
+    moveHistoryListEl.textContent = turns.join('  ');
   }
 
   function squareEl(sq: string) {
@@ -221,8 +287,11 @@ import '../styles/global.css';
     const m = currentNode.children.find((c) => c.from === from && c.to === to);
     if (m) {
       applyMove(m);
+      recordMove(m);
       flash(to, 'flash-good');
-      score += 8 * comboMultiplier;
+      correctAttempts += 1;
+      totalAttempts += 1;
+      score += (trainingModeSelect.value === 'challenge' ? 12 : 8) * comboMultiplier;
       if (!hintUsedThisMove) {
         comboCount += 1;
         if (comboCount % 3 === 0) comboMultiplier += 1;
@@ -240,11 +309,14 @@ import '../styles/global.css';
       }
     } else {
       mistakes += 1;
+      totalAttempts += 1;
       score -= 5;
       comboCount = 0;
       comboMultiplier = 1;
       flash(from, 'flash-bad');
       flash(to, 'flash-bad');
+      showBookMoves();
+      turnLabel.textContent = 'Try one of the book moves';
       updateUI();
     }
   }
@@ -254,6 +326,7 @@ import '../styles/global.css';
     const moves = currentNode.children;
     const m = moves[Math.floor(Math.random() * moves.length)];
     applyMove(m);
+    recordMove(m);
     currentNode = m;
     if (m.children.length === 0) {
       showWinScreen();
@@ -267,27 +340,16 @@ import '../styles/global.css';
 
   function clearHint() {
     clearTimeout(hintTimer);
-    hintOverlay.querySelector('line')?.remove();
+    hintOverlay.querySelectorAll('line').forEach((line) => line.remove());
+    bookMovesEl.textContent = '';
   }
 
-  function showHint() {
-    if (phase !== 'player' || currentNode.children.length === 0) return;
-    clearHint();
-    const m = currentNode.children[0];
-    const theoryKey = `${m.from}-${m.to}`;
-    theoryMoveEl.textContent = m.san;
-    theoryTextEl.textContent = openingTheory[currentOpeningSlug]?.[theoryKey]
-      ?? 'Этот ход улучшает расположение фигур и помогает выполнить стратегические задачи дебюта.';
-    if (theoryDialog.open) theoryDialog.close();
-    theoryDialog.showModal();
+  function drawMoveArrow(m: Move, index = 0) {
     const flip = playerSide === 'black';
     const coord = (sq: string) => {
       const f = FILES.indexOf(sq[0]);
       const r = Number(sq[1]) - 1;
-      return {
-        x: (flip ? 7 - f : f) + 0.5,
-        y: (flip ? r : 7 - r) + 0.5,
-      };
+      return { x: (flip ? 7 - f : f) + 0.5, y: (flip ? r : 7 - r) + 0.5 };
     };
     const a = coord(m.from);
     const b = coord(m.to);
@@ -297,16 +359,43 @@ import '../styles/global.css';
     line.setAttribute('x2', String(b.x));
     line.setAttribute('y2', String(b.y));
     line.setAttribute('marker-end', 'url(#arrowHead)');
+    line.style.opacity = String(Math.max(0.42, 0.9 - index * 0.2));
     hintOverlay.appendChild(line);
+  }
+
+  function showBookMoves(moves = currentNode.children) {
+    clearHint();
+    moves.slice(0, 3).forEach(drawMoveArrow);
+    bookMovesEl.textContent = `Book moves: ${moves.slice(0, 3).map((move) => move.san).join(' · ')}`;
     hintUsedThisMove = true;
-    hintTimer = setTimeout(clearHint, 2500);
+    hintTimer = setTimeout(clearHint, 4500);
+  }
+
+  function showHint() {
+    if (phase !== 'player' || currentNode.children.length === 0) return;
+    showBookMoves();
+    const m = currentNode.children[0];
+    const theoryKey = `${m.from}-${m.to}`;
+    theoryMoveEl.textContent = m.san;
+    theoryTextEl.textContent = openingTheory[currentOpeningSlug]?.[theoryKey]
+      ?? 'Этот ход улучшает расположение фигур и помогает выполнить стратегические задачи дебюта.';
+    if (theoryDialog.open) theoryDialog.close();
+    theoryDialog.showModal();
   }
 
   function showWinScreen() {
     phase = 'finished';
     turnLabel.textContent = '';
-    finalStatsEl.textContent = `Score: ${score} · Mistakes: ${mistakes}`;
+    const accuracy = totalAttempts === 0 ? 100 : Math.round(correctAttempts / totalAttempts * 100);
+    const openingMastery = mastery[currentOpeningSlug] ?? { completions: 0, bestAccuracy: 0 };
+    mastery[currentOpeningSlug] = {
+      completions: openingMastery.completions + 1,
+      bestAccuracy: Math.max(openingMastery.bestAccuracy, accuracy)
+    };
+    saveMastery();
+    finalStatsEl.textContent = `Score: ${score} · Accuracy: ${accuracy}% · ${moveHistory.length} plies`;
     winOverlay.hidden = false;
+    updateUI();
   }
 
   async function loadOpening() {
@@ -316,12 +405,19 @@ import '../styles/global.css';
     mistakes = 0;
     comboMultiplier = 1;
     comboCount = 0;
+    correctAttempts = 0;
+    totalAttempts = 0;
+    moveHistory = [];
+    renderMoveHistory();
     hintUsedThisMove = false;
     selectedSquare = null;
     winOverlay.hidden = true;
     clearHint();
 
-    const slug = openingSelect.value;
+    const requestedSlug = openingSelect.value;
+    const slug = requestedSlug === '__random__'
+      ? availableOpenings[Math.floor(Math.random() * availableOpenings.length)].slug
+      : requestedSlug;
     currentOpeningSlug = slug;
     const [openingRes, sidelinesRes, theoryRes] = await Promise.all([
       fetch(`/chess/openings/${encodeURIComponent(slug)}.json`),
@@ -335,6 +431,8 @@ import '../styles/global.css';
 
     playerSide = data.side;
     currentNode = data.root;
+    maxLineDepth = treeDepth(data.root);
+    openingStatusEl.textContent = `${data.label} · as ${data.side}`;
     board = startPosition();
     renderBoard();
     updateUI();
@@ -354,14 +452,28 @@ import '../styles/global.css';
     scoreEl.textContent = `Score: ${score}`;
     mistakesEl.textContent = `Mistakes: ${mistakes}`;
     multiplierEl.textContent = `Multiplier: x${comboMultiplier}`;
+    const accuracy = totalAttempts === 0 ? 100 : Math.round(correctAttempts / totalAttempts * 100);
+    accuracyEl.textContent = `Accuracy: ${accuracy}%`;
+    lineProgressEl.textContent = `Line: ${moveHistory.length}/${maxLineDepth}`;
+    const openingMastery = mastery[currentOpeningSlug];
+    masteryEl.textContent = openingMastery
+      ? `Mastery: ${openingMastery.completions}× · best ${openingMastery.bestAccuracy}%`
+      : 'Mastery: new';
+    hintBtn.disabled = trainingModeSelect.value === 'challenge';
     scoreEl.classList.toggle('negative', score < 0);
     scoreEl.classList.toggle('high', score >= 1000);
   }
 
   async function init() {
     const res = await fetch('/chess/openings.json');
-    const openings: { slug: string; label: string; side: Side }[] =
-      await res.json();
+    const openings: { slug: string; label: string; side: Side }[] = await res.json();
+    availableOpenings = openings;
+    mastery = loadMastery();
+
+    const randomOpt = document.createElement('option');
+    randomOpt.value = '__random__';
+    randomOpt.textContent = 'Random opening';
+    openingSelect.appendChild(randomOpt);
 
     openings.forEach(({ slug, label, side }) => {
       const opt = document.createElement('option');
@@ -373,6 +485,7 @@ import '../styles/global.css';
   }
 
   openingSelect.addEventListener('change', loadOpening);
+  trainingModeSelect.addEventListener('change', loadOpening);
   $('#reloadBtn').addEventListener('click', loadOpening);
   $('#hintBtn').addEventListener('click', showHint);
   $('#closeTheoryBtn').addEventListener('click', () => theoryDialog.close());
@@ -442,7 +555,8 @@ import '../styles/global.css';
   }
 
   .controls {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr) auto;
     gap: 10px;
     margin-bottom: 20px;
   }
@@ -533,6 +647,35 @@ import '../styles/global.css';
     gap: 16px;
     margin-top: 16px;
   }
+  .book-moves {
+    min-height: 20px;
+    margin: 10px 0 0;
+    color: var(--accent);
+    font: 0.78rem/1.4 var(--font-mono);
+  }
+  .move-history {
+    margin-top: 14px;
+    padding: 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .move-history-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 9px;
+    color: var(--text-dim);
+    font: 0.74rem var(--font-mono);
+  }
+  .move-history-head strong { color: var(--text); font-weight: 600; }
+  .move-history-list {
+    max-height: 72px;
+    overflow-y: auto;
+    color: var(--text-dim);
+    font: 0.82rem/1.65 var(--font-mono);
+  }
+  #hintBtn:disabled { opacity: 0.45; cursor: not-allowed; }
   #turnLabel {
     font-family: var(--font-mono);
     font-size: 0.85rem;
@@ -540,7 +683,7 @@ import '../styles/global.css';
   }
 
   @media (max-width: 520px) {
-    .controls { flex-direction: column; }
+    .controls { grid-template-columns: 1fr; }
     .stats { flex-wrap: wrap; gap: 12px; }
   }
 </style>
