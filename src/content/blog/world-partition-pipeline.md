@@ -9,6 +9,10 @@ tags: [UnrealEngine, Runtime, WorldPartition, Rendering, Optimization]
 
 So here's the whole path, one cell, tick to pixel. Function names and call sites are traced against **UE 5.8**; a few of them changed name in 5.x, and I'll flag those where they bite.
 
+![World Partition pipeline: from the game-thread tick through source hashing, cell selection, level streaming, actor registration, scene proxies, render-thread visibility, and finally a pixel on the GPU.](/images/blog/world-partition-pipeline.svg)
+
+The important boundary is near the end: the game thread decides that a cell should exist, but the render thread still decides whether its proxies are visible and worth drawing. The eight stages below unpack every box in that handoff.
+
 ## Stage 1 — The tick decides
 
 Streaming is not a background service that runs whenever it likes. It's driven from inside `UWorld::Tick`, and its position in that function matters:

@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 430" role="img" aria-labelledby="title desc">
+  <title id="title">World Partition pipeline from tick to pixel</title>
+  <desc id="desc">Eight stages show how a game-thread tick evaluates streaming sources, selects cells, loads and activates a level, registers scene proxies, then hands work to the render thread and GPU.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#5eead4"/>
+    </marker>
+    <style>
+      .lane { fill: #101316; stroke: #2b3035; stroke-width: 1; }
+      .node { fill: #171b1f; stroke: #3a4249; stroke-width: 1.2; }
+      .handoff { fill: #14201f; stroke: #2f766d; }
+      .stage { fill: #5eead4; font: 600 11px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .08em; }
+      .label { fill: #eef2f3; font: 600 15px system-ui, sans-serif; }
+      .detail { fill: #8f9ba3; font: 12px system-ui, sans-serif; }
+      .lane-label { fill: #69757d; font: 600 11px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .12em; }
+      .flow { fill: none; stroke: #5eead4; stroke-width: 1.6; marker-end: url(#arrow); }
+      .handoff-line { fill: none; stroke: #5eead4; stroke-width: 1.6; stroke-dasharray: 5 5; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect width="1120" height="430" rx="18" fill="#0b0d0f"/>
+  <rect class="lane" x="26" y="44" width="1068" height="160" rx="14"/>
+  <rect class="lane" x="26" y="226" width="1068" height="160" rx="14"/>
+  <text class="lane-label" x="46" y="31">GAME THREAD · STREAMING</text>
+  <text class="lane-label" x="46" y="213">GAME → RENDER THREAD → GPU</text>
+
+  <!-- Connectors are drawn before nodes so arrows remain behind the cards. -->
+  <path class="flow" d="M270 124 H304"/>
+  <path class="flow" d="M526 124 H560"/>
+  <path class="flow" d="M782 124 H816"/>
+  <path class="flow" d="M1038 124 H1060 V244 H152 V267"/>
+  <path class="flow" d="M270 306 H304"/>
+  <path class="handoff-line" d="M526 306 H560"/>
+  <path class="flow" d="M782 306 H816"/>
+
+  <g transform="translate(48 78)">
+    <rect class="node" width="222" height="92" rx="10"/>
+    <text class="stage" x="18" y="23">01 · TICK</text>
+    <text class="label" x="18" y="49">Update streaming</text>
+    <text class="detail" x="18" y="71">after PostPhysics</text>
+  </g>
+  <g transform="translate(304 78)">
+    <rect class="node" width="222" height="92" rx="10"/>
+    <text class="stage" x="18" y="23">02 · SUBSYSTEM</text>
+    <text class="label" x="18" y="49">World Partition policy</text>
+    <text class="detail" x="18" y="71">once per game tick</text>
+  </g>
+  <g transform="translate(560 78)">
+    <rect class="node" width="222" height="92" rx="10"/>
+    <text class="stage" x="18" y="23">03 · SOURCES</text>
+    <text class="label" x="18" y="49">Hash camera &amp; players</text>
+    <text class="detail" x="18" y="71">skip query if unchanged</text>
+  </g>
+  <g transform="translate(816 78)">
+    <rect class="node" width="222" height="92" rx="10"/>
+    <text class="stage" x="18" y="23">04 · RUNTIME HASH</text>
+    <text class="label" x="18" y="49">Choose target cells</text>
+    <text class="detail" x="18" y="71">load · activate · unload</text>
+  </g>
+
+  <g transform="translate(48 260)">
+    <rect class="node" width="222" height="92" rx="10"/>
+    <text class="stage" x="18" y="23">05 · LEVEL STREAMING</text>
+    <text class="label" x="18" y="49">Request cell package</text>
+    <text class="detail" x="18" y="71">async I/O + state machine</text>
+  </g>
+  <g transform="translate(304 260)">
+    <rect class="node" width="222" height="92" rx="10"/>
+    <text class="stage" x="18" y="23">06 · ADD TO WORLD</text>
+    <text class="label" x="18" y="49">Register actors</text>
+    <text class="detail" x="18" y="71">incremental across frames</text>
+  </g>
+  <g transform="translate(560 260)">
+    <rect class="node handoff" width="222" height="92" rx="10"/>
+    <text class="stage" x="18" y="23">07 · SCENE PROXIES</text>
+    <text class="label" x="18" y="49">Enqueue render state</text>
+    <text class="detail" x="18" y="71">cross-thread handoff</text>
+  </g>
+  <g transform="translate(816 260)">
+    <rect class="node handoff" width="222" height="92" rx="10"/>
+    <text class="stage" x="18" y="23">08 · VISIBILITY</text>
+    <text class="label" x="18" y="49">Cull, draw, rasterize</text>
+    <text class="detail" x="18" y="71">render thread → pixel</text>
+  </g>
+
+  <text class="detail" x="560" y="410" text-anchor="middle">The cell is decided on the game thread; visibility is decided later on the render thread.</text>
+</svg>
