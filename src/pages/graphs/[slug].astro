@@ -1,0 +1,964 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { graphs } from '../../data/graphs.js';
+import { layoutRadial, buildAdjacency } from '../../lib/graph-layout.js';
+import { matchPostsToNodes } from '../../lib/tag-match.js';
+import { buildGraphTree } from '../../lib/graph-tree.js';
+
+export async function getStaticPaths() {
+  return graphs.map((graph) => ({ params: { slug: graph.slug }, props: { graph } }));
+}
+
+const { graph } = Astro.props;
+
+const allPosts = await getCollection('blog');
+
+// Posts become leaf nodes on the tree before layout, so the radial allocation
+// reserves angular space for them.
+const { tree } = buildGraphTree(graph.root, allPosts);
+const { nodes, links } = layoutRadial(tree);
+const related = buildAdjacency(nodes);
+
+// The list below the graph still uses the flat match (every node, not just the
+// deepest), so selecting "Runtime" lists everything tagged Runtime.
+const topicNodes = nodes.filter((n) => n.kind !== 'post');
+const { matched, byNode } = matchPostsToNodes(allPosts, topicNodes);
+
+const fmt = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'short', day: 'numeric' });
+
+// Article lists for the side panel, so selecting a node surfaces its writing
+// right beside the graph instead of only in the section further down.
+const postMeta = Object.fromEntries(
+  allPosts.map((p) => [
+    p.id,
+    { title: p.data.title, href: `/blog/${p.id}`, date: fmt.format(p.data.date) },
+  ])
+);
+const postsByNode = Object.fromEntries(
+  Object.entries(byNode)
+    .filter(([, ids]) => ids.length > 0)
+    .map(([id, ids]) => [id, ids.map((postId) => postMeta[postId])])
+);
+
+/* Zoom gating. Depth 0-1 is always on screen; deeper rings and finally the
+   articles fade in as you zoom. */
+const ZOOM = { systems: 0.45, detail: 0.75, posts: 1.8 };
+const minZoomFor = (n) =>
+  n.kind === 'post' ? ZOOM.posts : n.depth <= 1 ? 0 : n.depth === 2 ? ZOOM.systems : ZOOM.detail;
+
+const minZoom = Object.fromEntries(nodes.map((n) => [n.id, minZoomFor(n)]));
+
+const truncate = (s, max) => (s.length > max ? `${s.slice(0, max - 1)}…` : s);
+
+const panelData = Object.fromEntries(
+  nodes.map((n) => [
+    n.id,
+    {
+      label: n.label,
+      note: n.note,
+      group: n.group,
+      parentLabel: n.parentLabel,
+      kind: n.kind,
+      href: n.href,
+    },
+  ])
+);
+
+const rootNode = nodes.find((n) => n.depth === 0);
+const groupLabel = Object.fromEntries(graph.groups.map((g) => [g.id, g.label]));
+const postNodeCount = nodes.filter((n) => n.kind === 'post').length;
+---
+
+<Base title={graph.title} description={graph.summary}>
+  <section class="section page-top">
+    <div class="container">
+      <a href="/graphs" class="back">
+        <span class="back-well" aria-hidden="true">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 3.5L5.5 8l4.5 4.5" />
+          </svg>
+        </span>
+        All graphs
+      </a>
+      <span class="eyebrow reveal"><span class="dot"></span>Knowledge graph</span>
+      <h1 class="page-title reveal" style="--i:1">{graph.title}</h1>
+      <p class="page-intro reveal" style="--i:2">{graph.summary}</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="bezel reveal">
+        <div class="core">
+          <div class="graph-head">
+            <ul class="legend">
+              {graph.groups.map((g) => (
+                <li data-group={g.id}><span class="swatch"></span>{g.label}</li>
+              ))}
+              <li><span class="swatch-ring"></span>Has writing</li>
+            </ul>
+            <p class="hint">Scroll to zoom · drag to pan · click a node for its writing</p>
+          </div>
+
+          <div class="graph-body">
+            <div class="canvas-wrap">
+              <svg
+                class="canvas"
+                viewBox="-580 -285 1045 495"
+                role="application"
+                aria-label={`${graph.title} knowledge graph — pan and zoom to reveal detail`}
+                data-graph
+              >
+                <g data-viewport>
+                  <g class="links">
+                    {links.map((l) => (
+                      <path
+                        class="link"
+                        d={l.d}
+                        data-link={l.id}
+                        data-group={l.group}
+                        data-min-zoom={Math.max(minZoom[l.source] ?? 0, minZoom[l.target] ?? 0)}
+                        vector-effect="non-scaling-stroke"
+                      />
+                    ))}
+                  </g>
+                  <g class="nodes">
+                    {nodes.map((n) => {
+                      const count = (byNode[n.id] || []).length;
+                      const isPost = n.kind === 'post';
+                      const Tag = isPost ? 'a' : 'g';
+                      return (
+                        <Tag
+                          class:list={[
+                            'node',
+                            {
+                              branch: n.isBranch && !isPost,
+                              root: n.depth === 0,
+                              post: isPost,
+                              'has-posts': count > 0,
+                            },
+                          ]}
+                          href={isPost ? n.href : undefined}
+                          data-node={n.id}
+                          data-kind={n.kind}
+                          data-group={n.group}
+                          data-min-zoom={minZoom[n.id]}
+                          transform={`translate(${n.x.toFixed(1)} ${n.y.toFixed(1)})`}
+                          tabindex="0"
+                          role={isPost ? undefined : 'button'}
+                          aria-label={
+                            isPost
+                              ? `Article: ${n.label}`
+                              : `${n.label}${n.parentLabel ? `, under ${n.parentLabel}` : ''}${count ? `, ${count} post${count === 1 ? '' : 's'}` : ''}`
+                          }
+                        >
+                          <title>{n.label}</title>
+                          {/* counter-scaled so marks stay a constant size as the graph spreads */}
+                          <g data-inner>
+                            <circle class="halo" r={n.depth === 0 ? 26 : n.isBranch ? 20 : 15} />
+                            {count > 0 && !isPost && (
+                              <circle class="ring" r={n.depth === 0 ? 17 : n.isBranch ? 13 : 10} />
+                            )}
+                            {isPost ? (
+                              <rect class="doc" x="-4.5" y="-6" width="9" height="12" rx="1.5" />
+                            ) : (
+                              <circle class="dot" r={n.depth === 0 ? 11 : n.isBranch ? 7.5 : 4.5} />
+                            )}
+                            {n.depth === 0 ? (
+                              <text class="label" text-anchor="middle" y="34">{n.label}</text>
+                            ) : (
+                              <text
+                                class="label"
+                                text-anchor={Math.cos(n.angle) >= 0 ? 'start' : 'end'}
+                                x={Math.cos(n.angle) >= 0 ? 16 : -16}
+                                y="4"
+                              >
+                                {isPost ? truncate(n.label, 30) : n.label}
+                              </text>
+                            )}
+                          </g>
+                        </Tag>
+                      );
+                    })}
+                  </g>
+                </g>
+              </svg>
+
+              <div class="zoom-ui">
+                <span class="level" data-level>Detail</span>
+                <div class="zoom-btns">
+                  <button type="button" data-zoom-out aria-label="Zoom out">−</button>
+                  <button type="button" data-zoom-reset aria-label="Reset view">Reset</button>
+                  <button type="button" data-zoom-in aria-label="Zoom in">+</button>
+                </div>
+              </div>
+
+              {postNodeCount > 0 && (
+                <p class="zoom-nudge" data-nudge>Keep zooming to reveal articles</p>
+              )}
+            </div>
+
+            <aside class="panel" data-panel aria-live="polite">
+              <span class="panel-kicker" data-panel-kicker>Overview</span>
+              <h2 data-panel-title>{rootNode.label}</h2>
+              <p data-panel-note>{rootNode.note}</p>
+
+              <div class="panel-posts" data-panel-posts hidden>
+                <span class="panel-posts-label" data-panel-posts-label>Articles</span>
+                <ul data-panel-posts-list></ul>
+              </div>
+
+              <button class="panel-reset" type="button" data-panel-reset hidden>
+                Clear selection
+              </button>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Writing attached to the graph, filtered by the selected node -->
+  <section class="section docs" data-docs>
+    <div class="container">
+      <div class="docs-head reveal">
+        <div>
+          <span class="eyebrow"><span class="dot"></span>Writing</span>
+          <h2 data-docs-title>From the blog</h2>
+        </div>
+        <span class="docs-count" data-docs-count></span>
+      </div>
+
+      {matched.length > 0 && (
+        <ul class="docs-list">
+          {matched.map(({ post, nodeIds }, i) => (
+            <li class="bezel interactive reveal" data-post-nodes={nodeIds.join(' ')} style={`--i:${i % 3}`}>
+              <div class="core">
+                <a href={`/blog/${post.id}`} class="row">
+                  <span class="stretch"></span>
+                  <time datetime={post.data.date.toISOString()}>{fmt.format(post.data.date)}</time>
+                  <div class="body">
+                    <h3>{post.data.title}</h3>
+                    <p>{post.data.description}</p>
+                    <div class="tags">
+                      {post.data.tags.map((t) => <span class="tag">{t}</span>)}
+                    </div>
+                  </div>
+                  <span class="well" aria-hidden="true">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M4 12L12 4M12 4H6M12 4v6" />
+                    </svg>
+                  </span>
+                </a>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <div class="docs-empty bezel" data-docs-empty hidden={matched.length > 0}>
+        <div class="core">
+          <p data-docs-empty-text>
+            Nothing written against this graph yet. Tag a post with a node name — Nanite,
+            Runtime, UnrealEngine — and it will appear here.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script
+    type="application/json"
+    data-graph-data
+    set:html={JSON.stringify({ panel: panelData, related, rootId: rootNode.id, groupLabel, zoom: ZOOM, postsByNode })}
+  />
+</Base>
+
+<script is:inline>
+  (() => {
+    const svg = document.querySelector('[data-graph]');
+    const raw = document.querySelector('[data-graph-data]');
+    if (!svg || !raw) return;
+
+    const { panel, related, rootId, groupLabel, zoom, postsByNode } = JSON.parse(raw.textContent);
+
+    const viewport = svg.querySelector('[data-viewport]');
+    const inners = [...svg.querySelectorAll('[data-inner]')];
+    const nodeEls = [...svg.querySelectorAll('[data-node]')];
+    const linkEls = [...svg.querySelectorAll('[data-link]')];
+
+    const kicker = document.querySelector('[data-panel-kicker]');
+    const title = document.querySelector('[data-panel-title]');
+    const note = document.querySelector('[data-panel-note]');
+    const reset = document.querySelector('[data-panel-reset]');
+    const levelEl = document.querySelector('[data-level]');
+    const nudge = document.querySelector('[data-nudge]');
+    const panelPosts = document.querySelector('[data-panel-posts]');
+    const panelPostsList = document.querySelector('[data-panel-posts-list]');
+    const panelPostsLabel = document.querySelector('[data-panel-posts-label]');
+
+    const docsTitle = document.querySelector('[data-docs-title]');
+    const docsCount = document.querySelector('[data-docs-count]');
+    const docsEmpty = document.querySelector('[data-docs-empty]');
+    const docsEmptyText = document.querySelector('[data-docs-empty-text]');
+    const postEls = [...document.querySelectorAll('[data-post-nodes]')];
+
+    const MIN_K = 0.3;
+    const MAX_K = 4;
+    let k = 1;
+    let tx = 0;
+    let ty = 0;
+    let pinned = null;
+
+    const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+
+    /* --- view transform ------------------------------------------------- */
+
+    // Screen point -> viewBox coords. The viewBox mapping is fixed (our pan and
+    // zoom live on an inner <g>), so the CTM is stable.
+    const toView = (clientX, clientY) => {
+      const ctm = svg.getScreenCTM();
+      if (!ctm) return { x: 0, y: 0 };
+      const inv = ctm.inverse();
+      const p = new DOMPoint(clientX, clientY).matrixTransform(inv);
+      return { x: p.x, y: p.y };
+    };
+
+    const levelName = () =>
+      k < zoom.systems ? 'Overview' : k < zoom.detail ? 'Systems' : k < zoom.posts ? 'Detail' : 'Articles';
+
+    const applyLOD = () => {
+      nodeEls.forEach((el) => {
+        const on = k >= parseFloat(el.dataset.minZoom || '0');
+        el.classList.toggle('off', !on);
+        el.setAttribute('tabindex', on ? '0' : '-1');
+        el.setAttribute('aria-hidden', on ? 'false' : 'true');
+      });
+      linkEls.forEach((el) => {
+        el.classList.toggle('off', k < parseFloat(el.dataset.minZoom || '0'));
+      });
+      if (levelEl) levelEl.textContent = levelName();
+      if (nudge) nudge.hidden = k >= zoom.posts;
+    };
+
+    const apply = () => {
+      viewport.setAttribute('transform', 'translate(' + tx + ' ' + ty + ') scale(' + k + ')');
+      // Counter-scale each node so dots and labels keep a constant screen size.
+      const inv = 1 / k;
+      inners.forEach((g) => g.setAttribute('transform', 'scale(' + inv + ')'));
+      applyLOD();
+    };
+
+    const zoomAt = (clientX, clientY, factor) => {
+      const next = clamp(k * factor, MIN_K, MAX_K);
+      if (next === k) return;
+      const p = toView(clientX, clientY);
+      const s = next / k;
+      tx = p.x - (p.x - tx) * s;
+      ty = p.y - (p.y - ty) * s;
+      k = next;
+      apply();
+    };
+
+    const zoomCentre = (factor) => {
+      const r = svg.getBoundingClientRect();
+      zoomAt(r.left + r.width / 2, r.top + r.height / 2, factor);
+    };
+
+    const resetView = () => {
+      k = 1; tx = 0; ty = 0;
+      apply();
+    };
+
+    /* --- pan + pinch ----------------------------------------------------- */
+
+    const pointers = new Map();
+    const DRAG_SLOP = 4; // px of travel before a press counts as a drag
+    let last = null;
+    let pinchDist = 0;
+    let downAt = null;
+    let dragging = false;
+    let moved = false;
+
+    svg.addEventListener('pointerdown', (e) => {
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pointers.size === 1) {
+        downAt = { x: e.clientX, y: e.clientY };
+        last = toView(e.clientX, e.clientY);
+        dragging = false;
+        moved = false;
+      } else if (pointers.size === 2) {
+        const [a, b] = [...pointers.values()];
+        pinchDist = Math.hypot(a.x - b.x, a.y - b.y);
+        dragging = true;
+        moved = true;
+      }
+    });
+
+    svg.addEventListener('pointermove', (e) => {
+      if (!pointers.has(e.pointerId)) return;
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+      if (pointers.size === 2) {
+        const [a, b] = [...pointers.values()];
+        const dist = Math.hypot(a.x - b.x, a.y - b.y);
+        if (pinchDist > 0) zoomAt((a.x + b.x) / 2, (a.y + b.y) / 2, dist / pinchDist);
+        pinchDist = dist;
+        return;
+      }
+
+      if (!last || !downAt) return;
+
+      // Stay a click until the pointer actually travels. Capturing on
+      // pointerdown would retarget the click away from the node under it.
+      if (!dragging) {
+        if (Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y) < DRAG_SLOP) return;
+        dragging = true;
+        moved = true;
+        svg.classList.add('grabbing');
+        svg.setPointerCapture(e.pointerId);
+        last = toView(e.clientX, e.clientY);
+      }
+
+      const p = toView(e.clientX, e.clientY);
+      tx += p.x - last.x;
+      ty += p.y - last.y;
+      last = p;
+      apply();
+    });
+
+    const endPointer = (e) => {
+      pointers.delete(e.pointerId);
+      if (pointers.size < 2) pinchDist = 0;
+      if (pointers.size === 0) {
+        last = null;
+        downAt = null;
+        dragging = false;
+        svg.classList.remove('grabbing');
+        if (svg.hasPointerCapture(e.pointerId)) svg.releasePointerCapture(e.pointerId);
+      }
+    };
+    svg.addEventListener('pointerup', endPointer);
+    svg.addEventListener('pointercancel', endPointer);
+
+    // Wheel over the canvas zooms at the cursor.
+    svg.addEventListener(
+      'wheel',
+      (e) => {
+        e.preventDefault();
+        // Firefox reports scroll in lines rather than pixels.
+        const dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
+        zoomAt(e.clientX, e.clientY, Math.exp(-dy * 0.0015));
+      },
+      { passive: false }
+    );
+
+    svg.addEventListener('dblclick', (e) => {
+      e.preventDefault();
+      zoomAt(e.clientX, e.clientY, 1.6);
+    });
+
+    document.querySelector('[data-zoom-in]').addEventListener('click', () => zoomCentre(1.4));
+    document.querySelector('[data-zoom-out]').addEventListener('click', () => zoomCentre(1 / 1.4));
+    document.querySelector('[data-zoom-reset]').addEventListener('click', resetView);
+
+    /* --- highlight + panel ------------------------------------------------ */
+
+    const clearMarks = () => {
+      svg.classList.remove('is-focused');
+      nodeEls.forEach((el) => el.classList.remove('lit', 'is-selected'));
+      linkEls.forEach((el) => el.classList.remove('lit'));
+    };
+
+    const light = (id) => {
+      const set = new Set(related[id] || [id]);
+      svg.classList.add('is-focused');
+      nodeEls.forEach((el) => el.classList.toggle('lit', set.has(el.dataset.node)));
+      linkEls.forEach((el) => {
+        const [a, b] = el.dataset.link.split('--');
+        el.classList.toggle('lit', set.has(a) && set.has(b));
+      });
+    };
+
+    const describe = (id) => {
+      const d = panel[id];
+      if (!d) return;
+      kicker.textContent =
+        d.kind === 'post'
+          ? 'Article'
+          : d.group === 'root'
+            ? 'Overview'
+            : d.parentLabel || groupLabel[d.group] || '';
+      title.textContent = d.label;
+      note.textContent = d.note;
+
+      // An article node links straight to itself; a topic node lists its writing.
+      const items = d.kind === 'post'
+        ? [{ title: 'Read this article', href: d.href, date: '' }]
+        : postsByNode[id] || [];
+
+      if (!panelPosts) return;
+      panelPosts.hidden = items.length === 0;
+      if (items.length === 0) { panelPostsList.replaceChildren(); return; }
+
+      if (panelPostsLabel) {
+        panelPostsLabel.textContent =
+          d.kind === 'post' ? 'Article' : items.length === 1 ? '1 article' : items.length + ' articles';
+      }
+
+      panelPostsList.replaceChildren(
+        ...items.map((item) => {
+          const li = document.createElement('li');
+          const a = document.createElement('a');
+          a.href = item.href;
+          a.textContent = item.title;
+          li.append(a);
+          if (item.date) {
+            const time = document.createElement('span');
+            time.className = 'panel-post-date';
+            time.textContent = item.date;
+            li.append(time);
+          }
+          return li;
+        })
+      );
+    };
+
+    const filterPosts = (id) => {
+      const label = id ? panel[id].label : null;
+      let shown = 0;
+      postEls.forEach((el) => {
+        const visible = !id || el.dataset.postNodes.split(' ').includes(id);
+        el.hidden = !visible;
+        if (visible) shown++;
+      });
+      docsTitle.textContent = label ? 'Writing on ' + label : 'From the blog';
+      docsCount.textContent = shown ? shown + (shown === 1 ? ' post' : ' posts') : '';
+      if (docsEmpty) {
+        docsEmpty.hidden = shown > 0;
+        if (!shown && docsEmptyText && label) {
+          docsEmptyText.textContent = 'Nothing tagged ' + label + ' yet.';
+        }
+      }
+    };
+
+    const select = (id) => {
+      pinned = id;
+      clearMarks();
+      light(id);
+      const el = nodeEls.find((n) => n.dataset.node === id);
+      if (el) el.classList.add('is-selected');
+      describe(id);
+      filterPosts(id);
+      reset.hidden = false;
+    };
+
+    const unpin = () => {
+      pinned = null;
+      clearMarks();
+      describe(rootId);
+      filterPosts(null);
+      reset.hidden = true;
+    };
+
+    nodeEls.forEach((el) => {
+      const id = el.dataset.node;
+      const isPost = el.dataset.kind === 'post';
+
+      el.addEventListener('pointerenter', () => {
+        if (pinned) return;
+        light(id);
+        describe(id);
+      });
+      el.addEventListener('pointerleave', () => {
+        if (pinned) return;
+        clearMarks();
+        describe(rootId);
+      });
+      el.addEventListener('focus', () => { if (!pinned) { light(id); describe(id); } });
+      el.addEventListener('blur', () => { if (!pinned) { clearMarks(); describe(rootId); } });
+
+      if (isPost) return; // article nodes are links — let them navigate
+
+      el.addEventListener('click', (e) => {
+        if (moved) return; // that was a drag, not a click
+        e.stopPropagation();
+        select(id);
+      });
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(id); }
+      });
+    });
+
+    reset.addEventListener('click', unpin);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && pinned) unpin(); });
+    svg.addEventListener('click', (e) => {
+      if (!moved && !e.target.closest('[data-node]')) unpin();
+    });
+
+    apply();
+    filterPosts(null);
+  })();
+</script>
+
+<style>
+  .page-top { padding-bottom: 0; padding-top: clamp(126px, 15vw, 190px); }
+
+  .back {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-dim);
+    font-size: 0.88rem;
+    margin-bottom: var(--sp-6);
+  }
+  .back:hover { color: var(--text); text-decoration: none; }
+  .back-well {
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--hairline);
+    transition: transform var(--dur-fast) var(--ease-fluid),
+      background var(--dur-fast) var(--ease-fluid);
+  }
+  .back-well svg { width: 12px; height: 12px; }
+  .back:hover .back-well { transform: translateX(-3px); background: rgba(255, 255, 255, 0.1); }
+
+  /* Head ------------------------------------------------------------------ */
+  .graph-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-5);
+    flex-wrap: wrap;
+    padding: var(--sp-5) var(--sp-6);
+    border-bottom: 1px solid var(--hairline);
+  }
+  .legend { list-style: none; display: flex; gap: var(--sp-5); flex-wrap: wrap; }
+  .legend li {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--text-dim);
+  }
+  .swatch { width: 8px; height: 8px; border-radius: 999px; }
+  .legend li[data-group='editor'] .swatch { background: #5eead4; box-shadow: 0 0 10px rgba(94, 234, 212, 0.7); }
+  .legend li[data-group='runtime'] .swatch { background: #8b7aff; box-shadow: 0 0 10px rgba(139, 122, 255, 0.7); }
+  .legend li[data-group='optimization'] .swatch { background: #ffb86b; box-shadow: 0 0 10px rgba(255, 184, 107, 0.7); }
+  .swatch-ring { width: 10px; height: 10px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.5); }
+  .hint { font-size: 0.82rem; color: var(--text-faint); }
+
+  /* Body ------------------------------------------------------------------ */
+  .graph-body { display: grid; grid-template-columns: 1fr 300px; }
+  .canvas-wrap { position: relative; overflow: hidden; }
+  .canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    touch-action: none;
+    cursor: grab;
+    background: radial-gradient(60% 70% at 50% 50%, rgba(94, 234, 212, 0.05), transparent 72%);
+  }
+  .canvas.grabbing { cursor: grabbing; }
+
+  /* Zoom controls */
+  .zoom-ui {
+    position: absolute;
+    left: var(--sp-5);
+    bottom: var(--sp-5);
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+  }
+  .level {
+    padding: 6px 13px;
+    border-radius: 999px;
+    background: rgba(10, 10, 12, 0.7);
+    border: 1px solid var(--hairline);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--text-muted);
+  }
+  .zoom-btns {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px;
+    border-radius: 999px;
+    background: rgba(10, 10, 12, 0.7);
+    border: 1px solid var(--hairline);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+  }
+  .zoom-btns button {
+    min-width: 28px;
+    height: 26px;
+    padding: 0 10px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    cursor: pointer;
+    transition: background var(--dur-fast) var(--ease-fluid), color var(--dur-fast) var(--ease-fluid);
+  }
+  .zoom-btns button:hover { background: rgba(255, 255, 255, 0.1); color: var(--text); }
+
+  .zoom-nudge {
+    position: absolute;
+    right: var(--sp-5);
+    bottom: var(--sp-5);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--text-faint);
+    pointer-events: none;
+  }
+  .zoom-nudge[hidden] { display: none; }
+
+  /* Links ----------------------------------------------------------------- */
+  .link {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.16);
+    stroke-width: 1;
+    transition: stroke var(--dur-fast) var(--ease-fluid), opacity var(--dur-fast) var(--ease-fluid);
+  }
+  .is-focused .link { opacity: 0.18; }
+  .is-focused .link.lit { opacity: 1; stroke-width: 1.5; }
+  .link.lit[data-group='editor'] { stroke: rgba(94, 234, 212, 0.75); }
+  .link.lit[data-group='runtime'] { stroke: rgba(139, 122, 255, 0.75); }
+  .link.lit[data-group='optimization'] { stroke: rgba(255, 184, 107, 0.75); }
+  .link.off { opacity: 0 !important; }
+
+  /* Nodes ------------------------------------------------------------------ */
+  .node { cursor: pointer; outline: none; transition: opacity 350ms var(--ease-fluid); }
+  .node.off { opacity: 0; pointer-events: none; }
+  .node .dot { fill: #8f98a8; transition: fill var(--dur-fast) var(--ease-fluid); }
+  .node .halo {
+    fill: transparent;
+    stroke: transparent;
+    stroke-width: 1;
+    transition: fill var(--dur-fast) var(--ease-fluid), stroke var(--dur-fast) var(--ease-fluid);
+  }
+  .node .ring {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.4);
+    stroke-width: 1;
+    transition: stroke var(--dur-fast) var(--ease-fluid);
+  }
+  .node:hover .ring, .node.is-selected .ring { stroke: rgba(255, 255, 255, 0.85); }
+  .node .label {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    fill: var(--text-dim);
+    letter-spacing: -0.01em;
+    pointer-events: none;
+    transition: fill var(--dur-fast) var(--ease-fluid);
+  }
+  .node.branch .label { font-size: 15px; font-weight: 500; fill: var(--text-muted); }
+  .node.root .label {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 500;
+    fill: var(--text);
+  }
+  .node.root .dot { fill: #f4f5f7; }
+  .node[data-group='editor'] .dot { fill: #5eead4; }
+  .node[data-group='runtime'] .dot { fill: #8b7aff; }
+  .node[data-group='optimization'] .dot { fill: #ffb86b; }
+
+  /* Article nodes read as documents, not topics */
+  .node.post .doc {
+    fill: rgba(255, 255, 255, 0.9);
+    transition: fill var(--dur-fast) var(--ease-fluid);
+  }
+  .node.post .label { font-size: 11.5px; fill: var(--text-faint); font-style: italic; }
+  .node.post:hover .doc { fill: var(--accent); }
+  .node.post:hover .label { fill: var(--accent); }
+
+  .is-focused .node { opacity: 0.26; }
+  .is-focused .node.lit { opacity: 1; }
+  .is-focused .node.off { opacity: 0; }
+  .is-focused .node.lit .label { fill: var(--text); }
+
+  .node:hover .halo,
+  .node:focus-visible .halo,
+  .node.is-selected .halo {
+    fill: rgba(255, 255, 255, 0.07);
+    stroke: rgba(255, 255, 255, 0.18);
+  }
+  .node:focus-visible .halo { stroke: var(--accent); }
+  .node.is-selected[data-group='editor'] .halo { stroke: #5eead4; }
+  .node.is-selected[data-group='runtime'] .halo { stroke: #8b7aff; }
+  .node.is-selected[data-group='optimization'] .halo { stroke: #ffb86b; }
+
+  /* Panel ------------------------------------------------------------------ */
+  .panel {
+    border-left: 1px solid var(--hairline);
+    padding: var(--sp-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    background: rgba(255, 255, 255, 0.015);
+  }
+  .panel-kicker {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--text-faint);
+  }
+  .panel h2 { font-size: 1.35rem; }
+  .panel p { color: var(--text-dim); font-size: 0.9rem; line-height: 1.65; }
+  .panel-reset {
+    align-self: flex-start;
+    margin-top: var(--sp-3);
+    padding: 8px 16px;
+    border-radius: 999px;
+    border: 1px solid var(--hairline);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-muted);
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background var(--dur-fast) var(--ease-fluid), color var(--dur-fast) var(--ease-fluid);
+  }
+  .panel-reset:hover { background: rgba(255, 255, 255, 0.1); color: var(--text); }
+  .panel-reset[hidden] { display: none; }
+
+  .panel-posts {
+    margin-top: var(--sp-4);
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--hairline);
+  }
+  .panel-posts[hidden] { display: none; }
+  .panel-posts-label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    margin-bottom: var(--sp-3);
+  }
+  .panel-posts ul { list-style: none; display: flex; flex-direction: column; gap: var(--sp-3); }
+  .panel-posts li { display: flex; flex-direction: column; gap: 2px; }
+  .panel-posts a {
+    color: var(--text);
+    font-size: 0.88rem;
+    line-height: 1.4;
+  }
+  .panel-posts a:hover { color: var(--accent); }
+  .panel-post-date {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+
+  /* Docs ------------------------------------------------------------------- */
+  .docs-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--sp-5);
+    flex-wrap: wrap;
+    margin-bottom: var(--sp-6);
+  }
+  .docs-head h2 { font-size: var(--fs-h2); margin-top: var(--sp-4); }
+  .docs-count {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--text-faint);
+  }
+  .docs-list { list-style: none; display: flex; flex-direction: column; gap: var(--sp-3); }
+  .docs-list li[hidden] { display: none; }
+  .row {
+    display: grid;
+    grid-template-columns: 120px 1fr auto;
+    align-items: center;
+    gap: var(--sp-5);
+    padding: var(--sp-5) var(--sp-6);
+    color: inherit;
+  }
+  .row:hover { text-decoration: none; }
+  .stretch { position: absolute; inset: 0; z-index: 1; }
+  .row time {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    white-space: nowrap;
+  }
+  .row h3 { font-size: var(--fs-h3); margin-bottom: 6px; transition: color var(--dur) var(--ease-fluid); }
+  .bezel:hover .row h3 { color: var(--accent); }
+  .row .body p {
+    color: var(--text-dim);
+    font-size: 0.92rem;
+    line-height: 1.6;
+    margin-bottom: var(--sp-3);
+    max-width: 62ch;
+  }
+  .well {
+    width: 32px;
+    height: 32px;
+    flex: none;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--hairline);
+    color: var(--text-dim);
+    transition: transform var(--dur) var(--ease-fluid),
+      background var(--dur) var(--ease-fluid), color var(--dur) var(--ease-fluid);
+  }
+  .well svg { width: 12px; height: 12px; }
+  .bezel:hover .well, .bezel:focus-within .well {
+    transform: translate(2px, -2px) scale(1.06);
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  .docs-empty { margin-top: var(--sp-3); }
+  .docs-empty[hidden] { display: none; }
+  .docs-empty p {
+    padding: var(--sp-7) var(--sp-6);
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 0.92rem;
+  }
+
+  @media (max-width: 900px) {
+    .graph-body { grid-template-columns: 1fr; }
+    .panel { border-left: 0; border-top: 1px solid var(--hairline); }
+    .graph-head { padding: var(--sp-4) var(--sp-5); }
+    .hint { display: none; }
+    .zoom-nudge { display: none; }
+    .row { grid-template-columns: 1fr; gap: var(--sp-3); padding: var(--sp-5); }
+    .well { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .node, .link { transition: none; }
+  }
+</style>

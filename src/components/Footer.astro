@@ -3,42 +3,94 @@ import { site } from '../data/site.js';
 const year = new Date().getFullYear();
 ---
 
-<footer class="site-footer">
-  <div class="container inner">
-    <span class="copy">© {year} {site.name}</span>
-    <div class="links">
-      <a href={site.github} target="_blank" rel="noopener">GitHub</a>
-      <a href={site.linkedin} target="_blank" rel="noopener">LinkedIn</a>
-      <a href={`mailto:${site.email}`}>Email</a>
+<footer class="site-footer" id="contact">
+  <div class="container">
+    <div class="bezel reveal">
+      <div class="core">
+        <div class="pad">
+          <div class="lead-col">
+            <h2>Let's build something<br /><em>precise</em>.</h2>
+            <a href={`mailto:${site.email}`} class="btn primary has-icon">
+              {site.email}
+              <span class="btn-icon" aria-hidden="true">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 12L12 4M12 4H6M12 4v6" />
+                </svg>
+              </span>
+            </a>
+          </div>
+
+          <nav class="cols" aria-label="Footer">
+            <div>
+              <span class="col-label">Site</span>
+              <a href="/work">Work</a>
+              <a href="/graphs">Knowledge graphs</a>
+              <a href="/blog">Blog</a>
+            </div>
+            <div>
+              <span class="col-label">Elsewhere</span>
+              <a href={site.github} target="_blank" rel="noopener">GitHub</a>
+              <a href={site.linkedin} target="_blank" rel="noopener">LinkedIn</a>
+            </div>
+          </nav>
+        </div>
+      </div>
+    </div>
+
+    <div class="baseline">
+      <span>© {year} {site.name}</span>
+      <span class="role">{site.role}</span>
     </div>
   </div>
 </footer>
 
 <style>
-  .site-footer {
-    border-top: 1px solid var(--border);
-    margin-top: 48px;
+  .site-footer { padding: var(--sp-8) 0 var(--sp-6); }
+  .pad {
+    padding: clamp(var(--sp-6), 5vw, var(--sp-8));
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--sp-8);
+    align-items: start;
   }
-  .inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-top: 28px;
-    padding-bottom: 28px;
-    flex-wrap: wrap;
-    gap: 12px;
+  h2 {
+    font-size: clamp(1.8rem, 1.3rem + 2.2vw, 3rem);
+    margin-bottom: var(--sp-6);
   }
-  .copy {
+  h2 em { font-style: normal; color: var(--accent); }
+
+  .cols { display: flex; gap: var(--sp-8); }
+  .cols div { display: flex; flex-direction: column; gap: 10px; }
+  .col-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
     color: var(--text-faint);
-    font-size: 0.88rem;
+    margin-bottom: 4px;
   }
-  .links {
-    display: flex;
-    gap: 20px;
-  }
-  .links a {
+  .cols a {
     color: var(--text-dim);
-    font-size: 0.88rem;
+    font-size: 0.9rem;
+    transition: color var(--dur-fast) var(--ease-fluid);
   }
-  .links a:hover { color: var(--accent); }
+  .cols a:hover { color: var(--text); text-decoration: none; }
+
+  .baseline {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--sp-4);
+    flex-wrap: wrap;
+    padding: var(--sp-6) var(--sp-2) 0;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--text-faint);
+  }
+
+  @media (max-width: 768px) {
+    .pad { grid-template-columns: 1fr; gap: var(--sp-7); }
+    .cols { gap: var(--sp-7); }
+  }
 </style>

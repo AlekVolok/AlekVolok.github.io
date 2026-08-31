@@ -22,14 +22,6 @@ export const projects = [
     featured: true,
   },
   {
-    title: 'Shader Lab',
-    description:
-      'A collection of live GLSL experiments running right in the browser — raymarched SDFs, fractals and volumetric rendering on a WebGL2 canvas.',
-    tags: ['GLSL', 'WebGL2', 'Raymarching'],
-    link: '/lab',
-    featured: true,
-  },
-  {
     title: 'Dutch Vocabulary Trainer',
     description:
       'A small web app for topic-based language drilling, backed by a JSON word database — built to make daily Dutch practice frictionless.',

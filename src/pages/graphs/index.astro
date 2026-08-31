@@ -1,0 +1,151 @@
+---
+import Base from '../../layouts/Base.astro';
+import { graphs } from '../../data/graphs.js';
+import { layoutRadial } from '../../lib/graph-layout.js';
+
+// Each card gets a miniature of its own graph, from the same layout function.
+const cards = graphs.map((graph) => {
+  const { nodes, links } = layoutRadial(graph.root);
+  return { graph, nodes, links };
+});
+---
+
+<Base title="Knowledge Graphs" description="Visual maps of the tools and concepts I work with — and how they connect.">
+  <section class="section page-top">
+    <div class="container">
+      <span class="eyebrow reveal"><span class="dot"></span>Knowledge graphs</span>
+      <h1 class="page-title reveal" style="--i:1">Knowledge graphs</h1>
+      <p class="page-intro reveal" style="--i:2">
+        Maps of the tools and concepts I work with, and how they connect. Each
+        graph is a tree — one subject at the centre, branches for the parts that
+        matter in practice.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <ul class="graph-list">
+        {cards.map(({ graph, nodes, links }, i) => (
+          <li class="bezel interactive reveal" style={`--i:${i}`}>
+            <div class="core">
+              <a href={`/graphs/${graph.slug}`} class="row">
+                <span class="stretch"></span>
+
+                <div class="mini" aria-hidden="true">
+                  <svg viewBox="-580 -285 1045 495">
+                    {links.map((l) => <path class="m-link" d={l.d} data-group={l.group} />)}
+                    {nodes.map((n) => (
+                      <circle
+                        class="m-dot"
+                        data-group={n.group}
+                        cx={n.x.toFixed(1)}
+                        cy={n.y.toFixed(1)}
+                        r={n.depth === 0 ? 18 : n.isBranch ? 12 : 7}
+                      />
+                    ))}
+                  </svg>
+                </div>
+
+                <div class="body">
+                  <h2>{graph.title}</h2>
+                  <p>{graph.summary}</p>
+                  <div class="tags">
+                    {graph.tags.map((t) => <span class="tag">{t}</span>)}
+                  </div>
+                  <span class="meta">
+                    {nodes.length} nodes · {graph.groups.map((g) => g.label).join(' · ')}
+                  </span>
+                </div>
+
+                <span class="well" aria-hidden="true">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 12L12 4M12 4H6M12 4v6" />
+                  </svg>
+                </span>
+              </a>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page-top { padding-bottom: 0; padding-top: clamp(126px, 15vw, 190px); }
+  .graph-list { list-style: none; display: flex; flex-direction: column; gap: var(--sp-4); }
+  .row {
+    display: grid;
+    grid-template-columns: 260px 1fr auto;
+    align-items: center;
+    gap: var(--sp-6);
+    padding: var(--sp-5) var(--sp-6);
+    color: inherit;
+  }
+  .row:hover { text-decoration: none; }
+  .stretch { position: absolute; inset: 0; z-index: 1; }
+
+  .mini {
+    border-radius: var(--r-core-sm);
+    background: radial-gradient(70% 80% at 50% 50%, rgba(94, 234, 212, 0.07), transparent 70%),
+      rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--hairline);
+    padding: var(--sp-3);
+  }
+  .mini svg { width: 100%; height: auto; display: block; }
+  .m-link { fill: none; stroke: rgba(255, 255, 255, 0.14); stroke-width: 2.5; }
+  .m-dot { fill: #8f98a8; }
+  .m-dot[data-group='root'] { fill: #f4f5f7; }
+  .m-dot[data-group='editor'] { fill: #5eead4; }
+  .m-dot[data-group='runtime'] { fill: #8b7aff; }
+  .m-dot[data-group='optimization'] { fill: #ffb86b; }
+  .m-link[data-group='editor'] { stroke: rgba(94, 234, 212, 0.28); }
+  .m-link[data-group='runtime'] { stroke: rgba(139, 122, 255, 0.28); }
+  .m-link[data-group='optimization'] { stroke: rgba(255, 184, 107, 0.28); }
+
+  h2 { font-size: var(--fs-h3); margin-bottom: 8px; transition: color var(--dur) var(--ease-fluid); }
+  .bezel:hover h2 { color: var(--accent); }
+  .body p {
+    color: var(--text-dim);
+    font-size: 0.92rem;
+    line-height: 1.6;
+    margin-bottom: var(--sp-4);
+    max-width: 60ch;
+  }
+  .meta {
+    display: block;
+    margin-top: var(--sp-4);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--text-faint);
+  }
+
+  .well {
+    width: 32px;
+    height: 32px;
+    flex: none;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--hairline);
+    color: var(--text-dim);
+    transition: transform var(--dur) var(--ease-fluid),
+      background var(--dur) var(--ease-fluid), color var(--dur) var(--ease-fluid);
+  }
+  .well svg { width: 12px; height: 12px; }
+  .bezel:hover .well, .bezel:focus-within .well {
+    transform: translate(2px, -2px) scale(1.06);
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  @media (max-width: 900px) {
+    .row { grid-template-columns: 1fr; gap: var(--sp-4); padding: var(--sp-5); }
+    .well { display: none; }
+  }
+</style>

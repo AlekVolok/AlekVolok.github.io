@@ -18,20 +18,28 @@ const fmt = new Intl.DateTimeFormat('en', {
 ---
 
 <Base title={post.data.title} description={post.data.description}>
-  <article class="section">
+  <article class="section post">
     <div class="container">
+      <a href="/blog" class="back">
+        <span class="back-well" aria-hidden="true">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 3.5L5.5 8l4.5 4.5" />
+          </svg>
+        </span>
+        All posts
+      </a>
+
       <header class="post-header">
-        <a href="/blog" class="back">← All posts</a>
         <h1>{post.data.title}</h1>
         <div class="meta">
-          <time datetime={post.data.date.toISOString()}>
-            {fmt.format(post.data.date)}
-          </time>
+          <time datetime={post.data.date.toISOString()}>{fmt.format(post.data.date)}</time>
+          <span class="sep" aria-hidden="true"></span>
           <div class="tags">
             {post.data.tags.map((t) => <span class="tag">{t}</span>)}
           </div>
         </div>
       </header>
+
       <div class="prose">
         <Content />
       </div>
@@ -40,31 +48,64 @@ const fmt = new Intl.DateTimeFormat('en', {
 </Base>
 
 <style>
-  .post-header {
-    max-width: 760px;
-    margin-bottom: 40px;
-  }
+  .post { padding-top: clamp(150px, 18vw, 210px); }
   .back {
-    font-family: var(--font-mono);
-    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
     color: var(--text-dim);
-    display: inline-block;
-    margin-bottom: 24px;
+    font-size: 0.88rem;
+    margin-bottom: var(--sp-7);
   }
-  .back:hover { color: var(--accent); }
+  .back:hover { color: var(--text); text-decoration: none; }
+  .back-well {
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--hairline);
+    transition: transform var(--dur-fast) var(--ease-fluid),
+      background var(--dur-fast) var(--ease-fluid);
+  }
+  .back-well svg { width: 12px; height: 12px; }
+  .back:hover .back-well {
+    transform: translateX(-3px);
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .post-header {
+    max-width: var(--max-prose);
+    padding-bottom: var(--sp-6);
+    margin-bottom: var(--sp-7);
+    border-bottom: 1px solid var(--hairline);
+  }
   h1 {
-    font-size: clamp(1.8rem, 4.5vw, 2.6rem);
-    margin-bottom: 16px;
+    font-size: var(--fs-h1);
+    margin-bottom: var(--sp-5);
   }
   .meta {
     display: flex;
     align-items: center;
-    gap: 18px;
+    gap: var(--sp-4);
     flex-wrap: wrap;
   }
   .meta time {
     color: var(--text-faint);
     font-family: var(--font-mono);
-    font-size: 0.85rem;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .sep {
+    width: 3px;
+    height: 3px;
+    border-radius: 999px;
+    background: var(--text-faint);
+  }
+  @media (max-width: 768px) {
+    .sep { display: none; }
   }
 </style>

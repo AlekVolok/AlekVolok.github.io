@@ -5,27 +5,33 @@ import { projects } from '../data/projects.js';
 ---
 
 <Base title="Work" description="Projects and tools by Aleksandr Kozlov — Houdini, Python, geometry processing and real-time graphics.">
+  <section class="section page-top">
+    <div class="container">
+      <span class="eyebrow reveal"><span class="dot"></span>Selected projects</span>
+      <h1 class="page-title reveal" style="--i:1">Work</h1>
+      <p class="page-intro reveal" style="--i:2">
+        Tools, experiments and pipelines. Most of it lives at the intersection of
+        DCC software and code — making 3D content generation faster, smarter, or
+        possible at all.
+      </p>
+    </div>
+  </section>
+
   <section class="section">
     <div class="container">
-      <h1 class="page-title">Work</h1>
-      <p class="page-intro">
-        Tools, experiments and pipelines. Most of it lives at the intersection
-        of DCC software and code — making 3D content generation faster,
-        smarter, or possible at all.
-      </p>
-      <div class="card-grid">
-        {projects.map((p) => <ProjectCard project={p} />)}
+      <div class="work-grid">
+        {projects.map((p, i) => <ProjectCard project={p} index={i % 3} />)}
       </div>
     </div>
   </section>
 </Base>
 
 <style>
-  .page-title { font-size: 2.4rem; margin-bottom: 16px; }
-  .page-intro {
-    color: var(--text-dim);
-    max-width: 620px;
-    margin-bottom: 44px;
-    font-size: 1.05rem;
+  .page-top { padding-bottom: 0; padding-top: clamp(150px, 18vw, 220px); }
+  .work-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--sp-4);
+    margin-top: var(--sp-8);
   }
 </style>
