@@ -100,9 +100,19 @@ const cards = graphs.map((graph) => {
   .m-dot[data-group='editor'] { fill: #5eead4; }
   .m-dot[data-group='runtime'] { fill: #8b7aff; }
   .m-dot[data-group='optimization'] { fill: #ffb86b; }
+  .m-dot[data-group='sop'] { fill: #5eead4; }
+  .m-dot[data-group='pdg'] { fill: #8b7aff; }
+  .m-dot[data-group='ml'] { fill: #ffb86b; }
+  .m-dot[data-group='dop'] { fill: #ff6b7a; }
+  .m-dot[data-group='cop'] { fill: #67b7ff; }
   .m-link[data-group='editor'] { stroke: rgba(94, 234, 212, 0.28); }
   .m-link[data-group='runtime'] { stroke: rgba(139, 122, 255, 0.28); }
   .m-link[data-group='optimization'] { stroke: rgba(255, 184, 107, 0.28); }
+  .m-link[data-group='sop'] { stroke: rgba(94, 234, 212, 0.28); }
+  .m-link[data-group='pdg'] { stroke: rgba(139, 122, 255, 0.28); }
+  .m-link[data-group='ml'] { stroke: rgba(255, 184, 107, 0.28); }
+  .m-link[data-group='dop'] { stroke: rgba(255, 107, 122, 0.28); }
+  .m-link[data-group='cop'] { stroke: rgba(103, 183, 255, 0.28); }
 
   h2 { font-size: var(--fs-h3); margin-bottom: 8px; transition: color var(--dur) var(--ease-fluid); }
   .bezel:hover h2 { color: var(--accent); }

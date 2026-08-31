@@ -654,6 +654,11 @@ const postNodeCount = nodes.filter((n) => n.kind === 'post').length;
   .legend li[data-group='editor'] .swatch { background: #5eead4; box-shadow: 0 0 10px rgba(94, 234, 212, 0.7); }
   .legend li[data-group='runtime'] .swatch { background: #8b7aff; box-shadow: 0 0 10px rgba(139, 122, 255, 0.7); }
   .legend li[data-group='optimization'] .swatch { background: #ffb86b; box-shadow: 0 0 10px rgba(255, 184, 107, 0.7); }
+  .legend li[data-group='sop'] .swatch { background: #5eead4; box-shadow: 0 0 10px rgba(94, 234, 212, 0.7); }
+  .legend li[data-group='pdg'] .swatch { background: #8b7aff; box-shadow: 0 0 10px rgba(139, 122, 255, 0.7); }
+  .legend li[data-group='ml'] .swatch { background: #ffb86b; box-shadow: 0 0 10px rgba(255, 184, 107, 0.7); }
+  .legend li[data-group='dop'] .swatch { background: #ff6b7a; box-shadow: 0 0 10px rgba(255, 107, 122, 0.7); }
+  .legend li[data-group='cop'] .swatch { background: #67b7ff; box-shadow: 0 0 10px rgba(103, 183, 255, 0.7); }
   .swatch-ring { width: 10px; height: 10px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.5); }
   .hint { font-size: 0.82rem; color: var(--text-faint); }
 
@@ -743,6 +748,11 @@ const postNodeCount = nodes.filter((n) => n.kind === 'post').length;
   .link.lit[data-group='editor'] { stroke: rgba(94, 234, 212, 0.75); }
   .link.lit[data-group='runtime'] { stroke: rgba(139, 122, 255, 0.75); }
   .link.lit[data-group='optimization'] { stroke: rgba(255, 184, 107, 0.75); }
+  .link.lit[data-group='sop'] { stroke: rgba(94, 234, 212, 0.75); }
+  .link.lit[data-group='pdg'] { stroke: rgba(139, 122, 255, 0.75); }
+  .link.lit[data-group='ml'] { stroke: rgba(255, 184, 107, 0.75); }
+  .link.lit[data-group='dop'] { stroke: rgba(255, 107, 122, 0.75); }
+  .link.lit[data-group='cop'] { stroke: rgba(103, 183, 255, 0.75); }
   .link.off { opacity: 0 !important; }
 
   /* Nodes ------------------------------------------------------------------ */
@@ -781,6 +791,11 @@ const postNodeCount = nodes.filter((n) => n.kind === 'post').length;
   .node[data-group='editor'] .dot { fill: #5eead4; }
   .node[data-group='runtime'] .dot { fill: #8b7aff; }
   .node[data-group='optimization'] .dot { fill: #ffb86b; }
+  .node[data-group='sop'] .dot { fill: #5eead4; }
+  .node[data-group='pdg'] .dot { fill: #8b7aff; }
+  .node[data-group='ml'] .dot { fill: #ffb86b; }
+  .node[data-group='dop'] .dot { fill: #ff6b7a; }
+  .node[data-group='cop'] .dot { fill: #67b7ff; }
 
   /* Article nodes read as documents, not topics */
   .node.post .doc {
@@ -806,6 +821,11 @@ const postNodeCount = nodes.filter((n) => n.kind === 'post').length;
   .node.is-selected[data-group='editor'] .halo { stroke: #5eead4; }
   .node.is-selected[data-group='runtime'] .halo { stroke: #8b7aff; }
   .node.is-selected[data-group='optimization'] .halo { stroke: #ffb86b; }
+  .node.is-selected[data-group='sop'] .halo { stroke: #5eead4; }
+  .node.is-selected[data-group='pdg'] .halo { stroke: #8b7aff; }
+  .node.is-selected[data-group='ml'] .halo { stroke: #ffb86b; }
+  .node.is-selected[data-group='dop'] .halo { stroke: #ff6b7a; }
+  .node.is-selected[data-group='cop'] .halo { stroke: #67b7ff; }
 
   /* Panel ------------------------------------------------------------------ */
   .panel {
