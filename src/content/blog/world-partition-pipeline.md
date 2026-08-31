@@ -15,6 +15,8 @@ The important boundary is near the end: the game thread decides that a cell shou
 
 ## Stage 1 — The tick decides
 
+![A game-frame timeline showing the World Partition streaming update after the PostPhysics tick group.](/images/blog/world-partition/stage-1-tick.svg)
+
 Streaming is not a background service that runs whenever it likes. It's driven from inside `UWorld::Tick`, and its position in that function matters:
 
 ```
@@ -40,6 +42,8 @@ Two consequences fall straight out of that. Streaming state is computed against 
 
 ## Stage 2 — Into the World Partition subsystem
 
+![UWorld dispatching a shared streaming interface to World Partition, Level Instances, and other subsystem implementations.](/images/blog/world-partition/stage-2-subsystem.svg)
+
 `UWorld::InternalUpdateStreamingState` (World.cpp:4862) doesn't know what World Partition is. It walks subsystems that implement a streaming interface:
 
 ```cpp
@@ -62,6 +66,8 @@ UWorldPartitionSubsystem::OnUpdateStreamingState()          WorldPartitionSubsys
 
 ## Stage 3 — Sources, then a hash
 
+![A camera streaming source over the runtime grid feeding a hash that either skips or triggers the spatial query.](/images/blog/world-partition/stage-3-sources.svg)
+
 The policy's first job is to work out *where the interest is*. Streaming sources are the camera, the player, anything registered as a source provider:
 
 ```
@@ -82,6 +88,8 @@ if (bCanOptimizeUpdate && (UpdateStreamingSourcesHash == NewUpdateStreamingSourc
 The sources are hashed, and if the hash is unchanged from last frame the expensive query is skipped entirely. A stationary camera costs almost nothing. This is also why "it hitches only when I move" is the normal shape of a streaming performance problem — the work is proportional to *change*, not to world size.
 
 ## Stage 4 — Sources become cells
+
+![A runtime grid with activated, loaded, and unloaded cells selected around a streaming source.](/images/blog/world-partition/stage-4-cells.svg)
 
 The runtime hash — the spatial structure your world is partitioned into — turns source positions into a set of cells and a target state for each:
 
@@ -107,6 +115,8 @@ There is also `GetCellsToReprioritize` (:963) — cells already in flight whose 
 
 ## Stage 5 — A cell is really a streaming level
 
+![The streaming level state machine moving a cell from unloaded through asynchronous package I/O to loaded and activated.](/images/blog/world-partition/stage-5-level.svg)
+
 Here World Partition hands off to machinery that predates it. Each runtime cell owns a `ULevelStreaming`:
 
 ```
@@ -129,6 +139,8 @@ ULevelStreaming::UpdateStreamingState(bOutUpdateAgain, bOutRedetermineTarget, ..
 
 ## Stage 6 — AddToWorld, the incremental one
 
+![Actor and component registration split across three frame budgets by incremental AddToWorld processing.](/images/blog/world-partition/stage-6-add-to-world.svg)
+
 The package is loaded. Actors exist in memory but are not in the world. `UWorld::AddToWorld` (World.cpp:3666) does that, and it is deliberately *incremental* — it is written to be spread across frames:
 
 ```
@@ -143,6 +155,8 @@ UWorld::AddToWorld(Level, LevelTransform, bConsiderTimeLimit, ...)
 This is also why `s.LevelStreamingActorsUpdateTimeLimit` and friends exist: they're the budget those checks measure against. If your cells pop in visibly late, this stage is usually where the time went, not the package load.
 
 ## Stage 7 — Components become scene proxies
+
+![A primitive component on the game thread enqueueing a command that creates a scene proxy on the render thread.](/images/blog/world-partition/stage-7-proxies.svg)
 
 Registering a component is what actually connects an actor to the renderer:
 
@@ -164,6 +178,8 @@ There's a batched form too — `FScene::BatchAddPrimitives` (:1522) — which is
 **The one-frame latency lives here.** The game thread registered the component this frame; the render thread consumes the command when it gets there. An actor is never visible on the same frame its component registered.
 
 ## Stage 8 — Visibility, and a rename that trips people up
+
+![Camera frustum and occlusion culling reducing scene proxies to draw commands that the GPU rasterizes into pixels.](/images/blog/world-partition/stage-8-visibility.svg)
 
 The primitive is now in the scene. Being in the scene is not being drawn:
 
@@ -215,3 +231,5 @@ Knowing the chain turns vague symptoms into a specific stage:
 - **In the world, still not drawn.** Stage 8. Culled, or the render thread hasn't consumed the add command yet.
 
 The general lesson is that "streaming is slow" is never actionable, because streaming isn't one thing — it's a package load, an incremental world merge, a component registration pass, and a render-thread handoff, and those four fail in completely different ways.
+
+For Epic's higher-level view of grid cells, streaming sources, loading range, and runtime grid settings, see the official [World Partition documentation](https://dev.epicgames.com/documentation/en-us/unreal-engine/world-partition-in-unreal-engine).
