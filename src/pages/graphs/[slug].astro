@@ -88,7 +88,7 @@ const postNodeCount = nodes.filter((n) => n.kind === 'post').length;
   </section>
 
   <section class="section">
-    <div class="container">
+    <div class="container graph-container">
       <div class="bezel reveal">
         <div class="core">
           <div class="graph-head">
@@ -604,6 +604,10 @@ const postNodeCount = nodes.filter((n) => n.kind === 'post').length;
 
 <style>
   .page-top { padding-bottom: 0; padding-top: clamp(126px, 15vw, 190px); }
+  .graph-container {
+    max-width: none;
+    padding-inline: clamp(var(--sp-4), 2.5vw, var(--sp-8));
+  }
 
   .back {
     display: inline-flex;
@@ -668,7 +672,7 @@ const postNodeCount = nodes.filter((n) => n.kind === 'post').length;
   .canvas {
     display: block;
     width: 100%;
-    height: auto;
+    height: clamp(520px, 47vw, 900px);
     touch-action: none;
     cursor: grab;
     background: radial-gradient(60% 70% at 50% 50%, rgba(94, 234, 212, 0.05), transparent 72%);
@@ -969,6 +973,7 @@ const postNodeCount = nodes.filter((n) => n.kind === 'post').length;
   }
 
   @media (max-width: 900px) {
+    .canvas { height: clamp(420px, 72vw, 620px); }
     .graph-body { grid-template-columns: 1fr; }
     .panel { border-left: 0; border-top: 1px solid var(--hairline); }
     .graph-head { padding: var(--sp-4) var(--sp-5); }
