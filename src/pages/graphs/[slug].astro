@@ -98,7 +98,7 @@ const postNodeCount = nodes.filter((n) => n.kind === 'post').length;
               ))}
               <li><span class="swatch-ring"></span>Has writing</li>
             </ul>
-            <p class="hint">Scroll to zoom · drag to pan · click a node for its writing</p>
+            <p class="hint">Ctrl + scroll to zoom · drag to pan · click a node for its writing</p>
           </div>
 
           <div class="graph-body">
@@ -442,10 +442,12 @@ const postNodeCount = nodes.filter((n) => n.kind === 'post').length;
     svg.addEventListener('pointerup', endPointer);
     svg.addEventListener('pointercancel', endPointer);
 
-    // Wheel over the canvas zooms at the cursor.
+    // Ctrl + wheel over the canvas zooms at the cursor. A plain wheel keeps
+    // scrolling the page, which matters now that the graph spans wide screens.
     svg.addEventListener(
       'wheel',
       (e) => {
+        if (!e.ctrlKey) return;
         e.preventDefault();
         // Firefox reports scroll in lines rather than pixels.
         const dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
