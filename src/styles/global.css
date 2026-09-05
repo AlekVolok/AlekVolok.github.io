@@ -16,6 +16,12 @@
   --hairline-strong: rgba(255, 255, 255, 0.14);
   --inner-light: inset 0 1px 1px rgba(255, 255, 255, 0.1);
 
+  /* Compatibility tokens used by the standalone trainers. */
+  --bg-raised: var(--bg-lift);
+  --bg-card: var(--bg-core);
+  --border: var(--hairline);
+  --border-hover: var(--hairline-strong);
+
   /* Text ramp ------------------------------------------------------------ */
   --text: #f4f5f7;
   --text-muted: rgba(244, 245, 247, 0.66);
@@ -27,6 +33,7 @@
   --accent-hi: #99f6e4;
   --accent-ink: #04211c;
   --accent-glow: rgba(94, 234, 212, 0.5);
+  --accent-dim: rgba(94, 234, 212, 0.12);
   --violet-glow: rgba(139, 122, 255, 0.36);
 
   /* Type ----------------------------------------------------------------- */
@@ -171,6 +178,20 @@ img {
 code {
   font-family: var(--font-mono);
   font-size: 0.87em;
+}
+
+/* Keep native dropdown popups aligned with the dark UI. Some Chromium
+   builds do not apply the document color scheme to dynamically added options. */
+select,
+select option,
+select optgroup {
+  color-scheme: dark;
+}
+
+select option,
+select optgroup {
+  color: var(--text);
+  background-color: var(--bg-lift);
 }
 
 /* Layout ------------------------------------------------------------------ */
