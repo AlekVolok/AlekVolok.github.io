@@ -13,5 +13,6 @@
     { "slug": "cinema-theater", "label": "Cinema, theater" },
     { "slug": "personal-contacts", "label": "Personal contacts" },
     { "slug": "sport", "label": "Sport" },
-    { "slug": "travel", "label": "Travel" }
+    { "slug": "travel", "label": "Travel" },
+    { "slug": "fiets", "label": "Fiets" }
 ]
