@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+# Do not index implementation and generated data paths.
+Disallow: /chess/openings/
+Disallow: /words/topics/
