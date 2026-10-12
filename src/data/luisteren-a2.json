@@ -840,7 +840,7 @@
         },
         {
           "id": "C",
-          "text": "Hij wil liever op een andere afdeling (отделение) werken."
+          "text": "Hij wil liever op een andere afdeling werken."
         },
         {
           "id": "D",
@@ -917,7 +917,7 @@
         },
         {
           "id": "C",
-          "text": "Ja, hij heeft alle onderdelen (детали) gehaald."
+          "text": "Ja, hij heeft alle onderdelen gehaald."
         },
         {
           "id": "D",
@@ -932,7 +932,7 @@
       "lessonTitle": "Het formulier en de agenda",
       "text": 2,
       "textTitle": "",
-      "prompt": "Heeft Carlos de participatieverklaring (заявление об участии) getekend?",
+      "prompt": "Heeft Carlos de participatieverklaring getekend?",
       "options": [
         {
           "id": "A",
@@ -982,7 +982,7 @@
       "lessonTitle": "Het formulier en de agenda",
       "text": 3,
       "textTitle": "",
-      "prompt": "Vindt Ingrid vergaderingen (встречи) interessant?",
+      "prompt": "Vindt Ingrid vergaderingen interessant?",
       "options": [
         {
           "id": "A",
