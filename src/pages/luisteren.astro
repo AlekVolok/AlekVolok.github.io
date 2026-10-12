@@ -1,13 +1,20 @@
 ---
-import Base from '../layouts/Base.astro';
+import '../styles/global.css';
 import listeningData from '../data/luisteren-a2.json';
 ---
 
-<Base title="Inburgering A2 · Luisteren" description="Oefen luistervaardigheid met 25 willekeurige vragen en een timer van 45 minuten.">
-  <section class="section listen-page">
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="theme-color" content="#050505" />
+    <meta name="robots" content="noindex" />
+    <title>Inburgering A2 · Luisteren</title>
+  </head>
+  <body>
+    <main class="section listen-page">
     <div class="container listen-shell">
-      <a class="back" href="/words">← Naar oefenen</a>
-
       <section id="intro" class="intro-card">
         <p class="eyebrow"><span class="dot"></span> Inburgering · A2</p>
         <h1>Luisteren<br /><em>exam trainer</em></h1>
@@ -51,7 +58,13 @@ import listeningData from '../data/luisteren-a2.json';
           </section>
         </div>
 
-        <nav id="questionNav" class="question-nav" aria-label="Vragennavigatie"></nav>
+        <section class="question-overview" aria-label="Vraagoverzicht">
+          <div class="overview-heading">
+            <span>Vraagoverzicht</span>
+            <span class="legend"><i class="answered-dot"></i> Beantwoord <i class="visited-dot"></i> Bekeken</span>
+          </div>
+          <nav id="questionNav" class="question-nav" aria-label="Vragennavigatie"></nav>
+        </section>
       </section>
 
       <section id="results" class="results-card" hidden aria-live="polite">
@@ -62,8 +75,9 @@ import listeningData from '../data/luisteren-a2.json';
         <button id="restart" class="primary-button" type="button">Nieuw oefenexamen <span>↻</span></button>
       </section>
     </div>
-  </section>
-</Base>
+    </main>
+  </body>
+</html>
 
 <script define:vars={{ listeningData }}>
   const examLength = 25;
@@ -91,6 +105,7 @@ import listeningData from '../data/luisteren-a2.json';
   let index = 0;
   let deadline = 0;
   let clock = null;
+  let visited = new Set();
 
   const shuffle = (items) => [...items].sort(() => Math.random() - 0.5);
   const groupedKeys = [...new Set(listeningData.questions.map((item) => `${item.lesson}-${item.text}`))];
@@ -113,6 +128,7 @@ import listeningData from '../data/luisteren-a2.json';
     const item = questions[index];
     const answer = answers[index];
     const key = `${item.lesson}-${item.text}`;
+    visited.add(index);
     progress.textContent = `Vraag ${index + 1} van ${examLength}`;
     progressBar.style.width = `${((index + 1) / examLength) * 100}%`;
     question.textContent = item.prompt;
@@ -147,6 +163,7 @@ import listeningData from '../data/luisteren-a2.json';
       button.textContent = String(questionIndex + 1);
       button.classList.toggle('active', questionIndex === index);
       button.classList.toggle('answered', Boolean(answers[questionIndex]));
+      button.classList.toggle('visited', visited.has(questionIndex) && !answers[questionIndex]);
       button.setAttribute('aria-label', `Vraag ${questionIndex + 1}`);
       button.addEventListener('click', () => { index = questionIndex; renderQuestion(); });
       return button;
@@ -156,6 +173,7 @@ import listeningData from '../data/luisteren-a2.json';
   function startExam() {
     questions = shuffle(listeningData.questions).slice(0, examLength);
     answers = Array(examLength).fill(null);
+    visited = new Set();
     index = 0;
     deadline = Date.now() + examDurationMs;
     intro.hidden = true;
@@ -199,7 +217,6 @@ import listeningData from '../data/luisteren-a2.json';
 <style>
   .listen-page { padding-top: clamp(96px, 12vw, 150px); }
   .listen-shell { max-width: 1060px; }
-  .back { display: inline-block; color: var(--text-dim); margin-bottom: var(--sp-6); }
   .intro-card, .results-card, .question-card, .video-card { border: 1px solid var(--hairline); background: var(--glass); box-shadow: var(--inner-light); border-radius: var(--r-shell); }
   .intro-card, .results-card { padding: clamp(28px, 6vw, 72px); }
   h1 { font-size: var(--fs-h1); margin: var(--sp-5) 0; }
@@ -228,18 +245,27 @@ import listeningData from '../data/luisteren-a2.json';
   .context { color: var(--text-dim); margin-top: var(--sp-4); font-size: .86rem; }
   h2 { font-family: var(--font-sans); font-size: clamp(1.2rem, 2vw, 1.5rem); line-height: 1.35; margin: var(--sp-3) 0 var(--sp-5); }
   .options { display: grid; gap: var(--sp-3); }
-  .option { display: grid; grid-template-columns: 34px 1fr; gap: 10px; align-items: center; border: 1px solid var(--hairline); border-radius: var(--r-core-sm); padding: 11px; color: var(--text-muted); transition: border-color .2s, background .2s; }
+  .option { display: grid; grid-template-columns: 34px minmax(0, 1fr); column-gap: 16px; align-items: center; border: 1px solid var(--hairline); border-radius: var(--r-core-sm); padding: 11px 14px; color: var(--text-muted); transition: border-color .2s, background .2s; }
   .option:hover { border-color: var(--hairline-strong); background: var(--glass-strong); }
   .option:has(input:checked) { border-color: var(--accent); background: var(--accent-dim); color: var(--text); }
   .option input { position: absolute; opacity: 0; }
   .option-letter { width: 30px; height: 30px; display: grid; place-items: center; border: 1px solid currentColor; border-radius: 50%; font-family: var(--font-mono); font-size: .8rem; }
+  .option > span:last-child { display: block; min-width: 0; }
   .exam-actions { display: flex; justify-content: space-between; gap: var(--sp-3); margin-top: var(--sp-6); }
   .secondary-button:disabled { opacity: .35; cursor: not-allowed; }
   .finish-button { display: block; margin: var(--sp-5) auto 0; }
-  .question-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: var(--sp-5); }
-  .question-nav button { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--hairline); color: var(--text-dim); background: transparent; font-size: .78rem; }
-  .question-nav button.answered { border-color: rgba(94,234,212,.55); color: var(--accent); }
-  .question-nav button.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .question-overview { margin-top: var(--sp-6); padding: var(--sp-4); border: 1px solid var(--hairline); border-radius: var(--r-core-sm); background: rgba(255,255,255,.018); }
+  .overview-heading { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); margin-bottom: var(--sp-3); color: var(--text-dim); font-size: .8rem; }
+  .legend { display: inline-flex; align-items: center; gap: 7px; color: var(--text-faint); font-size: .72rem; }
+  .legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-left: 5px; }
+  .answered-dot { background: var(--accent); box-shadow: 0 0 7px var(--accent-glow); }
+  .visited-dot { background: #fbbf24; box-shadow: 0 0 7px rgba(251,191,36,.5); }
+  .question-nav { display: grid; grid-template-columns: repeat(auto-fill, minmax(38px, 1fr)); gap: 8px; }
+  .question-nav button { height: 38px; border-radius: 10px; border: 1px solid var(--hairline); color: var(--text-dim); background: var(--bg-core); font-family: var(--font-mono); font-size: .76rem; transition: transform .15s ease, border-color .15s ease, background .15s ease; }
+  .question-nav button:hover { transform: translateY(-1px); border-color: var(--hairline-strong); }
+  .question-nav button.answered { border-color: rgba(94,234,212,.65); background: rgba(94,234,212,.12); color: var(--accent-hi); }
+  .question-nav button.visited { border-color: rgba(251,191,36,.75); background: rgba(251,191,36,.11); color: #fde68a; }
+  .question-nav button.active { outline: 2px solid var(--text); outline-offset: 2px; }
   .review { display: grid; gap: var(--sp-3); margin: var(--sp-7) 0; }
   .review-item { border-left: 3px solid var(--hairline); padding: var(--sp-4); background: var(--glass); border-radius: 0 var(--r-core-sm) var(--r-core-sm) 0; }
   .review-item.correct { border-color: var(--accent); }
