@@ -142,7 +142,14 @@ import listeningData from '../data/luisteren-a2.json';
       input.name = 'answer';
       input.value = option.id;
       input.checked = answer === option.id;
-      input.addEventListener('change', () => { answers[index] = option.id; renderNav(); });
+      input.addEventListener('change', () => {
+        answers[index] = option.id;
+        if (answers.every(Boolean)) {
+          completeExam();
+          return;
+        }
+        renderNav();
+      });
       const letter = document.createElement('span');
       letter.className = 'option-letter';
       letter.textContent = option.id;
