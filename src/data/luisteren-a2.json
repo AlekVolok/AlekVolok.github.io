@@ -1,0 +1,3752 @@
+{
+  "playlistId": "PLXhM-IdBEVjjXsZrVZAf4X94FCBE2tq99",
+  "videoIds": [
+    "TnzORNjSbMU",
+    "0kCEtabeh2o",
+    "xj8BNwiEMY4",
+    "YR8X0InqUVg",
+    "kc5rtK8eq7U",
+    "RMkVMca_xjg",
+    "rW4LiP5NJL4",
+    "6GFg0DiFChA",
+    "ANLuWHbxiyM",
+    "wQzgZqZTFyI",
+    "_Y46yCxkzr8",
+    "JuM7pv87UoY",
+    "fm6xhAQI6Rs",
+    "qee7iI--uqs",
+    "UOhz0LtVHlc",
+    "A3QPdZaoUw4",
+    "QW-A3J_t9gM",
+    "ROaWwpn6R-g",
+    "ID2ygfCHPTU",
+    "p0iUEjIuhjo",
+    "MBXToc0IczE",
+    "GgSOa9re4bo",
+    "1og1cqix3Cg",
+    "t1CMJxzOT9Y",
+    "Koz3_OBZVIw",
+    "lkpfjM9GMWw",
+    "hbUGi8EnkHY",
+    "9x23-WEbQZc",
+    "1jYgVE3s9w0",
+    "Wr3h91ydA1Q",
+    "YlhxcQp3w7o",
+    "D4jJDPmgi6w",
+    "A4McpB5VFjk",
+    "c0Y-8_t5hYk",
+    "cw9wMUxMLKk",
+    "Sahp_coWISU",
+    "u7HOZRoZL6Y",
+    "pyPjrI8sxK8",
+    "Y8xsKapoI40",
+    "lpJd1mlXoo0",
+    "gvjk97y6Poc",
+    "JkJJIlXioUw",
+    "gkgAndMf5xk",
+    "0IzoMiTwh0E",
+    "304LXd9Upws",
+    "iURWX_fklKg",
+    "kwRR03ER1Ko",
+    "9wH9fRuFp0w",
+    "_mbfNUcpWps"
+  ],
+  "questions": [
+    {
+      "id": "l1t1q1",
+      "lesson": 1,
+      "lessonTitle": "Het huis",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "In wat voor soort huis wonen Henk en Ingrid?",
+      "options": [
+        {
+          "id": "A",
+          "text": "In een villa."
+        },
+        {
+          "id": "B",
+          "text": "In een flat."
+        },
+        {
+          "id": "C",
+          "text": "In een rijtjeshuis."
+        },
+        {
+          "id": "D",
+          "text": "In een appartement."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l1t1q2",
+      "lesson": 1,
+      "lessonTitle": "Het huis",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Heeft het huis van Henk ook een tuin?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Ja, zijn huis heeft een tuin."
+        },
+        {
+          "id": "B",
+          "text": "Ja, zijn huis heeft twee kleine tuinen."
+        },
+        {
+          "id": "C",
+          "text": "Nee, zijn huis heeft geen tuin."
+        },
+        {
+          "id": "D",
+          "text": "Ja, hij heeft een grote tuin bij zijn villa."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l1t1q3",
+      "lesson": 1,
+      "lessonTitle": "Het huis",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Wie wil verhuizen naar een flat?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Henk."
+        },
+        {
+          "id": "B",
+          "text": "Ingrid."
+        },
+        {
+          "id": "C",
+          "text": "Henk en Ingrid, allebei."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l1t2q1",
+      "lesson": 1,
+      "lessonTitle": "Het huis",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Henk gaat verhuizen. Hoe ziet zijn nieuwe huis eruit?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Hij gaat verhuizen naar een rijtjeshuis."
+        },
+        {
+          "id": "B",
+          "text": "Hij gaat verhuizen naar een bejaardenhuis."
+        },
+        {
+          "id": "C",
+          "text": "Hij gaat verhuizen naar een heel groot huis."
+        },
+        {
+          "id": "D",
+          "text": "Hij gaat verhuizen naar een kleine woning in een flat."
+        }
+      ],
+      "correct": "D"
+    },
+    {
+      "id": "l1t2q2",
+      "lesson": 1,
+      "lessonTitle": "Het huis",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Wie gaan Henk helpen bij de verhuizing?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Ingrid."
+        },
+        {
+          "id": "B",
+          "text": "Twee vrienden van Ingrid."
+        },
+        {
+          "id": "C",
+          "text": "Ingrid en ook twee vrienden van Henk."
+        },
+        {
+          "id": "D",
+          "text": "Ingrid en ook veel andere collega's."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l1t2q3",
+      "lesson": 1,
+      "lessonTitle": "Het huis",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Henk gaat verhuizen. Wanneer gaat Ingrid hem helpen?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Op zaterdag."
+        },
+        {
+          "id": "B",
+          "text": "Op zondag."
+        },
+        {
+          "id": "C",
+          "text": "Morgen."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l1t3q1",
+      "lesson": 1,
+      "lessonTitle": "Het huis",
+      "text": 3,
+      "textTitle": "",
+      "prompt": "Wat doet Jordi?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Hij is bezig met Facebook."
+        },
+        {
+          "id": "B",
+          "text": "Hij is bezig met zijn huiswerk."
+        },
+        {
+          "id": "C",
+          "text": "Hij is bezig met het opruimen van zijn rotzooi."
+        },
+        {
+          "id": "D",
+          "text": "Hij gaat naar zijn moeder."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l1t3q2",
+      "lesson": 1,
+      "lessonTitle": "Het huis",
+      "text": 3,
+      "textTitle": "",
+      "prompt": "Wie gaat de rotzooi van Jordi opruimen?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Desiree."
+        },
+        {
+          "id": "B",
+          "text": "Jordi."
+        },
+        {
+          "id": "C",
+          "text": "Jordi en Desiree samen."
+        },
+        {
+          "id": "D",
+          "text": "De moeder van Jordi en Desiree."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l1t3q3",
+      "lesson": 1,
+      "lessonTitle": "Het huis",
+      "text": 3,
+      "textTitle": "",
+      "prompt": "Waar ligt de rotzooi van Jordi?",
+      "options": [
+        {
+          "id": "A",
+          "text": "In de woonkamer."
+        },
+        {
+          "id": "B",
+          "text": "In de gang."
+        },
+        {
+          "id": "C",
+          "text": "Overal."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l2t1q1",
+      "lesson": 2,
+      "lessonTitle": "De school",
+      "text": 1,
+      "textTitle": "Gesprek van Dik en Katinka",
+      "prompt": "Wat is het huiswerk voor het vak Nederlands?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Dik en Katinka hebben geen huiswerk."
+        },
+        {
+          "id": "B",
+          "text": "Dik en Katinka moeten een boek schrijven."
+        },
+        {
+          "id": "C",
+          "text": "Dik en Katinka moeten veel boeken lezen."
+        },
+        {
+          "id": "D",
+          "text": "Dik en Katinka moeten een boek lezen."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l2t1q2",
+      "lesson": 2,
+      "lessonTitle": "De school",
+      "text": 1,
+      "textTitle": "Gesprek van Dik en Katinka",
+      "prompt": "Hoe heet de docent voor het vak Nederlands?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Dik Dombo."
+        },
+        {
+          "id": "B",
+          "text": "Dikkie Dik."
+        },
+        {
+          "id": "C",
+          "text": "Verpaalen."
+        },
+        {
+          "id": "D",
+          "text": "Super."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l2t1q3",
+      "lesson": 2,
+      "lessonTitle": "De school",
+      "text": 1,
+      "textTitle": "Gesprek van Dik en Katinka",
+      "prompt": "Wat gaat Dik vanmiddag doen?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Hij gaat huiswerk maken."
+        },
+        {
+          "id": "B",
+          "text": "Hij gaat op Facebook kijken."
+        },
+        {
+          "id": "C",
+          "text": "Dat is niet duidelijk."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l2t2q1",
+      "lesson": 2,
+      "lessonTitle": "De school",
+      "text": 2,
+      "textTitle": "Gesprek van Dik en Katinka",
+      "prompt": "Gaan alle leerlingen alleen door Brussel wandelen?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Nee, zij moeten een team maken met twee andere leerlingen."
+        },
+        {
+          "id": "B",
+          "text": "Nee, Katinka gaat samen met Dik door Brussel wandelen."
+        },
+        {
+          "id": "C",
+          "text": "Nee, zij gaan met de hele klas samen door de stad wandelen."
+        },
+        {
+          "id": "D",
+          "text": "Nee, zij gaan niet naar Brussel, maar naar Dance Valley."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l2t2q2",
+      "lesson": 2,
+      "lessonTitle": "De school",
+      "text": 2,
+      "textTitle": "Gesprek van Dik en Katinka",
+      "prompt": "Waar gaan de leerlingen samen iets eten en drinken?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Op de zwarte markt."
+        },
+        {
+          "id": "B",
+          "text": "Op de Grote Markt."
+        },
+        {
+          "id": "C",
+          "text": "In een winkel."
+        },
+        {
+          "id": "D",
+          "text": "In de metro."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l2t2q3",
+      "lesson": 2,
+      "lessonTitle": "De school",
+      "text": 2,
+      "textTitle": "Gesprek van Dik en Katinka",
+      "prompt": "Wanneer is de excursie naar Brussel?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Over twee weken."
+        },
+        {
+          "id": "B",
+          "text": "Volgende week."
+        },
+        {
+          "id": "C",
+          "text": "Morgen."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l2t3q1",
+      "lesson": 2,
+      "lessonTitle": "De school",
+      "text": 3,
+      "textTitle": "Gesprek van Diego en Thea",
+      "prompt": "Hoeveel opdrachten heeft de toets van Diego?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Twee."
+        },
+        {
+          "id": "B",
+          "text": "Vier."
+        },
+        {
+          "id": "C",
+          "text": "Zeven."
+        },
+        {
+          "id": "D",
+          "text": "35."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l2t3q2",
+      "lesson": 2,
+      "lessonTitle": "De school",
+      "text": 3,
+      "textTitle": "Gesprek van Diego en Thea",
+      "prompt": "Wanneer is het examen van Diego?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Diego krijgt vandaag het examen."
+        },
+        {
+          "id": "B",
+          "text": "Over ongeveer 35 minuten."
+        },
+        {
+          "id": "C",
+          "text": "Volgende maand."
+        },
+        {
+          "id": "D",
+          "text": "Volgend jaar."
+        }
+      ],
+      "correct": "D"
+    },
+    {
+      "id": "l2t3q3",
+      "lesson": 2,
+      "lessonTitle": "De school",
+      "text": 3,
+      "textTitle": "Gesprek van Diego en Thea",
+      "prompt": "Diego krijgt van zijn docente een oefenexamen. Kan Diego dit oefenexamen maken met de computer?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Nee, dat kan niet. Hij moet dit oefenexamen maken met pen en papier."
+        },
+        {
+          "id": "B",
+          "text": "Ja, hij kan kiezen: hij kan dit oefenexamen maken op de computer of met pen en papier."
+        },
+        {
+          "id": "C",
+          "text": "Ja, hij moet twee e-mails op de computer schrijven."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l2t4q1",
+      "lesson": 2,
+      "lessonTitle": "De school",
+      "text": 4,
+      "textTitle": "Gesprek van Diego en Teresa",
+      "prompt": "Wanneer gaan Teresa en Diego het inburgeringsexamen doen?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Zo snel mogelijk."
+        },
+        {
+          "id": "B",
+          "text": "Na de vakantie."
+        },
+        {
+          "id": "C",
+          "text": "Over meer dan een jaar."
+        },
+        {
+          "id": "D",
+          "text": "Volgend jaar."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l2t4q2",
+      "lesson": 2,
+      "lessonTitle": "De school",
+      "text": 4,
+      "textTitle": "Gesprek van Diego en Teresa",
+      "prompt": "Waarom willen Teresa en Diego snel examen doen?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Zij vinden de school niet leuk."
+        },
+        {
+          "id": "B",
+          "text": "Zij vinden de school duur."
+        },
+        {
+          "id": "C",
+          "text": "Zij vinden de docent niet goed."
+        },
+        {
+          "id": "D",
+          "text": "Zij hebben geen zin om samen te studeren."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l2t4q3",
+      "lesson": 2,
+      "lessonTitle": "De school",
+      "text": 4,
+      "textTitle": "Gesprek van Diego en Teresa",
+      "prompt": "Hoe schrijven Diego en Teresa zich in voor het inburgeringsexamen?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Zij doen dat via de website van DUO."
+        },
+        {
+          "id": "B",
+          "text": "Hun docent Thea doet de registratie voor het examen."
+        },
+        {
+          "id": "C",
+          "text": "Hun school doet de registratie voor het examen."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l3t1q1",
+      "lesson": 3,
+      "lessonTitle": "De familie",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Waar zijn de ouders van Jordi en Desiree?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Dat is niet duidelijk."
+        },
+        {
+          "id": "B",
+          "text": "Die zijn bij opa en oma."
+        },
+        {
+          "id": "C",
+          "text": "Die zijn naar een winkel."
+        },
+        {
+          "id": "D",
+          "text": "Die zijn in de keuken."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l3t1q2",
+      "lesson": 3,
+      "lessonTitle": "De familie",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Wat gaat Jordi kopen voor zijn moeder?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Bloemen."
+        },
+        {
+          "id": "B",
+          "text": "Zeep."
+        },
+        {
+          "id": "C",
+          "text": "Cola."
+        },
+        {
+          "id": "D",
+          "text": "Hij weet het nog niet."
+        }
+      ],
+      "correct": "D"
+    },
+    {
+      "id": "l3t1q3",
+      "lesson": 3,
+      "lessonTitle": "De familie",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Wat zegt Desiree over jongens?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Alle jongens zijn stom."
+        },
+        {
+          "id": "B",
+          "text": "Niet alle jongens zijn stom, maar Jordi is wel stom."
+        },
+        {
+          "id": "C",
+          "text": "Jongens houden niet van shoppen."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l3t2q1",
+      "lesson": 3,
+      "lessonTitle": "De familie",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Hoeveel kinderen heeft Kees?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Vier."
+        },
+        {
+          "id": "B",
+          "text": "Twee."
+        },
+        {
+          "id": "C",
+          "text": "Zeven."
+        },
+        {
+          "id": "D",
+          "text": "Vijf."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l3t2q2",
+      "lesson": 3,
+      "lessonTitle": "De familie",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Waarom gaat Laila niet naar de crèche?",
+      "options": [
+        {
+          "id": "A",
+          "text": "De crèche is erg duur."
+        },
+        {
+          "id": "B",
+          "text": "De crèche is te ver weg."
+        },
+        {
+          "id": "C",
+          "text": "Laila is een baby en een baby is te klein voor de crèche."
+        },
+        {
+          "id": "D",
+          "text": "De crèche heeft geen plaats."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l3t2q3",
+      "lesson": 3,
+      "lessonTitle": "De familie",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Hoeveel kinderen heeft Karin?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Zij heeft twee kinderen."
+        },
+        {
+          "id": "B",
+          "text": "Zij heeft één kind."
+        },
+        {
+          "id": "C",
+          "text": "Dat is niet duidelijk."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l3t3q1",
+      "lesson": 3,
+      "lessonTitle": "De familie",
+      "text": 3,
+      "textTitle": "",
+      "prompt": "Hoeveel broers heeft Henk?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Dat is niet duidelijk."
+        },
+        {
+          "id": "B",
+          "text": "Hij heeft zes broers."
+        },
+        {
+          "id": "C",
+          "text": "Hij heeft één broer."
+        },
+        {
+          "id": "D",
+          "text": "Hij heeft twintig broers."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l3t3q2",
+      "lesson": 3,
+      "lessonTitle": "De familie",
+      "text": 3,
+      "textTitle": "",
+      "prompt": "Komen er veel mensen naar de begrafenis?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Ja, er komen meer dan 200 mensen."
+        },
+        {
+          "id": "B",
+          "text": "Ja, er komen bijna 100 mensen."
+        },
+        {
+          "id": "C",
+          "text": "Nee, er komen niet zo veel mensen."
+        },
+        {
+          "id": "D",
+          "text": "Nee, er komt niemand."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l3t3q3",
+      "lesson": 3,
+      "lessonTitle": "De familie",
+      "text": 3,
+      "textTitle": "",
+      "prompt": "Hoe oud is de oma van Henk geworden?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Zij is bijna 100 jaar geworden."
+        },
+        {
+          "id": "B",
+          "text": "Zij is 104 jaar geworden."
+        },
+        {
+          "id": "C",
+          "text": "Zij wordt overmorgen 104 jaar."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l4t1q1",
+      "lesson": 4,
+      "lessonTitle": "Het formulier en de agenda",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Henk heeft een afspraak met Ingrid. Waarover wil Henk praten?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Hij wil graag meer vakantie."
+        },
+        {
+          "id": "B",
+          "text": "Hij wil praten over zijn paspoort en zijn rijbewijs."
+        },
+        {
+          "id": "C",
+          "text": "Hij wil liever op een andere afdeling (отделение) werken."
+        },
+        {
+          "id": "D",
+          "text": "Hij wil liever minder werken."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l4t1q2",
+      "lesson": 4,
+      "lessonTitle": "Het formulier en de agenda",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Wat wil Ingrid niet met Henk bespreken?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Zijn vakantie."
+        },
+        {
+          "id": "B",
+          "text": "Het salaris."
+        },
+        {
+          "id": "C",
+          "text": "Verandering van het werk."
+        },
+        {
+          "id": "D",
+          "text": "Zijn paspoort of rijbewijs."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l4t1q3",
+      "lesson": 4,
+      "lessonTitle": "Het formulier en de agenda",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Voor wanneer maken Henk en Ingrid een afspraak?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Voor vanmorgen."
+        },
+        {
+          "id": "B",
+          "text": "Voor vanmiddag om kwart over twee."
+        },
+        {
+          "id": "C",
+          "text": "Voor vrijdagmiddag."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l4t2q1",
+      "lesson": 4,
+      "lessonTitle": "Het formulier en de agenda",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Heeft Carlos zijn inburgeringsdiploma gehaald?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Nee, hij heeft nog niet alle examens gehaald."
+        },
+        {
+          "id": "B",
+          "text": "Nee, hij moet nog examen Kennis Nederlandse Samenleving doen."
+        },
+        {
+          "id": "C",
+          "text": "Ja, hij heeft alle onderdelen (детали) gehaald."
+        },
+        {
+          "id": "D",
+          "text": "Nee, nog niet helemaal."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l4t2q2",
+      "lesson": 4,
+      "lessonTitle": "Het formulier en de agenda",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Heeft Carlos de participatieverklaring (заявление об участии) getekend?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Ja, hij heeft die verklaring getekend."
+        },
+        {
+          "id": "B",
+          "text": "Ja, want het is verplicht."
+        },
+        {
+          "id": "C",
+          "text": "Nee, want hij wil de verklaring niet tekenen."
+        },
+        {
+          "id": "D",
+          "text": "Nee, maar misschien moet hij de verklaring later nog tekenen."
+        }
+      ],
+      "correct": "D"
+    },
+    {
+      "id": "l4t2q3",
+      "lesson": 4,
+      "lessonTitle": "Het formulier en de agenda",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Hoe lang woont Carlos al in Nederland?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Zeven jaar."
+        },
+        {
+          "id": "B",
+          "text": "Eén jaar."
+        },
+        {
+          "id": "C",
+          "text": "Dat is niet duidelijk."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l4t3q1",
+      "lesson": 4,
+      "lessonTitle": "Het formulier en de agenda",
+      "text": 3,
+      "textTitle": "",
+      "prompt": "Vindt Ingrid vergaderingen (встречи) interessant?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Ja, zij vindt vergaderingen interessant."
+        },
+        {
+          "id": "B",
+          "text": "Ja, zij vindt vergaderingen leuk en gezellig."
+        },
+        {
+          "id": "C",
+          "text": "Nee, zij vindt vergaderingen niet leuk."
+        },
+        {
+          "id": "D",
+          "text": "Ingrid heeft nooit vergaderingen."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l4t3q2",
+      "lesson": 4,
+      "lessonTitle": "Het formulier en de agenda",
+      "text": 3,
+      "textTitle": "",
+      "prompt": "Wat gaan Henk en Ingrid doen na de vergadering?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Samen wat eten op een terrasje."
+        },
+        {
+          "id": "B",
+          "text": "Misschien samen iets drinken."
+        },
+        {
+          "id": "C",
+          "text": "Snel naar huis om te eten."
+        },
+        {
+          "id": "D",
+          "text": "Verder met het gewone werk."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l4t3q3",
+      "lesson": 4,
+      "lessonTitle": "Het formulier en de agenda",
+      "text": 3,
+      "textTitle": "",
+      "prompt": "Heeft Ingrid veel werk te doen?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Ja, Ingrid is altijd druk."
+        },
+        {
+          "id": "B",
+          "text": "Nee, niet altijd, maar vandaag is Ingrid druk."
+        },
+        {
+          "id": "C",
+          "text": "Nee, Ingrid heeft het nooit druk."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l5t1q1",
+      "lesson": 5,
+      "lessonTitle": "Het lichaam",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Wat is er gebeurd met Alexander?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Hij is uit zijn rolstoel gevallen."
+        },
+        {
+          "id": "B",
+          "text": "Hij is van zijn fiets gevallen."
+        },
+        {
+          "id": "C",
+          "text": "Hij heeft een auto-ongeluk gehad."
+        },
+        {
+          "id": "D",
+          "text": "Hij is verhuisd."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l5t1q2",
+      "lesson": 5,
+      "lessonTitle": "Het lichaam",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Komt Alexander volgende week naar zijn werk?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Ja, hij kan met een rolstoel naar zijn werk komen."
+        },
+        {
+          "id": "B",
+          "text": "Ja, hij komt met zijn fiets naar zijn werk."
+        },
+        {
+          "id": "C",
+          "text": "Ja, hij komt lopend naar zijn werk."
+        },
+        {
+          "id": "D",
+          "text": "Nee, hij zit deze week en volgende week thuis."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l5t1q3",
+      "lesson": 5,
+      "lessonTitle": "Het lichaam",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Heeft Alexander iets gebroken?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Ja, hij heeft een arm gebroken."
+        },
+        {
+          "id": "B",
+          "text": "Ja, hij heeft een been gebroken."
+        },
+        {
+          "id": "C",
+          "text": "Nee, hij heeft niets gebroken."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l5t2q1",
+      "lesson": 5,
+      "lessonTitle": "Het lichaam",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Welk probleem heeft Henk?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Hij heeft zijn been gebroken."
+        },
+        {
+          "id": "B",
+          "text": "Hij zit in een rolstoel."
+        },
+        {
+          "id": "C",
+          "text": "Hij heeft een bril."
+        },
+        {
+          "id": "D",
+          "text": "Hij heeft hoofdpijn."
+        }
+      ],
+      "correct": "D"
+    },
+    {
+      "id": "l5t2q2",
+      "lesson": 5,
+      "lessonTitle": "Het lichaam",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Wat moet Henk doen volgens Ingrid?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Naar de brillenwinkel van Hans Anders gaan."
+        },
+        {
+          "id": "B",
+          "text": "Zes weken in een rolstoel gaan zitten."
+        },
+        {
+          "id": "C",
+          "text": "Zijn computer uitzetten."
+        },
+        {
+          "id": "D",
+          "text": "Stoppen met werken en naar huis gaan."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l5t2q3",
+      "lesson": 5,
+      "lessonTitle": "Het lichaam",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Heeft Ingrid een bril?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Nee, zij heeft geen bril."
+        },
+        {
+          "id": "B",
+          "text": "Ja, zij heeft een bril gekocht bij Hans Anders."
+        },
+        {
+          "id": "C",
+          "text": "Ja, zij heeft een test gedaan en daarna een mooie bril gekocht."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l6t1q1",
+      "lesson": 6,
+      "lessonTitle": "De kleding",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Wat heeft Ingrid gekocht bij Zalando?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Schoenen."
+        },
+        {
+          "id": "B",
+          "text": "Een trui."
+        },
+        {
+          "id": "C",
+          "text": "Een broek."
+        },
+        {
+          "id": "D",
+          "text": "Een jurk."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l6t1q2",
+      "lesson": 6,
+      "lessonTitle": "De kleding",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Wat kun je bij Zalando kopen via internet?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Computers, meubels en kleding."
+        },
+        {
+          "id": "B",
+          "text": "Schoenen en kleding."
+        },
+        {
+          "id": "C",
+          "text": "Alleen schoenen."
+        },
+        {
+          "id": "D",
+          "text": "Alleen truien."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l6t1q3",
+      "lesson": 6,
+      "lessonTitle": "De kleding",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Hoeveel broeken gaat Ingrid vanavond bestellen via internet?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Dat is niet duidelijk."
+        },
+        {
+          "id": "B",
+          "text": "Negen."
+        },
+        {
+          "id": "C",
+          "text": "Tien."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l6t2q1",
+      "lesson": 6,
+      "lessonTitle": "De kleding",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Wat heeft Henk gekocht via internet?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Heel veel kleding."
+        },
+        {
+          "id": "B",
+          "text": "Alleen een trui."
+        },
+        {
+          "id": "C",
+          "text": "Alleen een broek."
+        },
+        {
+          "id": "D",
+          "text": "Alleen nieuwe schoenen."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l6t2q2",
+      "lesson": 6,
+      "lessonTitle": "De kleding",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Henk wil kleding terugsturen naar Trump. Wat moet hij doen?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Eerst een formulier invullen."
+        },
+        {
+          "id": "B",
+          "text": "Eerst 1200 euro betalen."
+        },
+        {
+          "id": "C",
+          "text": "Eerst bellen met Trump."
+        },
+        {
+          "id": "D",
+          "text": "De kleding zelf naar de winkel van Trump brengen."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l6t2q3",
+      "lesson": 6,
+      "lessonTitle": "De kleding",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Wat zegt Ingrid over de internetwinkel van Trump?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Misschien bestaat deze internetwinkel niet."
+        },
+        {
+          "id": "B",
+          "text": "Kleding terugsturen naar deze winkel is een probleem."
+        },
+        {
+          "id": "C",
+          "text": "Zij kent deze internetwinkel heel goed."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l7t1q1",
+      "lesson": 7,
+      "lessonTitle": "De keuken",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Welk advies geeft Henk aan Ingrid?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Vegetarisch eten maken voor haar vriendin."
+        },
+        {
+          "id": "B",
+          "text": "Een nieuwe keuken kopen."
+        },
+        {
+          "id": "C",
+          "text": "Eten in de magnetron maken."
+        },
+        {
+          "id": "D",
+          "text": "Met haar vriendin in een restaurant eten."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l7t1q2",
+      "lesson": 7,
+      "lessonTitle": "De keuken",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Waarom vraagt Ingrid advies aan Henk?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Zij wil een nieuwe keuken."
+        },
+        {
+          "id": "B",
+          "text": "Zij wil een nieuwe magnetron."
+        },
+        {
+          "id": "C",
+          "text": "Zij kan niet koken."
+        },
+        {
+          "id": "D",
+          "text": "Zij wil lekker eten maken voor haar vriendin."
+        }
+      ],
+      "correct": "D"
+    },
+    {
+      "id": "l7t1q3",
+      "lesson": 7,
+      "lessonTitle": "De keuken",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Wat zegt Henk over de salade?",
+      "options": [
+        {
+          "id": "A",
+          "text": "De salade moet in de oven."
+        },
+        {
+          "id": "B",
+          "text": "Ingrid moet ook kaas in de salade doen."
+        },
+        {
+          "id": "C",
+          "text": "Henk heeft een recept voor een lekkere salade."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l7t2q1",
+      "lesson": 7,
+      "lessonTitle": "De keuken",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Wat heeft Henk in het weekend gedaan?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Hij is verhuisd naar een nieuwe woning."
+        },
+        {
+          "id": "B",
+          "text": "Hij heeft een nieuwe keuken gekocht bij IKEA."
+        },
+        {
+          "id": "C",
+          "text": "Hij heeft met een vriend een nieuwe keuken gemaakt."
+        },
+        {
+          "id": "D",
+          "text": "Hij heeft met een vriend broccolitaart gegeten."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l7t2q2",
+      "lesson": 7,
+      "lessonTitle": "De keuken",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Wat heeft Ingrid in het weekend gedaan?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Zij is naar IKEA geweest."
+        },
+        {
+          "id": "B",
+          "text": "Zij heeft met Henk broccolitaart gegeten."
+        },
+        {
+          "id": "C",
+          "text": "Zij heeft een handige vriend ontmoet."
+        },
+        {
+          "id": "D",
+          "text": "Zij heeft met een vriendin gegeten."
+        }
+      ],
+      "correct": "D"
+    },
+    {
+      "id": "l7t2q3",
+      "lesson": 7,
+      "lessonTitle": "De keuken",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Wie eet geen vlees?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Ingrid."
+        },
+        {
+          "id": "B",
+          "text": "De vriendin van Ingrid."
+        },
+        {
+          "id": "C",
+          "text": "Henk."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l8t1q1",
+      "lesson": 8,
+      "lessonTitle": "De boodschappen",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Hoeveel tijd is Henk bezig met boodschappen doen?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Elke dag een half uur."
+        },
+        {
+          "id": "B",
+          "text": "Elke week een half uur."
+        },
+        {
+          "id": "C",
+          "text": "Elke dag vijf minuten."
+        },
+        {
+          "id": "D",
+          "text": "Dat is niet duidelijk."
+        }
+      ],
+      "correct": "D"
+    },
+    {
+      "id": "l8t1q2",
+      "lesson": 8,
+      "lessonTitle": "De boodschappen",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Welke kassajuffrouw kent de namen van veel klanten?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Truus."
+        },
+        {
+          "id": "B",
+          "text": "Jantien."
+        },
+        {
+          "id": "C",
+          "text": "Truus en Jantien allebei."
+        },
+        {
+          "id": "D",
+          "text": "Geen van beiden."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l8t1q3",
+      "lesson": 8,
+      "lessonTitle": "De boodschappen",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Hoe vaak doet Ingrid boodschappen?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Dat is niet duidelijk."
+        },
+        {
+          "id": "B",
+          "text": "Eén keer per week."
+        },
+        {
+          "id": "C",
+          "text": "Bijna elke dag."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l8t2q1",
+      "lesson": 8,
+      "lessonTitle": "De boodschappen",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Wat hebben Hans en Heidi niet nodig?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Wc-papier."
+        },
+        {
+          "id": "B",
+          "text": "Vlees."
+        },
+        {
+          "id": "C",
+          "text": "Brood."
+        },
+        {
+          "id": "D",
+          "text": "Shampoo."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l8t2q2",
+      "lesson": 8,
+      "lessonTitle": "De boodschappen",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Wat hebben Hans en Heidi wel nodig?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Brood."
+        },
+        {
+          "id": "B",
+          "text": "Een tandenborstel."
+        },
+        {
+          "id": "C",
+          "text": "Kaas."
+        },
+        {
+          "id": "D",
+          "text": "Wc-papier."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l8t2q3",
+      "lesson": 8,
+      "lessonTitle": "De boodschappen",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Hoe gaan Hans en Heidi naar de winkel?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Met de fiets."
+        },
+        {
+          "id": "B",
+          "text": "Met de auto."
+        },
+        {
+          "id": "C",
+          "text": "Lopend."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l9t1q1",
+      "lesson": 9,
+      "lessonTitle": "Groente en fruit",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Welke zin is juist?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Heidi wil graag vlees eten."
+        },
+        {
+          "id": "B",
+          "text": "Heidi zet de televisie uit."
+        },
+        {
+          "id": "C",
+          "text": "Heidi doet het eten op het bord."
+        },
+        {
+          "id": "D",
+          "text": "Hans pakt het bestek."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l9t1q2",
+      "lesson": 9,
+      "lessonTitle": "Groente en fruit",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Wat zegt Heidi over vlees?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Hans en Heidi eten te veel vlees."
+        },
+        {
+          "id": "B",
+          "text": "Vlees is lekker."
+        },
+        {
+          "id": "C",
+          "text": "Vlees is gezond."
+        },
+        {
+          "id": "D",
+          "text": "Vlees is beter dan groente en fruit."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l9t1q3",
+      "lesson": 9,
+      "lessonTitle": "Groente en fruit",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Wie eet er vandaag geen vlees?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Hans."
+        },
+        {
+          "id": "B",
+          "text": "Heidi."
+        },
+        {
+          "id": "C",
+          "text": "Hans en Heidi allebei."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l10t1q1",
+      "lesson": 10,
+      "lessonTitle": "Eten en drinken",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Wat vraagt Henk aan Ingrid?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Of Ingrid bij hem komt eten."
+        },
+        {
+          "id": "B",
+          "text": "Of Ingrid een nieuwe keuken heeft."
+        },
+        {
+          "id": "C",
+          "text": "Of Ingrid vlees wil eten."
+        },
+        {
+          "id": "D",
+          "text": "Of Ingrid en haar vriendin bij hem willen komen eten."
+        }
+      ],
+      "correct": "D"
+    },
+    {
+      "id": "l10t1q2",
+      "lesson": 10,
+      "lessonTitle": "Eten en drinken",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Wat gaat Henk koken?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Iets met vis."
+        },
+        {
+          "id": "B",
+          "text": "Iets met vlees."
+        },
+        {
+          "id": "C",
+          "text": "Iets Mexicaans."
+        },
+        {
+          "id": "D",
+          "text": "Hij weet het nog niet."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l10t1q3",
+      "lesson": 10,
+      "lessonTitle": "Eten en drinken",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Wat vraagt Henk aan Ingrid over Maxima?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Het telefoonnummer van Maxima."
+        },
+        {
+          "id": "B",
+          "text": "Het adres van Maxima."
+        },
+        {
+          "id": "C",
+          "text": "In welk land Maxima is geboren."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l10t2q1",
+      "lesson": 10,
+      "lessonTitle": "Eten en drinken",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Waarom is Hans vandaag moe?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Hij heeft in de pizzeria gewerkt."
+        },
+        {
+          "id": "B",
+          "text": "Hij heeft boodschappen gedaan."
+        },
+        {
+          "id": "C",
+          "text": "Hij heeft veel bier gedronken."
+        },
+        {
+          "id": "D",
+          "text": "Dat is niet duidelijk."
+        }
+      ],
+      "correct": "D"
+    },
+    {
+      "id": "l10t2q2",
+      "lesson": 10,
+      "lessonTitle": "Eten en drinken",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Wat geeft Heidi aan Hans?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Een zoen."
+        },
+        {
+          "id": "B",
+          "text": "Een biertje."
+        },
+        {
+          "id": "C",
+          "text": "Een broodje."
+        },
+        {
+          "id": "D",
+          "text": "Een paracetamol."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l10t2q3",
+      "lesson": 10,
+      "lessonTitle": "Eten en drinken",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Wie gaat er eten koken, Hans of Heidi?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Hans."
+        },
+        {
+          "id": "B",
+          "text": "Heidi."
+        },
+        {
+          "id": "C",
+          "text": "Hans en Heidi gaan niet koken."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l11t1q1",
+      "lesson": 11,
+      "lessonTitle": "Het weer",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Hoe komt Henk vandaag naar zijn werk?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Met de auto."
+        },
+        {
+          "id": "B",
+          "text": "In een regenpak."
+        },
+        {
+          "id": "C",
+          "text": "Met de trein."
+        },
+        {
+          "id": "D",
+          "text": "Op zijn fiets."
+        }
+      ],
+      "correct": "D"
+    },
+    {
+      "id": "l11t1q2",
+      "lesson": 11,
+      "lessonTitle": "Het weer",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Wat geeft Ingrid aan Henk?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Een warme stoel."
+        },
+        {
+          "id": "B",
+          "text": "Een regenpak."
+        },
+        {
+          "id": "C",
+          "text": "Zwarte koffie."
+        },
+        {
+          "id": "D",
+          "text": "Een paraplu."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l11t1q3",
+      "lesson": 11,
+      "lessonTitle": "Het weer",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Hoe gaat Ingrid naar haar werk als het regent?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Met de trein."
+        },
+        {
+          "id": "B",
+          "text": "Met haar auto."
+        },
+        {
+          "id": "C",
+          "text": "Op haar fiets met een paraplu."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l11t2q1",
+      "lesson": 11,
+      "lessonTitle": "Het weer",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Wat gaat Henk doen in het weekend?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Ver fietsen."
+        },
+        {
+          "id": "B",
+          "text": "Misschien naar het strand."
+        },
+        {
+          "id": "C",
+          "text": "Zaterdag naar Zandvoort en zondag naar Den Helder."
+        },
+        {
+          "id": "D",
+          "text": "Zaterdag naar Zandvoort en zondag weer werken."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l11t2q2",
+      "lesson": 11,
+      "lessonTitle": "Het weer",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Wat gaat Ingrid doen in het weekend?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Een fiets kopen."
+        },
+        {
+          "id": "B",
+          "text": "Misschien naar het strand."
+        },
+        {
+          "id": "C",
+          "text": "Fietsen met Henk."
+        },
+        {
+          "id": "D",
+          "text": "Naar een restaurant."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l11t2q3",
+      "lesson": 11,
+      "lessonTitle": "Het weer",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Hoe ver is het naar Zandvoort?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Bijna 100 kilometer."
+        },
+        {
+          "id": "B",
+          "text": "25 kilometer."
+        },
+        {
+          "id": "C",
+          "text": "Dat is niet duidelijk."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l12t1q1",
+      "lesson": 12,
+      "lessonTitle": "Het verkeer",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Hoe drinkt Ingrid haar koffie?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Zwart."
+        },
+        {
+          "id": "B",
+          "text": "Zwart met suiker."
+        },
+        {
+          "id": "C",
+          "text": "Zij drinkt geen koffie."
+        },
+        {
+          "id": "D",
+          "text": "Met melk en suiker."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l12t1q2",
+      "lesson": 12,
+      "lessonTitle": "Het verkeer",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Waarom is Ingrid laat op haar werk?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Haar huis is ver van haar werk."
+        },
+        {
+          "id": "B",
+          "text": "Er was een file door veel regen."
+        },
+        {
+          "id": "C",
+          "text": "Er was een file omdat de weg dicht was."
+        },
+        {
+          "id": "D",
+          "text": "Zij is op de fiets gekomen."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l12t1q3",
+      "lesson": 12,
+      "lessonTitle": "Het verkeer",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Hoeveel kilometer moet Ingrid reizen van haar huis naar haar werk?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Elf kilometer."
+        },
+        {
+          "id": "B",
+          "text": "Zeven kilometer."
+        },
+        {
+          "id": "C",
+          "text": "22 kilometer."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l12t2q1",
+      "lesson": 12,
+      "lessonTitle": "Het verkeer",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Ingrid reist nooit met de bus of de trein. Waarom niet?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Zij komt liever met een raket."
+        },
+        {
+          "id": "B",
+          "text": "Het openbaar vervoer is slecht, denkt Ingrid."
+        },
+        {
+          "id": "C",
+          "text": "Zij kan sneller reizen met de auto."
+        },
+        {
+          "id": "D",
+          "text": "Zij kan sneller reizen met de trein."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l12t2q2",
+      "lesson": 12,
+      "lessonTitle": "Het verkeer",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Wat vindt Ingrid van haar nieuwe elektrische fiets?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Zij is heel tevreden."
+        },
+        {
+          "id": "B",
+          "text": "Zij gaat liever met een raket."
+        },
+        {
+          "id": "C",
+          "text": "Zij gaat liever met de bus."
+        },
+        {
+          "id": "D",
+          "text": "Zij gaat liever met de auto."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l12t2q3",
+      "lesson": 12,
+      "lessonTitle": "Het verkeer",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Wat doen Henk en Ingrid na het werk?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Samen fietsen in de richting van Henks huis."
+        },
+        {
+          "id": "B",
+          "text": "Samen fietstassen kopen."
+        },
+        {
+          "id": "C",
+          "text": "Een TomTom kopen."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l13t1q1",
+      "lesson": 13,
+      "lessonTitle": "De dieren",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Waarom hebben Ingrid en Henk geen huisdier?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Zij houden niet van dieren."
+        },
+        {
+          "id": "B",
+          "text": "Zij zijn bang voor honden."
+        },
+        {
+          "id": "C",
+          "text": "Zij willen geen eten maken voor een huisdier."
+        },
+        {
+          "id": "D",
+          "text": "Zij gaan soms op vakantie en dan zorgt niemand voor hun huisdier."
+        }
+      ],
+      "correct": "D"
+    },
+    {
+      "id": "l13t1q2",
+      "lesson": 13,
+      "lessonTitle": "De dieren",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Wat doen sommige mensen op 4 oktober?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Zij geven hun huisdier iets lekkers of een cadeautje."
+        },
+        {
+          "id": "B",
+          "text": "Zij gaan extra naar hun werk."
+        },
+        {
+          "id": "C",
+          "text": "Zij gaan op vakantie."
+        },
+        {
+          "id": "D",
+          "text": "Zij komen extra laat thuis."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l13t1q3",
+      "lesson": 13,
+      "lessonTitle": "De dieren",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Welk huisdier vindt Henk het leukst?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Een hond."
+        },
+        {
+          "id": "B",
+          "text": "Een papegaai."
+        },
+        {
+          "id": "C",
+          "text": "Hij vindt alle huisdieren leuk."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l14t1q1",
+      "lesson": 14,
+      "lessonTitle": "De tijd",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Wat moet Henk vandaag doen op zijn werk?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Vergaderen."
+        },
+        {
+          "id": "B",
+          "text": "Een vakantieplanning voor zijn collega's maken."
+        },
+        {
+          "id": "C",
+          "text": "Lunchen met Ingrid."
+        },
+        {
+          "id": "D",
+          "text": "Zijn manager vertellen wanneer hij vakantie wil."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l14t1q2",
+      "lesson": 14,
+      "lessonTitle": "De tijd",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Wanneer gaan Henk en Ingrid op vakantie?",
+      "options": [
+        {
+          "id": "A",
+          "text": "In januari."
+        },
+        {
+          "id": "B",
+          "text": "In juli of augustus."
+        },
+        {
+          "id": "C",
+          "text": "In de zomer."
+        },
+        {
+          "id": "D",
+          "text": "Dat is niet duidelijk."
+        }
+      ],
+      "correct": "D"
+    },
+    {
+      "id": "l14t1q3",
+      "lesson": 14,
+      "lessonTitle": "De tijd",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Hoe laat wil Henk met Ingrid lunchen?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Om half één."
+        },
+        {
+          "id": "B",
+          "text": "Om één uur."
+        },
+        {
+          "id": "C",
+          "text": "Om kwart over één."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l15t1q1",
+      "lesson": 15,
+      "lessonTitle": "De sport",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Wat is de favoriete sport van Ingrid?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Fietsen."
+        },
+        {
+          "id": "B",
+          "text": "Voetballen."
+        },
+        {
+          "id": "C",
+          "text": "Voetbal kijken op televisie."
+        },
+        {
+          "id": "D",
+          "text": "Zij vindt alle sporten leuk."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l15t1q2",
+      "lesson": 15,
+      "lessonTitle": "De sport",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Henk fietst veel op zijn racefiets. Wat vindt Ingrid hiervan?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Henk fietst te veel."
+        },
+        {
+          "id": "B",
+          "text": "Henk moet een elektrische fiets kopen."
+        },
+        {
+          "id": "C",
+          "text": "Henk kan beter gaan voetballen."
+        },
+        {
+          "id": "D",
+          "text": "Henk kan beter televisie kijken."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l15t1q3",
+      "lesson": 15,
+      "lessonTitle": "De sport",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Welk advies geeft Henk aan Ingrid?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Meer uitrusten en relaxen."
+        },
+        {
+          "id": "B",
+          "text": "Meer televisie kijken."
+        },
+        {
+          "id": "C",
+          "text": "Meer sporten."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l15t2q1",
+      "lesson": 15,
+      "lessonTitle": "De sport",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Wat komt er vanavond op de televisie?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Een voetbalwedstrijd."
+        },
+        {
+          "id": "B",
+          "text": "De Tour de France."
+        },
+        {
+          "id": "C",
+          "text": "De buurman van Ingrid."
+        },
+        {
+          "id": "D",
+          "text": "De vriendin van Ingrid."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l15t2q2",
+      "lesson": 15,
+      "lessonTitle": "De sport",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Wat gaat Henk vanavond doen?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Televisie kijken."
+        },
+        {
+          "id": "B",
+          "text": "Eten in een restaurant."
+        },
+        {
+          "id": "C",
+          "text": "Naar de Tour de France kijken."
+        },
+        {
+          "id": "D",
+          "text": "Wijn kopen en meenemen naar Ingrid."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l15t2q3",
+      "lesson": 15,
+      "lessonTitle": "De sport",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Gaat Henk nog iets meenemen als hij bij Ingrid op bezoek gaat?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Nee, hij neemt niets mee."
+        },
+        {
+          "id": "B",
+          "text": "Ja, hij neemt bier mee."
+        },
+        {
+          "id": "C",
+          "text": "Ja, hij neemt oranje petjes mee voor iedereen."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l16t1q1",
+      "lesson": 16,
+      "lessonTitle": "Uitgaan",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Hoe vaak gaat Ingrid uit?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Elk weekend."
+        },
+        {
+          "id": "B",
+          "text": "Twee keer per week."
+        },
+        {
+          "id": "C",
+          "text": "Nooit."
+        },
+        {
+          "id": "D",
+          "text": "Eén keer per twee weken."
+        }
+      ],
+      "correct": "D"
+    },
+    {
+      "id": "l16t1q2",
+      "lesson": 16,
+      "lessonTitle": "Uitgaan",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Hoe vaak gaat Henk uit?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Elk weekend."
+        },
+        {
+          "id": "B",
+          "text": "Eén keer per twee weken."
+        },
+        {
+          "id": "C",
+          "text": "Elke avond."
+        },
+        {
+          "id": "D",
+          "text": "Niet vaak."
+        }
+      ],
+      "correct": "D"
+    },
+    {
+      "id": "l16t1q3",
+      "lesson": 16,
+      "lessonTitle": "Uitgaan",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Waarover praten Henk en zijn vrienden als zij bier drinken?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Over heel veel dingen."
+        },
+        {
+          "id": "B",
+          "text": "Alleen over vrouwen."
+        },
+        {
+          "id": "C",
+          "text": "Nooit over vrouwen."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l17t1q1",
+      "lesson": 17,
+      "lessonTitle": "De vakantie",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Waar gaat Ingrid naartoe op vakantie?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Frankrijk."
+        },
+        {
+          "id": "B",
+          "text": "Thailand."
+        },
+        {
+          "id": "C",
+          "text": "Dat is niet duidelijk."
+        },
+        {
+          "id": "D",
+          "text": "Zij blijft in Nederland."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l17t1q2",
+      "lesson": 17,
+      "lessonTitle": "De vakantie",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Wat gaat Henk doen in zijn vakantie?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Kamperen in de bergen."
+        },
+        {
+          "id": "B",
+          "text": "Met vrienden fietsen in Zuid-Frankrijk."
+        },
+        {
+          "id": "C",
+          "text": "Met Ingrid naar Thailand."
+        },
+        {
+          "id": "D",
+          "text": "Relaxen en veel slapen in een vakantiehuisje."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l17t1q3",
+      "lesson": 17,
+      "lessonTitle": "De vakantie",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Wanneer heeft Henk vakantie?",
+      "options": [
+        {
+          "id": "A",
+          "text": "In januari."
+        },
+        {
+          "id": "B",
+          "text": "Volgende week."
+        },
+        {
+          "id": "C",
+          "text": "In april."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l17t2q1",
+      "lesson": 17,
+      "lessonTitle": "De vakantie",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Wat gaat Ingrid doen in haar vakantie?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Drie weken op het strand liggen."
+        },
+        {
+          "id": "B",
+          "text": "Ook een beetje werken."
+        },
+        {
+          "id": "C",
+          "text": "Relaxen en mooie gebouwen en natuur bekijken."
+        },
+        {
+          "id": "D",
+          "text": "Veel in het hotel blijven."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l17t2q2",
+      "lesson": 17,
+      "lessonTitle": "De vakantie",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Met wie gaat Ingrid naar Thailand?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Met niemand."
+        },
+        {
+          "id": "B",
+          "text": "Met Henk."
+        },
+        {
+          "id": "C",
+          "text": "Met haar vriendin."
+        },
+        {
+          "id": "D",
+          "text": "Met haar familie."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l17t2q3",
+      "lesson": 17,
+      "lessonTitle": "De vakantie",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Hoeveel kost een vliegreis naar Thailand?",
+      "options": [
+        {
+          "id": "A",
+          "text": "€500 per persoon."
+        },
+        {
+          "id": "B",
+          "text": "€600 per persoon."
+        },
+        {
+          "id": "C",
+          "text": "€400 per persoon."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l18t1q1",
+      "lesson": 18,
+      "lessonTitle": "De natuur",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Is Henk boos op Ingrid?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Ja, want Ingrid gebruikt een plastic tas."
+        },
+        {
+          "id": "B",
+          "text": "Ja, want Ingrid doet boodschappen bij een slechte supermarkt."
+        },
+        {
+          "id": "C",
+          "text": "Ja, want haar belangrijke papieren zijn nat."
+        },
+        {
+          "id": "D",
+          "text": "Ja, want Ingrid luistert niet naar hem."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l18t1q2",
+      "lesson": 18,
+      "lessonTitle": "De natuur",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Wat geeft Henk aan Ingrid?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Belangrijke papieren."
+        },
+        {
+          "id": "B",
+          "text": "Een plastic tas van Aldi."
+        },
+        {
+          "id": "C",
+          "text": "Een kop koffie."
+        },
+        {
+          "id": "D",
+          "text": "Een andere tas."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l18t1q3",
+      "lesson": 18,
+      "lessonTitle": "De natuur",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Waarom gebruikt Ingrid een plastic tas?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Haar belangrijke papieren mogen niet nat worden."
+        },
+        {
+          "id": "B",
+          "text": "De plastic tas is een goedkope oplossing."
+        },
+        {
+          "id": "C",
+          "text": "Zij wil de natuur beschermen."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l19t1q1",
+      "lesson": 19,
+      "lessonTitle": "De Nederlandse cultuur",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Wat doet Ingrid met de kerstdagen?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Zij gaat haar vader en de rest van haar familie zien."
+        },
+        {
+          "id": "B",
+          "text": "Zij gaat wandelen met een vriendin."
+        },
+        {
+          "id": "C",
+          "text": "Zij gaat naar een hotel."
+        },
+        {
+          "id": "D",
+          "text": "Zij gaat naar haar vader en moeder."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l19t1q2",
+      "lesson": 19,
+      "lessonTitle": "De Nederlandse cultuur",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Wat doet Henk met de kerstdagen?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Praten met een vriend over belangrijke dingen."
+        },
+        {
+          "id": "B",
+          "text": "In een hotel slapen en daar lekker eten."
+        },
+        {
+          "id": "C",
+          "text": "Een paar dagen wandelen met een vriend."
+        },
+        {
+          "id": "D",
+          "text": "Thuisblijven en een biertje drinken."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l19t1q3",
+      "lesson": 19,
+      "lessonTitle": "De Nederlandse cultuur",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Wat is er gebeurd met de moeder van Ingrid?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Zij is erg ziek."
+        },
+        {
+          "id": "B",
+          "text": "Zij is gevallen."
+        },
+        {
+          "id": "C",
+          "text": "Zij is overleden."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l19t2q1",
+      "lesson": 19,
+      "lessonTitle": "De Nederlandse cultuur",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Wat wil Henk doen op zaterdag?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Op de fiets naar de Keukenhof gaan."
+        },
+        {
+          "id": "B",
+          "text": "Met zijn tante naar de Keukenhof gaan."
+        },
+        {
+          "id": "C",
+          "text": "Bloemen kopen in de Keukenhof."
+        },
+        {
+          "id": "D",
+          "text": "Zijn tante trakteren op appeltaart."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l19t2q2",
+      "lesson": 19,
+      "lessonTitle": "De Nederlandse cultuur",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Wat is het plan van Ingrid?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Met Henk naar de Keukenhof fietsen."
+        },
+        {
+          "id": "B",
+          "text": "Met Henk en zijn tante met de trein gaan."
+        },
+        {
+          "id": "C",
+          "text": "Met Henk en zijn tante met de auto gaan."
+        },
+        {
+          "id": "D",
+          "text": "Een extra vrije dag vragen."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l19t2q3",
+      "lesson": 19,
+      "lessonTitle": "De Nederlandse cultuur",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Wat gaat er zaterdag gebeuren?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Henk en Ingrid gaan samen met de auto."
+        },
+        {
+          "id": "B",
+          "text": "Henk, Ingrid en de tante gaan samen appeltaart eten."
+        },
+        {
+          "id": "C",
+          "text": "Ingrid gaat niet mee."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l20t1q1",
+      "lesson": 20,
+      "lessonTitle": "De politiek",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Gaan Henk en Ingrid stemmen bij de verkiezingen voor de Tweede Kamer?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Ingrid gaat misschien stemmen en Henk stemt op de Partij van de Arbeid."
+        },
+        {
+          "id": "B",
+          "text": "Henk en Ingrid gaan misschien stemmen."
+        },
+        {
+          "id": "C",
+          "text": "Henk stemt zeker niet en Ingrid stemt op de Partij van de Arbeid."
+        },
+        {
+          "id": "D",
+          "text": "Henk en Ingrid gaan niet stemmen."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l20t1q2",
+      "lesson": 20,
+      "lessonTitle": "De politiek",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Henk weet een goede politieke partij voor Ingrid. Welke partij is dat?",
+      "options": [
+        {
+          "id": "A",
+          "text": "De Groene Partij."
+        },
+        {
+          "id": "B",
+          "text": "De Partij van de Arbeid."
+        },
+        {
+          "id": "C",
+          "text": "De Partij voor de Dieren."
+        },
+        {
+          "id": "D",
+          "text": "GroenLinks."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l20t1q3",
+      "lesson": 20,
+      "lessonTitle": "De politiek",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Ingrid weet een goede politieke partij voor Henk. Welke partij is dat?",
+      "options": [
+        {
+          "id": "A",
+          "text": "De Groene Partij."
+        },
+        {
+          "id": "B",
+          "text": "De Partij van de Arbeid."
+        },
+        {
+          "id": "C",
+          "text": "De Belastingpartij."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l21t1q1",
+      "lesson": 21,
+      "lessonTitle": "De computer",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Ingrid krijgt een bericht van haar vriendin. Wat is het probleem?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Haar vriendin is ziek en heeft een virus."
+        },
+        {
+          "id": "B",
+          "text": "Haar vriendin moet plotseling naar de dokter."
+        },
+        {
+          "id": "C",
+          "text": "De computer van haar vriendin is kapot."
+        },
+        {
+          "id": "D",
+          "text": "Haar vriendin heeft een nieuwe vriend."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l21t1q2",
+      "lesson": 21,
+      "lessonTitle": "De computer",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Waarom heeft Henk nooit een probleem met zijn computer?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Hij werkt met een Apple-computer."
+        },
+        {
+          "id": "B",
+          "text": "Hij heeft een handige vriend."
+        },
+        {
+          "id": "C",
+          "text": "Hij heeft veel verstand van computers."
+        },
+        {
+          "id": "D",
+          "text": "Hij werkt niet veel op zijn computer."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l21t1q3",
+      "lesson": 21,
+      "lessonTitle": "De computer",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Wie gaat het probleem van de vriendin van Ingrid oplossen?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Ingrid."
+        },
+        {
+          "id": "B",
+          "text": "Henk."
+        },
+        {
+          "id": "C",
+          "text": "Een vriend van Henk."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l21t2q1",
+      "lesson": 21,
+      "lessonTitle": "De computer",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Wie weet veel van Facebook?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Ingrid."
+        },
+        {
+          "id": "B",
+          "text": "Henk."
+        },
+        {
+          "id": "C",
+          "text": "Een vriend van Henk."
+        },
+        {
+          "id": "D",
+          "text": "Iedereen."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l21t2q2",
+      "lesson": 21,
+      "lessonTitle": "De computer",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Waarom wil de vriend van Henk Facebook gebruiken?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Hij zoekt nieuwe vrienden."
+        },
+        {
+          "id": "B",
+          "text": "Hij zoekt informatie voor racefietsers."
+        },
+        {
+          "id": "C",
+          "text": "Hij zoekt een nieuwe partner."
+        },
+        {
+          "id": "D",
+          "text": "Hij zoekt lesmateriaal voor het inburgeringsexamen."
+        }
+      ],
+      "correct": "D"
+    },
+    {
+      "id": "l21t2q3",
+      "lesson": 21,
+      "lessonTitle": "De computer",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Ingrid geeft Henk informatie over Facebook. Is Henk blij met de informatie?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Ja, de informatie is goed voor zijn vriend."
+        },
+        {
+          "id": "B",
+          "text": "Ja, de informatie is goed voor zijn vriend en voor Henk zelf."
+        },
+        {
+          "id": "C",
+          "text": "Nee, hij is niet zo blij."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l22t1q1",
+      "lesson": 22,
+      "lessonTitle": "Een woning zoeken",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Hoe heeft Henk zijn woning gevonden?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Via Funda."
+        },
+        {
+          "id": "B",
+          "text": "Met hulp van een makelaar."
+        },
+        {
+          "id": "C",
+          "text": "Via Funda en met hulp van een makelaar."
+        },
+        {
+          "id": "D",
+          "text": "Met hulp van een vriendin."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l22t1q2",
+      "lesson": 22,
+      "lessonTitle": "Een woning zoeken",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Wat is Funda?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Dat is niet duidelijk."
+        },
+        {
+          "id": "B",
+          "text": "Een website voor mensen die een huis willen kopen."
+        },
+        {
+          "id": "C",
+          "text": "De naam van een makelaar."
+        },
+        {
+          "id": "D",
+          "text": "De naam van een vriendin van Henk."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l22t1q3",
+      "lesson": 22,
+      "lessonTitle": "Een woning zoeken",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Hoeveel geld heeft Henk aan de makelaar betaald?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Dat is niet duidelijk."
+        },
+        {
+          "id": "B",
+          "text": "€400."
+        },
+        {
+          "id": "C",
+          "text": "€300."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l22t2q1",
+      "lesson": 22,
+      "lessonTitle": "Een woning zoeken",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Heeft het nieuwe huis van Ingrid ook een speciale extra ruimte?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Ja, een hele grote garage."
+        },
+        {
+          "id": "B",
+          "text": "Ja, een extra slaapkamer."
+        },
+        {
+          "id": "C",
+          "text": "Ja, een extra werkkamer."
+        },
+        {
+          "id": "D",
+          "text": "Ja, een tweede keuken."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l22t2q2",
+      "lesson": 22,
+      "lessonTitle": "Een woning zoeken",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Bij wie zoekt Ingrid hulp voor haar verhuizing?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Bij haar manager."
+        },
+        {
+          "id": "B",
+          "text": "Bij de makelaar."
+        },
+        {
+          "id": "C",
+          "text": "Bij een verhuisbedrijf."
+        },
+        {
+          "id": "D",
+          "text": "Bij Henk."
+        }
+      ],
+      "correct": "D"
+    },
+    {
+      "id": "l22t2q3",
+      "lesson": 22,
+      "lessonTitle": "Een woning zoeken",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Op welke dag wil Ingrid verhuizen?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Op zaterdag."
+        },
+        {
+          "id": "B",
+          "text": "Op zondag."
+        },
+        {
+          "id": "C",
+          "text": "Waarschijnlijk zaterdag, maar dat is niet helemaal zeker."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l23t1q1",
+      "lesson": 23,
+      "lessonTitle": "Het onderwijs",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Veel leerlingen noemen Dik “Dikkie Dik”. Wat vindt Dik daarvan?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Hij vindt dat een probleem."
+        },
+        {
+          "id": "B",
+          "text": "Hij vindt dat helemaal niet leuk."
+        },
+        {
+          "id": "C",
+          "text": "Hij vindt Dikkie Dik een erg leuke naam."
+        },
+        {
+          "id": "D",
+          "text": "Hij wil geen Dik heten en ook geen Dikkie Dik."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l23t1q2",
+      "lesson": 23,
+      "lessonTitle": "Het onderwijs",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Wat gaat Katinka studeren?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Nederlands."
+        },
+        {
+          "id": "B",
+          "text": "Zij wil dokter worden."
+        },
+        {
+          "id": "C",
+          "text": "Zij wil lerares worden."
+        },
+        {
+          "id": "D",
+          "text": "Economie."
+        }
+      ],
+      "correct": "D"
+    },
+    {
+      "id": "l23t1q3",
+      "lesson": 23,
+      "lessonTitle": "Het onderwijs",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Welk beroep vindt Dik leuk?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Directeur."
+        },
+        {
+          "id": "B",
+          "text": "Leraar."
+        },
+        {
+          "id": "C",
+          "text": "Minister."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l23t2q1",
+      "lesson": 23,
+      "lessonTitle": "Het onderwijs",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Welk vak vindt Katinka moeilijk?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Wiskunde."
+        },
+        {
+          "id": "B",
+          "text": "Engels."
+        },
+        {
+          "id": "C",
+          "text": "Duits."
+        },
+        {
+          "id": "D",
+          "text": "Zij vindt alle vakken makkelijk."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l23t2q2",
+      "lesson": 23,
+      "lessonTitle": "Het onderwijs",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Welk vak vindt Dik moeilijk?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Engels."
+        },
+        {
+          "id": "B",
+          "text": "Duits."
+        },
+        {
+          "id": "C",
+          "text": "Nederlands."
+        },
+        {
+          "id": "D",
+          "text": "Wiskunde."
+        }
+      ],
+      "correct": "D"
+    },
+    {
+      "id": "l23t2q3",
+      "lesson": 23,
+      "lessonTitle": "Het onderwijs",
+      "text": 2,
+      "textTitle": "",
+      "prompt": "Hoe duur is een appartement in Amsterdam volgens Dik?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Ongeveer €100.000."
+        },
+        {
+          "id": "B",
+          "text": "Ongeveer €400.000."
+        },
+        {
+          "id": "C",
+          "text": "Hij zegt dat hij dat niet weet."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l24t1q1",
+      "lesson": 24,
+      "lessonTitle": "Beroep en werk",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Welk beroep kiest Katinka?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Journalist."
+        },
+        {
+          "id": "B",
+          "text": "Leraar Nederlands."
+        },
+        {
+          "id": "C",
+          "text": "Zij weet het nog niet."
+        },
+        {
+          "id": "D",
+          "text": "Advocaat."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l24t1q2",
+      "lesson": 24,
+      "lessonTitle": "Beroep en werk",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Welke zin is niet waar?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Katinka wil eerst slagen voor het examen."
+        },
+        {
+          "id": "B",
+          "text": "Haar vader heeft weinig tijd voor haar."
+        },
+        {
+          "id": "C",
+          "text": "Katinka wil economie studeren."
+        },
+        {
+          "id": "D",
+          "text": "Haar vader heeft een appartement voor haar gekocht."
+        }
+      ],
+      "correct": "D"
+    },
+    {
+      "id": "l24t1q3",
+      "lesson": 24,
+      "lessonTitle": "Beroep en werk",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Waar woont de moeder van Katinka?",
+      "options": [
+        {
+          "id": "A",
+          "text": "In Engeland."
+        },
+        {
+          "id": "B",
+          "text": "In een appartement in Amsterdam."
+        },
+        {
+          "id": "C",
+          "text": "Dat is niet bekend."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l25t1q1",
+      "lesson": 25,
+      "lessonTitle": "De economie",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Met wie heeft Katinka gisteravond gesproken?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Met haar vader."
+        },
+        {
+          "id": "B",
+          "text": "Met Dik."
+        },
+        {
+          "id": "C",
+          "text": "Met Bill Gates."
+        },
+        {
+          "id": "D",
+          "text": "Met haar oom."
+        }
+      ],
+      "correct": "D"
+    },
+    {
+      "id": "l25t1q2",
+      "lesson": 25,
+      "lessonTitle": "De economie",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Wat vindt Katinka erg interessant?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Mensen die veel geld hebben."
+        },
+        {
+          "id": "B",
+          "text": "Vliegtuigen."
+        },
+        {
+          "id": "C",
+          "text": "Leraren."
+        },
+        {
+          "id": "D",
+          "text": "Universiteiten."
+        }
+      ],
+      "correct": "A"
+    },
+    {
+      "id": "l25t1q3",
+      "lesson": 25,
+      "lessonTitle": "De economie",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Was Katinka gisteren boos op Dik?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Ja, heel boos."
+        },
+        {
+          "id": "B",
+          "text": "Nee, absoluut niet boos."
+        },
+        {
+          "id": "C",
+          "text": "Een klein beetje boos."
+        }
+      ],
+      "correct": "C"
+    },
+    {
+      "id": "l26t1q1",
+      "lesson": 26,
+      "lessonTitle": "De gezondheid",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Waarom gaat Ingrid naar het ziekenhuis?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Zij gaat op bezoek bij haar tante."
+        },
+        {
+          "id": "B",
+          "text": "Zij heeft een afspraak met een oogarts."
+        },
+        {
+          "id": "C",
+          "text": "Zij krijgt een operatie."
+        },
+        {
+          "id": "D",
+          "text": "Zij heeft een afspraak met haar huisarts."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l26t1q2",
+      "lesson": 26,
+      "lessonTitle": "De gezondheid",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Waar heeft Ingrid haar contactlenzen gekocht?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Bij een oogarts."
+        },
+        {
+          "id": "B",
+          "text": "Bij Hans Anders."
+        },
+        {
+          "id": "C",
+          "text": "Bij haar huisarts."
+        },
+        {
+          "id": "D",
+          "text": "Bij een specialist in het ziekenhuis."
+        }
+      ],
+      "correct": "B"
+    },
+    {
+      "id": "l26t1q3",
+      "lesson": 26,
+      "lessonTitle": "De gezondheid",
+      "text": 1,
+      "textTitle": "",
+      "prompt": "Ingrid vindt een bril niet mooi. Wat zegt Henk?",
+      "options": [
+        {
+          "id": "A",
+          "text": "Henk is het met haar eens."
+        },
+        {
+          "id": "B",
+          "text": "Ingrid kan beter nieuwe contactlenzen nemen."
+        },
+        {
+          "id": "C",
+          "text": "Ingrid ziet er mooi uit met een bril."
+        }
+      ],
+      "correct": "C"
+    }
+  ]
+}

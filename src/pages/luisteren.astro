@@ -1,0 +1,249 @@
+---
+import Base from '../layouts/Base.astro';
+import listeningData from '../data/luisteren-a2.json';
+---
+
+<Base title="Inburgering A2 · Luisteren" description="Oefen luistervaardigheid met 25 willekeurige vragen en een timer van 45 minuten.">
+  <section class="section listen-page">
+    <div class="container listen-shell">
+      <a class="back" href="/words">← Naar oefenen</a>
+
+      <section id="intro" class="intro-card">
+        <p class="eyebrow"><span class="dot"></span> Inburgering · A2</p>
+        <h1>Luisteren<br /><em>exam trainer</em></h1>
+        <p class="lead">25 willekeurige vragen · 45 minuten · video’s uit de Ad Appel A2-playlist.</p>
+        <div class="exam-rules">
+          <span>01 Luister naar de video</span>
+          <span>02 Kies één antwoord</span>
+          <span>03 Controleer pas aan het einde</span>
+        </div>
+        <button id="startExam" class="primary-button" type="button">Start oefenexamen <span>→</span></button>
+        <p class="source-note">Opgaven: Ad Appel Taaltrainingen · dit is een oefentrainer, geen officieel DUO-examen.</p>
+      </section>
+
+      <section id="exam" class="exam" hidden aria-live="polite">
+        <header class="exam-header">
+          <div>
+            <p class="kicker">A2 · Luistervaardigheid</p>
+            <strong id="progress">Vraag 1 van 25</strong>
+          </div>
+          <div id="timer" class="timer" aria-label="Resterende tijd">45:00</div>
+        </header>
+
+        <div class="progress-track" aria-hidden="true"><span id="progressBar"></span></div>
+
+        <div class="exam-grid">
+          <section class="video-card">
+            <div class="video-topline"><span>Luisterfragment</span><button id="newVideo" type="button">Andere video ↻</button></div>
+            <div class="video-frame"><iframe id="video" title="Nederlands A2 luisterfragment" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+            <p id="context" class="context"></p>
+          </section>
+
+          <section class="question-card">
+            <p class="question-label">Kies het beste antwoord</p>
+            <h2 id="question"></h2>
+            <div id="options" class="options" role="radiogroup" aria-label="Antwoorden"></div>
+            <div class="exam-actions">
+              <button id="previous" class="secondary-button" type="button">← Vorige</button>
+              <button id="next" class="primary-button" type="button">Volgende <span>→</span></button>
+            </div>
+            <button id="finish" class="finish-button" type="button">Examen afronden</button>
+          </section>
+        </div>
+
+        <nav id="questionNav" class="question-nav" aria-label="Vragennavigatie"></nav>
+      </section>
+
+      <section id="results" class="results-card" hidden aria-live="polite">
+        <p class="eyebrow"><span class="dot"></span> Resultaat</p>
+        <h1><span id="correctCount">0</span> / 25 goed</h1>
+        <p id="resultSummary" class="lead"></p>
+        <div id="review" class="review"></div>
+        <button id="restart" class="primary-button" type="button">Nieuw oefenexamen <span>↻</span></button>
+      </section>
+    </div>
+  </section>
+</Base>
+
+<script define:vars={{ listeningData }}>
+  const examLength = 25;
+  const examDurationMs = 45 * 60 * 1000;
+  const $ = (selector) => document.querySelector(selector);
+  const intro = $('#intro');
+  const exam = $('#exam');
+  const results = $('#results');
+  const startButton = $('#startExam');
+  const restartButton = $('#restart');
+  const timer = $('#timer');
+  const video = $('#video');
+  const context = $('#context');
+  const question = $('#question');
+  const options = $('#options');
+  const progress = $('#progress');
+  const progressBar = $('#progressBar');
+  const nav = $('#questionNav');
+  const previous = $('#previous');
+  const next = $('#next');
+  const finish = $('#finish');
+  const newVideo = $('#newVideo');
+  let questions = [];
+  let answers = [];
+  let index = 0;
+  let deadline = 0;
+  let clock = null;
+
+  const shuffle = (items) => [...items].sort(() => Math.random() - 0.5);
+  const groupedKeys = [...new Set(listeningData.questions.map((item) => `${item.lesson}-${item.text}`))];
+  const videoByText = new Map(groupedKeys.map((key, index) => [key, listeningData.videoIds[index % listeningData.videoIds.length]]));
+  const videoUrl = (id) => `https://www.youtube-nocookie.com/embed/${id}?rel=0&modestbranding=1`;
+
+  function formatTime(milliseconds) {
+    const seconds = Math.max(0, Math.ceil(milliseconds / 1000));
+    return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
+  }
+
+  function updateTimer() {
+    const remaining = deadline - Date.now();
+    timer.textContent = formatTime(remaining);
+    timer.classList.toggle('urgent', remaining <= 5 * 60 * 1000);
+    if (remaining <= 0) completeExam();
+  }
+
+  function renderQuestion() {
+    const item = questions[index];
+    const answer = answers[index];
+    const key = `${item.lesson}-${item.text}`;
+    progress.textContent = `Vraag ${index + 1} van ${examLength}`;
+    progressBar.style.width = `${((index + 1) / examLength) * 100}%`;
+    question.textContent = item.prompt;
+    context.textContent = `Les ${item.lesson}: ${item.lessonTitle} · Tekst ${item.text}${item.textTitle ? ` — ${item.textTitle}` : ''}`;
+    video.src = videoUrl(videoByText.get(key));
+    options.replaceChildren(...item.options.map((option) => {
+      const label = document.createElement('label');
+      label.className = 'option';
+      const input = document.createElement('input');
+      input.type = 'radio';
+      input.name = 'answer';
+      input.value = option.id;
+      input.checked = answer === option.id;
+      input.addEventListener('change', () => { answers[index] = option.id; renderNav(); });
+      const letter = document.createElement('span');
+      letter.className = 'option-letter';
+      letter.textContent = option.id;
+      const text = document.createElement('span');
+      text.textContent = option.text;
+      label.append(input, letter, text);
+      return label;
+    }));
+    previous.disabled = index === 0;
+    next.textContent = index === examLength - 1 ? 'Naar afronden →' : 'Volgende →';
+    renderNav();
+  }
+
+  function renderNav() {
+    nav.replaceChildren(...questions.map((_, questionIndex) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = String(questionIndex + 1);
+      button.classList.toggle('active', questionIndex === index);
+      button.classList.toggle('answered', Boolean(answers[questionIndex]));
+      button.setAttribute('aria-label', `Vraag ${questionIndex + 1}`);
+      button.addEventListener('click', () => { index = questionIndex; renderQuestion(); });
+      return button;
+    }));
+  }
+
+  function startExam() {
+    questions = shuffle(listeningData.questions).slice(0, examLength);
+    answers = Array(examLength).fill(null);
+    index = 0;
+    deadline = Date.now() + examDurationMs;
+    intro.hidden = true;
+    results.hidden = true;
+    exam.hidden = false;
+    clearInterval(clock);
+    clock = setInterval(updateTimer, 1000);
+    updateTimer();
+    renderQuestion();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function completeExam() {
+    clearInterval(clock);
+    const correct = questions.filter((item, questionIndex) => item.correct === answers[questionIndex]).length;
+    exam.hidden = true;
+    results.hidden = false;
+    $('#correctCount').textContent = String(correct);
+    $('#resultSummary').textContent = `${correct} van ${examLength} antwoorden zijn correct. ${correct >= 20 ? 'Goed gedaan — je zit op een sterk oefenniveau.' : 'Bekijk de antwoorden en probeer daarna een nieuwe willekeurige set.'}`;
+    const review = $('#review');
+    review.replaceChildren(...questions.map((item, questionIndex) => {
+      const selected = answers[questionIndex] || '—';
+      const selectedOption = item.options.find((option) => option.id === selected)?.text || 'Niet beantwoord';
+      const correctOption = item.options.find((option) => option.id === item.correct)?.text || '';
+      const article = document.createElement('article');
+      article.className = `review-item ${selected === item.correct ? 'correct' : 'incorrect'}`;
+      article.innerHTML = `<strong>${questionIndex + 1}. ${item.prompt}</strong><p>Jouw antwoord: <b>${selected}</b> — ${selectedOption}</p>${selected === item.correct ? '' : `<p>Goed antwoord: <b>${item.correct}</b> — ${correctOption}</p>`}`;
+      return article;
+    }));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  startButton.addEventListener('click', startExam);
+  restartButton.addEventListener('click', startExam);
+  previous.addEventListener('click', () => { if (index > 0) { index -= 1; renderQuestion(); } });
+  next.addEventListener('click', () => { if (index < examLength - 1) { index += 1; renderQuestion(); } else finish.focus(); });
+  finish.addEventListener('click', completeExam);
+  newVideo.addEventListener('click', () => { video.src = videoUrl(shuffle(listeningData.videoIds)[0]); });
+</script>
+
+<style>
+  .listen-page { padding-top: clamp(96px, 12vw, 150px); }
+  .listen-shell { max-width: 1060px; }
+  .back { display: inline-block; color: var(--text-dim); margin-bottom: var(--sp-6); }
+  .intro-card, .results-card, .question-card, .video-card { border: 1px solid var(--hairline); background: var(--glass); box-shadow: var(--inner-light); border-radius: var(--r-shell); }
+  .intro-card, .results-card { padding: clamp(28px, 6vw, 72px); }
+  h1 { font-size: var(--fs-h1); margin: var(--sp-5) 0; }
+  h1 em { color: var(--accent); font-style: normal; }
+  .lead { max-width: 58ch; color: var(--text-muted); font-size: var(--fs-lead); }
+  .exam-rules { display: flex; flex-wrap: wrap; gap: var(--sp-3); margin: var(--sp-7) 0; color: var(--text-dim); font-family: var(--font-mono); font-size: .78rem; }
+  .exam-rules span { padding: 9px 12px; border: 1px solid var(--hairline); border-radius: 999px; }
+  button { font: inherit; cursor: pointer; }
+  .primary-button, .secondary-button { border-radius: 999px; padding: 12px 18px; border: 1px solid var(--hairline); font-weight: 600; }
+  .primary-button { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+  .primary-button span { margin-left: 8px; }
+  .secondary-button { color: var(--text); background: transparent; }
+  .source-note { margin-top: var(--sp-5); color: var(--text-faint); font-size: .82rem; }
+  .exam-header { display: flex; justify-content: space-between; align-items: center; gap: var(--sp-4); margin-bottom: var(--sp-4); }
+  .kicker, .question-label, .video-topline { color: var(--text-faint); text-transform: uppercase; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .12em; }
+  .timer { min-width: 96px; text-align: center; border: 1px solid var(--hairline); background: var(--bg-core); border-radius: 999px; padding: 8px 14px; font-family: var(--font-mono); font-size: 1.2rem; }
+  .timer.urgent { color: #fca5a5; border-color: rgba(252,165,165,.5); }
+  .progress-track { height: 3px; background: var(--hairline); border-radius: 99px; margin-bottom: var(--sp-6); overflow: hidden; }
+  .progress-track span { display: block; height: 100%; width: 0; background: var(--accent); transition: width .25s ease; }
+  .exam-grid { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr); gap: var(--sp-5); }
+  .video-card, .question-card { padding: var(--sp-5); }
+  .video-topline { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--sp-4); }
+  .video-topline button, .finish-button { border: 0; background: none; color: var(--accent); font-size: .8rem; }
+  .video-frame { aspect-ratio: 16/9; background: #000; border-radius: var(--r-core); overflow: hidden; }
+  iframe { width: 100%; height: 100%; border: 0; }
+  .context { color: var(--text-dim); margin-top: var(--sp-4); font-size: .86rem; }
+  h2 { font-family: var(--font-sans); font-size: clamp(1.2rem, 2vw, 1.5rem); line-height: 1.35; margin: var(--sp-3) 0 var(--sp-5); }
+  .options { display: grid; gap: var(--sp-3); }
+  .option { display: grid; grid-template-columns: 34px 1fr; gap: 10px; align-items: center; border: 1px solid var(--hairline); border-radius: var(--r-core-sm); padding: 11px; color: var(--text-muted); transition: border-color .2s, background .2s; }
+  .option:hover { border-color: var(--hairline-strong); background: var(--glass-strong); }
+  .option:has(input:checked) { border-color: var(--accent); background: var(--accent-dim); color: var(--text); }
+  .option input { position: absolute; opacity: 0; }
+  .option-letter { width: 30px; height: 30px; display: grid; place-items: center; border: 1px solid currentColor; border-radius: 50%; font-family: var(--font-mono); font-size: .8rem; }
+  .exam-actions { display: flex; justify-content: space-between; gap: var(--sp-3); margin-top: var(--sp-6); }
+  .secondary-button:disabled { opacity: .35; cursor: not-allowed; }
+  .finish-button { display: block; margin: var(--sp-5) auto 0; }
+  .question-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: var(--sp-5); }
+  .question-nav button { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--hairline); color: var(--text-dim); background: transparent; font-size: .78rem; }
+  .question-nav button.answered { border-color: rgba(94,234,212,.55); color: var(--accent); }
+  .question-nav button.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .review { display: grid; gap: var(--sp-3); margin: var(--sp-7) 0; }
+  .review-item { border-left: 3px solid var(--hairline); padding: var(--sp-4); background: var(--glass); border-radius: 0 var(--r-core-sm) var(--r-core-sm) 0; }
+  .review-item.correct { border-color: var(--accent); }
+  .review-item.incorrect { border-color: #fb7185; }
+  .review-item p { margin-top: 6px; color: var(--text-dim); font-size: .9rem; }
+  @media (max-width: 760px) { .exam-grid { grid-template-columns: 1fr; } .exam-header { align-items: flex-start; } .timer { min-width: auto; } .intro-card, .results-card { padding: var(--sp-5); } }
+</style>
