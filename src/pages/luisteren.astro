@@ -18,7 +18,7 @@ import listeningData from '../data/luisteren-a2.json';
       <section id="intro" class="intro-card">
         <p class="eyebrow"><span class="dot"></span> Inburgering · A2</p>
         <h1>Luisteren<br /><em>exam trainer</em></h1>
-        <p class="lead">25 willekeurige vragen · 45 minuten · video’s uit de Ad Appel A2-playlist.</p>
+        <p class="lead">24 vragen · 8 luisterfragmenten · 3 vragen per video · 45 minuten.</p>
         <div class="exam-rules">
           <span>01 Luister naar de video</span>
           <span>02 Kies één antwoord</span>
@@ -32,7 +32,7 @@ import listeningData from '../data/luisteren-a2.json';
         <header class="exam-header">
           <div>
             <p class="kicker">A2 · Luistervaardigheid</p>
-            <strong id="progress">Vraag 1 van 25</strong>
+            <strong id="progress">Vraag 1 van 24</strong>
           </div>
           <div id="timer" class="timer" aria-label="Resterende tijd">45:00</div>
         </header>
@@ -41,7 +41,7 @@ import listeningData from '../data/luisteren-a2.json';
 
         <div class="exam-grid">
           <section class="video-card">
-            <div class="video-topline"><span>Luisterfragment</span><button id="newVideo" type="button">Andere video ↻</button></div>
+            <div class="video-topline"><span id="videoProgress">Luisterfragment 1 van 8 · Vraag 1 van 3</span></div>
             <div class="video-frame"><iframe id="video" title="Nederlands A2 luisterfragment" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
             <p id="context" class="context"></p>
           </section>
@@ -69,7 +69,7 @@ import listeningData from '../data/luisteren-a2.json';
 
       <section id="results" class="results-card" hidden aria-live="polite">
         <p class="eyebrow"><span class="dot"></span> Resultaat</p>
-        <h1><span id="correctCount">0</span> / 25 goed</h1>
+        <h1><span id="correctCount">0</span> / 24 goed</h1>
         <p id="resultSummary" class="lead"></p>
         <div id="review" class="review"></div>
         <button id="restart" class="primary-button" type="button">Nieuw oefenexamen <span>↻</span></button>
@@ -80,7 +80,9 @@ import listeningData from '../data/luisteren-a2.json';
 </html>
 
 <script define:vars={{ listeningData }}>
-  const examLength = 25;
+  const questionsPerVideo = 3;
+  const videoBlockCount = 8;
+  const examLength = questionsPerVideo * videoBlockCount;
   const examDurationMs = 45 * 60 * 1000;
   const $ = (selector) => document.querySelector(selector);
   const intro = $('#intro');
@@ -99,7 +101,7 @@ import listeningData from '../data/luisteren-a2.json';
   const previous = $('#previous');
   const next = $('#next');
   const finish = $('#finish');
-  const newVideo = $('#newVideo');
+  const videoProgress = $('#videoProgress');
   let questions = [];
   let answers = [];
   let index = 0;
@@ -109,7 +111,10 @@ import listeningData from '../data/luisteren-a2.json';
 
   const shuffle = (items) => [...items].sort(() => Math.random() - 0.5);
   const groupedKeys = [...new Set(listeningData.questions.map((item) => `${item.lesson}-${item.text}`))];
-  const videoByText = new Map(groupedKeys.map((key, index) => [key, listeningData.videoIds[index % listeningData.videoIds.length]]));
+  const questionGroups = groupedKeys.map((key, index) => ({
+    videoId: listeningData.videoIds[index % listeningData.videoIds.length],
+    questions: listeningData.questions.filter((item) => `${item.lesson}-${item.text}` === key),
+  }));
   const videoUrl = (id) => `https://www.youtube-nocookie.com/embed/${id}?rel=0&modestbranding=1`;
 
   function formatTime(milliseconds) {
@@ -127,13 +132,15 @@ import listeningData from '../data/luisteren-a2.json';
   function renderQuestion() {
     const item = questions[index];
     const answer = answers[index];
-    const key = `${item.lesson}-${item.text}`;
+    const fragmentNumber = Math.floor(index / questionsPerVideo) + 1;
+    const questionInFragment = (index % questionsPerVideo) + 1;
     visited.add(index);
     progress.textContent = `Vraag ${index + 1} van ${examLength}`;
+    videoProgress.textContent = `Luisterfragment ${fragmentNumber} van ${videoBlockCount} · Vraag ${questionInFragment} van ${questionsPerVideo}`;
     progressBar.style.width = `${((index + 1) / examLength) * 100}%`;
     question.textContent = item.prompt;
     context.textContent = `Les ${item.lesson}: ${item.lessonTitle} · Tekst ${item.text}${item.textTitle ? ` — ${item.textTitle}` : ''}`;
-    video.src = videoUrl(videoByText.get(key));
+    video.src = videoUrl(item.videoId);
     options.replaceChildren(...item.options.map((option) => {
       const label = document.createElement('label');
       label.className = 'option';
@@ -178,7 +185,9 @@ import listeningData from '../data/luisteren-a2.json';
   }
 
   function startExam() {
-    questions = shuffle(listeningData.questions).slice(0, examLength);
+    questions = shuffle(questionGroups)
+      .slice(0, videoBlockCount)
+      .flatMap((group) => group.questions.map((question) => ({ ...question, videoId: group.videoId })));
     answers = Array(examLength).fill(null);
     visited = new Set();
     index = 0;
@@ -218,7 +227,6 @@ import listeningData from '../data/luisteren-a2.json';
   previous.addEventListener('click', () => { if (index > 0) { index -= 1; renderQuestion(); } });
   next.addEventListener('click', () => { if (index < examLength - 1) { index += 1; renderQuestion(); } else finish.focus(); });
   finish.addEventListener('click', completeExam);
-  newVideo.addEventListener('click', () => { video.src = videoUrl(shuffle(listeningData.videoIds)[0]); });
 </script>
 
 <style is:global>
