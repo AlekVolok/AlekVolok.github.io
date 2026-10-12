@@ -214,7 +214,7 @@ import listeningData from '../data/luisteren-a2.json';
   newVideo.addEventListener('click', () => { video.src = videoUrl(shuffle(listeningData.videoIds)[0]); });
 </script>
 
-<style>
+<style is:global>
   .listen-page { padding-top: clamp(96px, 12vw, 150px); }
   .listen-shell { max-width: 1060px; }
   .intro-card, .results-card, .question-card, .video-card { border: 1px solid var(--hairline); background: var(--glass); box-shadow: var(--inner-light); border-radius: var(--r-shell); }
@@ -250,7 +250,7 @@ import listeningData from '../data/luisteren-a2.json';
   .option:has(input:checked) { border-color: var(--accent); background: var(--accent-dim); color: var(--text); }
   .option input { position: absolute; opacity: 0; }
   .option-letter { width: 30px; height: 30px; display: grid; place-items: center; border: 1px solid currentColor; border-radius: 50%; font-family: var(--font-mono); font-size: .8rem; }
-  .option > span:last-child { display: block; min-width: 0; }
+  .option > span:last-child { display: block; min-width: 0; padding-left: 6px; }
   .exam-actions { display: flex; justify-content: space-between; gap: var(--sp-3); margin-top: var(--sp-6); }
   .secondary-button:disabled { opacity: .35; cursor: not-allowed; }
   .finish-button { display: block; margin: var(--sp-5) auto 0; }
