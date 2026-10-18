@@ -1,0 +1,538 @@
+---
+import '../styles/global.css';
+---
+
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="theme-color" content="#050505" />
+    <meta name="robots" content="noindex" />
+    <title>Inburgering A2 · Spreken</title>
+  </head>
+  <body>
+    <main class="section spreken-page">
+    <div class="container spreken-shell">
+      <section id="intro" class="intro-card">
+        <p class="eyebrow"><span class="dot"></span> Inburgering · A2</p>
+        <h1>Spreken<br /><em>oefenexamen</em></h1>
+        <p class="lead"><span id="questionCount"></span> vragen · 45 minuten · je antwoord wordt opgenomen en daarna beoordeeld.</p>
+        <ol class="block-list" id="blockList"></ol>
+        <p id="support" class="support-note" hidden></p>
+        <button id="startExam" class="primary-button" type="button">Start oefenexamen <span>→</span></button>
+        <p class="source-note">Opgaven: Ad Appel Taaltrainingen · dit is een oefentrainer, geen officieel DUO-examen.</p>
+      </section>
+
+      <section id="exam" class="exam" hidden aria-live="polite">
+        <header class="exam-header">
+          <div>
+            <p class="kicker">A2 · Spreekvaardigheid</p>
+            <strong id="progress"></strong>
+          </div>
+          <div class="timers">
+            <div id="examTimer" class="timer" aria-label="Resterende tijd voor het examen">45:00</div>
+            <div id="questionTimer" class="timer small" aria-label="Voorgestelde tijd voor deze vraag">00:00</div>
+          </div>
+        </header>
+
+        <div class="progress-track" aria-hidden="true"><span id="progressBar"></span></div>
+
+        <div class="exam-grid">
+          <section class="question-card">
+            <p class="kicker" id="blockLabel"></p>
+            <p id="instruction" class="instruction"></p>
+
+            <div id="audioBox" class="audio-box" hidden>
+              <p class="hint">Luister naar de vraag. De tekst zie je na het examen.</p>
+              <audio id="questionAudio" controls preload="none"></audio>
+            </div>
+
+            <div id="pictureBox" class="picture-grid" hidden></div>
+            <h2 id="questionText" class="question-text" hidden></h2>
+
+            <div class="record-row">
+              <button id="record" class="record-button" type="button" aria-pressed="false">
+                <span class="record-dot" aria-hidden="true"></span><span id="recordLabel">Start opname</span>
+              </button>
+              <span id="recordStatus" class="record-status" aria-live="polite"></span>
+            </div>
+
+            <label class="transcript-label" for="transcript">Transcript (bewerkbaar)</label>
+            <textarea id="transcript" class="transcript" rows="4" placeholder="Je antwoord verschijnt hier tijdens het spreken, of typ het zelf."></textarea>
+            <audio id="playback" class="playback" controls hidden></audio>
+
+            <div class="exam-actions">
+              <button id="previous" class="secondary-button" type="button">← Vorige</button>
+              <button id="next" class="primary-button" type="button">Volgende <span>→</span></button>
+            </div>
+            <button id="finish" class="finish-button" type="button">Examen afronden</button>
+          </section>
+        </div>
+
+        <section class="question-overview" aria-label="Vraagoverzicht">
+          <div class="overview-heading"><span>Vragen</span></div>
+          <nav id="questionNav" class="question-nav" aria-label="Vragennavigatie"></nav>
+        </section>
+      </section>
+
+      <section id="results" class="results-card" hidden aria-live="polite">
+        <p class="eyebrow"><span class="dot"></span> Resultaat</p>
+        <h1 id="averageScore">Bezig met beoordelen…</h1>
+        <p id="resultSummary" class="lead"></p>
+        <div id="review" class="review"></div>
+        <div class="result-actions">
+          <button id="download" class="secondary-button" type="button" hidden>Download rapport (.md)</button>
+          <button id="restart" class="primary-button" type="button">Nieuw oefenexamen <span>↻</span></button>
+        </div>
+      </section>
+    </div>
+    </main>
+  </body>
+</html>
+
+<script>
+  import config from '../data/spreken-config.json';
+  import audioPool from '../data/spreken-audio.json';
+  import picturePool from '../data/spreken-pictures.json';
+  import { buildExam, buildEvaluationPayload, buildReportMarkdown, encodeWav, parseEvaluation } from '../lib/spreken.js';
+
+  const $ = (selector) => document.querySelector(selector);
+  const intro = $('#intro');
+  const exam = $('#exam');
+  const results = $('#results');
+  const progress = $('#progress');
+  const progressBar = $('#progressBar');
+  const examTimer = $('#examTimer');
+  const questionTimer = $('#questionTimer');
+  const blockLabel = $('#blockLabel');
+  const instruction = $('#instruction');
+  const audioBox = $('#audioBox');
+  const questionAudio = $('#questionAudio');
+  const pictureBox = $('#pictureBox');
+  const questionText = $('#questionText');
+  const transcriptBox = $('#transcript');
+  const playback = $('#playback');
+  const recordButton = $('#record');
+  const recordLabel = $('#recordLabel');
+  const recordStatus = $('#recordStatus');
+  const questionNav = $('#questionNav');
+  const previous = $('#previous');
+  const next = $('#next');
+  const finish = $('#finish');
+
+  const SpeechRecognitionApi = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const canRecord = Boolean(navigator.mediaDevices?.getUserMedia && window.MediaRecorder);
+  const examDurationMs = config.examMinutes * 60 * 1000;
+
+  let questions = [];
+  let answers = [];
+  let index = 0;
+  let deadline = 0;
+  let clock = null;
+  let countdown = null;
+  let recorder = null;
+  let stream = null;
+  let chunks = [];
+  let recognition = null;
+  let recognitionActive = false;
+
+  $('#questionCount').textContent = String(config.blocks.reduce((sum, block) => sum + block.count, 0));
+  $('#blockList').replaceChildren(...config.blocks.map((block) => {
+    const item = document.createElement('li');
+    item.textContent = `${block.title} — ${block.count} vragen · ${block.instruction}`;
+    return item;
+  }));
+  if (!canRecord) {
+    $('#support').hidden = false;
+    $('#support').textContent = 'Deze browser kan geen audio opnemen. Je kunt je antwoord wel typen.';
+  }
+
+  function formatTime(milliseconds) {
+    const seconds = Math.max(0, Math.ceil(milliseconds / 1000));
+    return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
+  }
+
+  function updateExamTimer() {
+    const remaining = deadline - Date.now();
+    examTimer.textContent = formatTime(remaining);
+    examTimer.classList.toggle('urgent', remaining <= 5 * 60 * 1000);
+    if (remaining <= 0) completeExam();
+  }
+
+  function stopRecording() {
+    clearInterval(countdown);
+    recognitionActive = false;
+    if (recognition) recognition.stop();
+    if (recorder && recorder.state !== 'inactive') recorder.stop();
+    recordButton.setAttribute('aria-pressed', 'false');
+    recordButton.classList.remove('recording');
+    recordLabel.textContent = 'Start opname';
+  }
+
+  function showPlayback(answer) {
+    if (answer.audioUrl) {
+      playback.src = answer.audioUrl;
+      playback.hidden = false;
+    } else {
+      playback.removeAttribute('src');
+      playback.hidden = true;
+    }
+  }
+
+  function renderQuestion() {
+    const item = questions[index];
+    const answer = answers[index];
+    const isAudio = item.pictureCount === 0;
+    progress.textContent = `Vraag ${index + 1} van ${questions.length}`;
+    progressBar.style.width = `${((index + 1) / questions.length) * 100}%`;
+    blockLabel.textContent = item.blockTitle;
+    instruction.textContent = item.instruction;
+
+    audioBox.hidden = !isAudio;
+    if (isAudio) {
+      questionAudio.src = item.audio;
+    } else {
+      questionAudio.removeAttribute('src');
+    }
+
+    pictureBox.hidden = isAudio;
+    pictureBox.replaceChildren(...(isAudio ? [] : item.pictures.map((src, pictureIndex) => {
+      const image = document.createElement('img');
+      image.src = src;
+      image.alt = `Plaatje ${pictureIndex + 1} bij vraag ${index + 1}`;
+      image.loading = 'lazy';
+      return image;
+    })));
+    pictureBox.dataset.count = String(item.pictures?.length || 0);
+
+    questionText.hidden = isAudio;
+    questionText.textContent = isAudio ? '' : item.question;
+
+    transcriptBox.value = answer.transcript;
+    showPlayback(answer);
+    clearInterval(countdown);
+    questionTimer.textContent = formatTime(item.seconds * 1000);
+    questionTimer.classList.remove('urgent');
+    recordStatus.textContent = '';
+    previous.disabled = index === 0;
+    next.textContent = index === questions.length - 1 ? 'Naar afronden →' : 'Volgende →';
+    renderNav();
+  }
+
+  function renderNav() {
+    questionNav.replaceChildren(...questions.map((_, questionIndex) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = String(questionIndex + 1);
+      button.classList.toggle('active', questionIndex === index);
+      button.classList.toggle('answered', Boolean(answers[questionIndex].transcript.trim() || answers[questionIndex].audioBlob));
+      button.setAttribute('aria-label', `Vraag ${questionIndex + 1}`);
+      button.addEventListener('click', () => { stopRecording(); index = questionIndex; renderQuestion(); });
+      return button;
+    }));
+  }
+
+  function appendTranscript(answer, text) {
+    answer.transcript = `${answer.transcript} ${text}`.trim();
+    if (answers[index] === answer) transcriptBox.value = answer.transcript;
+  }
+
+  function startSpeechPreview(answer) {
+    if (!SpeechRecognitionApi) {
+      recordStatus.textContent = 'Live transcript niet beschikbaar in deze browser; het transcript wordt door de AI gemaakt.';
+      return;
+    }
+    recognition = new SpeechRecognitionApi();
+    recognition.lang = 'nl-NL';
+    recognition.continuous = true;
+    recognition.interimResults = false;
+    recognition.onresult = (event) => {
+      for (let i = event.resultIndex; i < event.results.length; i += 1) {
+        if (event.results[i].isFinal) appendTranscript(answer, event.results[i][0].transcript);
+      }
+    };
+    // Browsers stop recognition after silence; restart while the recording is still running.
+    recognition.onend = () => { if (recognitionActive) recognition.start(); };
+    recognitionActive = true;
+    recognition.start();
+  }
+
+  async function startRecording() {
+    stopRecording();
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch {
+      recordStatus.textContent = 'Geen toegang tot de microfoon. Controleer de browserrechten.';
+      return;
+    }
+    // Capture the answer now: the user may navigate to another question before onstop fires.
+    const answer = answers[index];
+    const currentStream = stream;
+    const item = questions[index];
+    chunks = [];
+    recorder = new MediaRecorder(currentStream);
+    recorder.ondataavailable = (event) => { if (event.data.size) chunks.push(event.data); };
+    recorder.onstop = () => {
+      const blob = new Blob(chunks, { type: recorder.mimeType || 'audio/webm' });
+      answer.audioBlob = blob;
+      answer.mimeType = blob.type;
+      answer.audioUrl = URL.createObjectURL(blob);
+      currentStream.getTracks().forEach((track) => track.stop());
+      if (answers[index] === answer) showPlayback(answer);
+      renderNav();
+    };
+    recorder.start();
+    startSpeechPreview(answer);
+    recordButton.setAttribute('aria-pressed', 'true');
+    recordButton.classList.add('recording');
+    recordLabel.textContent = 'Stop opname';
+    recordStatus.textContent = 'Aan het opnemen…';
+
+    // The per-question timer is a suggestion: it warns but never stops the recording.
+    const startedAt = Date.now();
+    clearInterval(countdown);
+    countdown = setInterval(() => {
+      const left = item.seconds * 1000 - (Date.now() - startedAt);
+      questionTimer.textContent = formatTime(left);
+      questionTimer.classList.toggle('urgent', left <= 10000);
+    }, 250);
+  }
+
+  function toggleRecording() {
+    if (!canRecord) return;
+    if (recorder && recorder.state === 'recording') stopRecording();
+    else startRecording();
+  }
+
+  function blobToBase64(blob) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result).split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  // Browsers record webm or mp4; OpenRouter takes WAV, so decode and re-encode when possible.
+  async function toWav(blob) {
+    const context = new AudioContext();
+    try {
+      const decoded = await context.decodeAudioData(await blob.arrayBuffer());
+      const channels = Array.from({ length: decoded.numberOfChannels }, (_, channel) => decoded.getChannelData(channel));
+      return new Blob([encodeWav(channels, decoded.sampleRate)], { type: 'audio/wav' });
+    } finally {
+      context.close();
+    }
+  }
+
+  async function evaluate(questionIndex) {
+    const answer = answers[questionIndex];
+    let audioBlob = answer.audioBlob;
+    if (audioBlob) {
+      try {
+        audioBlob = await toWav(audioBlob);
+      } catch {
+        // Keep the original recording if this browser cannot decode it.
+      }
+    }
+    const body = buildEvaluationPayload(questions[questionIndex], {
+      audioBase64: audioBlob ? await blobToBase64(audioBlob) : '',
+      mimeType: audioBlob ? audioBlob.type : '',
+      transcriptHint: answer.transcript,
+    });
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 120000);
+    try {
+      const response = await fetch(config.evaluateUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      });
+      if (!response.ok) throw new Error(`Webhook gaf status ${response.status}`);
+      return parseEvaluation(await response.text());
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
+  function renderResults(entries) {
+    const scored = entries.filter((entry) => entry.result);
+    const average = scored.length ? scored.reduce((sum, entry) => sum + entry.result.score, 0) / scored.length : 0;
+    $('#averageScore').textContent = scored.length ? `${average.toFixed(1)} / 10` : 'Geen beoordeling';
+    $('#resultSummary').textContent = scored.length < entries.length
+      ? `${scored.length} van ${entries.length} vragen zijn beoordeeld. Zie de details hieronder.`
+      : 'Alle vragen zijn beoordeeld. Gebruik de fouten en het voorbeeldantwoord om te leren.';
+
+    const review = $('#review');
+    review.replaceChildren(...entries.map((entry, entryIndex) => {
+      const { item, result } = entry;
+      const article = document.createElement('article');
+      article.className = `review-item ${result && result.score >= 6 ? 'correct' : 'incorrect'}`;
+
+      const heading = document.createElement('strong');
+      heading.textContent = `${entryIndex + 1}. ${item.blockTitle}${result ? ` — ${result.score} / 10` : ''}`;
+      const questionLine = document.createElement('p');
+      questionLine.textContent = `Vraag: ${item.question}`;
+      const transcriptLine = document.createElement('p');
+      transcriptLine.textContent = `Jouw antwoord: ${(result?.transcript || entry.transcript).trim() || '—'}`;
+      article.append(heading, questionLine, transcriptLine);
+
+      if (item.modelAnswer) {
+        const model = document.createElement('p');
+        model.textContent = `Voorbeeldantwoord: ${item.modelAnswer}`;
+        article.append(model);
+      }
+      if (entry.error) {
+        const errorLine = document.createElement('p');
+        errorLine.textContent = entry.error;
+        article.append(errorLine);
+      }
+      if (result) {
+        if (result.mistakes.length) {
+          const mistakes = document.createElement('ul');
+          result.mistakes.forEach((mistake) => {
+            const li = document.createElement('li');
+            li.textContent = `"${mistake.original}" → ${mistake.correction}${mistake.explanation ? ` (${mistake.explanation})` : ''}`;
+            mistakes.append(li);
+          });
+          article.append(mistakes);
+        }
+        if (result.feedback) {
+          const feedback = document.createElement('p');
+          feedback.textContent = result.feedback;
+          article.append(feedback);
+        }
+      }
+      return article;
+    }));
+
+    const download = $('#download');
+    download.hidden = false;
+    download.onclick = () => {
+      const blob = new Blob([buildReportMarkdown(entries)], { type: 'text/markdown' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `spreken-a2-${new Date().toISOString().slice(0, 10)}.md`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    };
+  }
+
+  async function completeExam() {
+    stopRecording();
+    clearInterval(clock);
+    exam.hidden = true;
+    results.hidden = false;
+    $('#averageScore').textContent = 'Bezig met beoordelen…';
+    $('#resultSummary').textContent = '';
+    $('#download').hidden = true;
+    $('#review').replaceChildren();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    const entries = [];
+    for (let questionIndex = 0; questionIndex < questions.length; questionIndex += 1) {
+      const answer = answers[questionIndex];
+      const entry = { item: questions[questionIndex], transcript: answer.transcript, result: null, error: '' };
+      entries.push(entry);
+      if (!answer.audioBlob && !answer.transcript.trim()) {
+        entry.error = 'Geen antwoord opgenomen.';
+        continue;
+      }
+      try {
+        entry.result = await evaluate(questionIndex);
+        entry.transcript = entry.result.transcript || entry.transcript;
+      } catch (error) {
+        entry.error = error.name === 'AbortError' ? 'Beoordeling duurde te lang.' : error.message;
+      }
+    }
+    renderResults(entries);
+  }
+
+  function startExam() {
+    questions = buildExam(config, audioPool, picturePool);
+    answers = questions.map(() => ({ transcript: '', audioBlob: null, audioUrl: '', mimeType: '' }));
+    index = 0;
+    intro.hidden = true;
+    results.hidden = true;
+    exam.hidden = false;
+    deadline = Date.now() + examDurationMs;
+    clearInterval(clock);
+    clock = setInterval(updateExamTimer, 1000);
+    updateExamTimer();
+    renderQuestion();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  $('#startExam').addEventListener('click', startExam);
+  $('#restart').addEventListener('click', () => { results.hidden = true; intro.hidden = false; });
+  recordButton.addEventListener('click', toggleRecording);
+  transcriptBox.addEventListener('input', () => { answers[index].transcript = transcriptBox.value; renderNav(); });
+  previous.addEventListener('click', () => { if (index > 0) { stopRecording(); index -= 1; renderQuestion(); } });
+  next.addEventListener('click', () => { if (index < questions.length - 1) { stopRecording(); index += 1; renderQuestion(); } else finish.focus(); });
+  finish.addEventListener('click', completeExam);
+</script>
+
+<style is:global>
+  .spreken-page { padding-top: clamp(96px, 12vw, 150px); }
+  .spreken-shell { max-width: 1060px; }
+  .intro-card, .results-card, .question-card { border: 1px solid var(--hairline); background: var(--glass); box-shadow: var(--inner-light); border-radius: var(--r-shell); }
+  .intro-card, .results-card { padding: clamp(28px, 6vw, 72px); }
+  .spreken-page h1 { font-size: var(--fs-h1); margin: var(--sp-5) 0; }
+  .spreken-page h1 em { color: var(--accent); font-style: normal; }
+  .spreken-page .lead { max-width: 58ch; color: var(--text-muted); font-size: var(--fs-lead); }
+  .block-list { margin: var(--sp-6) 0; padding-left: 1.2em; color: var(--text-dim); display: grid; gap: var(--sp-2); }
+  .spreken-page button { font: inherit; cursor: pointer; }
+  .primary-button, .secondary-button { border-radius: 999px; padding: 12px 18px; border: 1px solid var(--hairline); font-weight: 600; }
+  .primary-button { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+  .primary-button span { margin-left: 8px; }
+  .secondary-button { color: var(--text); background: transparent; }
+  .secondary-button:disabled { opacity: .35; cursor: not-allowed; }
+  .source-note, .support-note { margin-top: var(--sp-5); color: var(--text-faint); font-size: .82rem; }
+  .support-note { color: #fde68a; }
+  .exam-header { display: flex; justify-content: space-between; align-items: center; gap: var(--sp-4); margin-bottom: var(--sp-4); }
+  .timers { display: flex; gap: var(--sp-2); }
+  .kicker, .transcript-label { color: var(--text-faint); text-transform: uppercase; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .12em; }
+  .timer { min-width: 96px; text-align: center; border: 1px solid var(--hairline); background: var(--bg-core); border-radius: 999px; padding: 8px 14px; font-family: var(--font-mono); font-size: 1.2rem; }
+  .timer.small { font-size: .95rem; min-width: 80px; }
+  .timer.urgent { color: #fca5a5; border-color: rgba(252,165,165,.5); }
+  .progress-track { height: 3px; background: var(--hairline); border-radius: 99px; margin-bottom: var(--sp-6); overflow: hidden; }
+  .progress-track span { display: block; height: 100%; width: 0; background: var(--accent); transition: width .25s ease; }
+  .exam-grid { display: grid; grid-template-columns: minmax(0, 1fr); }
+  .question-card { padding: var(--sp-5); }
+  .instruction { color: var(--text); font-size: 1.05rem; margin: var(--sp-2) 0 var(--sp-5); }
+  .audio-box { border: 1px solid var(--hairline); border-radius: var(--r-core); padding: var(--sp-4); margin-bottom: var(--sp-5); background: var(--bg-core); }
+  .hint { color: var(--text-dim); font-size: .86rem; margin-bottom: var(--sp-3); }
+  .audio-box audio, .playback { width: 100%; }
+  .picture-grid { display: grid; gap: var(--sp-3); margin-bottom: var(--sp-4); grid-template-columns: 1fr; }
+  .picture-grid[data-count="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .picture-grid[data-count="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .picture-grid img { width: 100%; height: auto; display: block; border-radius: var(--r-core); border: 1px solid var(--hairline); background: #fff; }
+  .question-text { font-family: var(--font-sans); font-size: clamp(1.1rem, 2vw, 1.35rem); line-height: 1.4; margin: var(--sp-2) 0 var(--sp-5); }
+  .record-row { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; margin-bottom: var(--sp-5); }
+  .record-button { display: inline-flex; align-items: center; gap: 10px; border-radius: 999px; padding: 12px 18px; border: 1px solid var(--hairline); background: var(--bg-core); color: var(--text); font-weight: 600; }
+  .record-dot { width: 10px; height: 10px; border-radius: 50%; background: #fb7185; }
+  .record-button.recording { border-color: #fb7185; }
+  .record-button.recording .record-dot { animation: pulse 1s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity: .3; } }
+  .record-status { color: var(--text-dim); font-size: .86rem; }
+  .transcript-label { display: block; margin-bottom: var(--sp-2); }
+  .transcript { width: 100%; box-sizing: border-box; background: var(--bg-core); color: var(--text); border: 1px solid var(--hairline); border-radius: var(--r-core-sm); padding: 12px; font: inherit; resize: vertical; }
+  .playback { margin-top: var(--sp-4); }
+  .exam-actions { display: flex; justify-content: space-between; gap: var(--sp-3); margin-top: var(--sp-6); }
+  .finish-button { display: block; margin: var(--sp-5) auto 0; border: 0; background: none; color: var(--accent); font-size: .8rem; }
+  .question-overview { margin-top: var(--sp-6); padding: var(--sp-4); border: 1px solid var(--hairline); border-radius: var(--r-core-sm); background: rgba(255,255,255,.018); }
+  .overview-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--sp-3); color: var(--text-dim); font-size: .8rem; }
+  .question-nav { display: grid; grid-template-columns: repeat(auto-fill, minmax(38px, 1fr)); gap: 8px; }
+  .question-nav button { height: 38px; border-radius: 10px; border: 1px solid var(--hairline); color: var(--text-dim); background: var(--bg-core); font-family: var(--font-mono); font-size: .76rem; }
+  .question-nav button.answered { border-color: rgba(94,234,212,.65); background: rgba(94,234,212,.12); color: var(--accent-hi); }
+  .question-nav button.active { outline: 2px solid var(--text); outline-offset: 2px; }
+  .review { display: grid; gap: var(--sp-3); margin: var(--sp-7) 0; }
+  .review-item { border-left: 3px solid var(--hairline); padding: var(--sp-4); background: var(--glass); border-radius: 0 var(--r-core-sm) var(--r-core-sm) 0; }
+  .review-item.correct { border-color: var(--accent); }
+  .review-item.incorrect { border-color: #fb7185; }
+  .review-item p, .review-item li { margin-top: 6px; color: var(--text-dim); font-size: .9rem; }
+  .result-actions { display: flex; flex-wrap: wrap; gap: var(--sp-3); }
+  @media (max-width: 760px) { .exam-header { align-items: flex-start; flex-direction: column; } .picture-grid[data-count="2"], .picture-grid[data-count="3"] { grid-template-columns: 1fr; } .intro-card, .results-card { padding: var(--sp-5); } .timer { min-width: auto; } }
+</style>

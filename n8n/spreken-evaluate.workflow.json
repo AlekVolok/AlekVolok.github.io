@@ -1,0 +1,234 @@
+{
+  "name": "Spreken A2 — evaluate",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "spreken-evaluate",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "https://alekvolok.github.io,http://localhost:4321"
+        }
+      },
+      "id": "webhook",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        200
+      ],
+      "webhookId": "6f1c2b1e-spreken-evaluate-0001"
+    },
+    {
+      "parameters": {
+        "jsCode": "const p = $input.first().json.body;\nconst formatFor = (mime) => (mime || '').includes('mp4') ? 'mp4' : (mime || '').includes('wav') ? 'wav' : (mime || '').includes('mpeg') ? 'mp3' : 'webm';\nconst system = \"You are an examiner for the Dutch Inburgering A2 speaking exam (Spreken).\\nYou receive one exam question: its block type, the instruction, the question text, key points a good answer covers, an optional picture description, a reference answer and the candidate audio.\\nBlock types by pictureCount: 0 = listen to the question and answer in one or two sentences; 1 = describe at least three things on the picture; 2 = choose one of two pictures and explain why; 3 = name all pictures and say what you can do with them.\\nStep 1: transcribe the candidate audio in Dutch. Ignore hesitation words. If there is no audio, use the speech hint as transcript.\\nStep 2: grade the transcript for task completion, vocabulary and grammar. Ignore punctuation, capitalisation and obvious recognition errors. Judge the language the candidate actually produced.\\nReply with JSON only, no markdown, in this shape:\\n{\\\"transcript\\\": \\\"<Dutch transcript>\\\", \\\"score\\\": <integer 0-10>, \\\"completed\\\": <true or false>, \\\"strengths\\\": [\\\"<English>\\\"], \\\"missingPoints\\\": [\\\"<key points not covered>\\\"], \\\"mistakes\\\": [{\\\"original\\\": \\\"<exact fragment from transcript>\\\", \\\"correction\\\": \\\"<Dutch correction>\\\", \\\"explanation\\\": \\\"<short English explanation of the rule>\\\"}], \\\"feedback\\\": \\\"<2-3 sentences in English with the most useful advice>\\\"}\\nList at most 6 mistakes, the most important first. If there are no mistakes return an empty array.\";\nconst userText = ['Block pictureCount: ' + p.pictureCount + ' (0 = audio-only question)', 'Instruction (Dutch): ' + p.instruction, 'Question (Dutch): ' + (p.question || 'audio only, not shown to candidate'), 'Key points: ' + (p.keyPoints || []).join('; '), 'Picture description: ' + (p.pictureDescription || 'none'), 'Reference answer (Dutch): ' + (p.referenceAnswer || 'none'), 'Browser speech hint (may be wrong or empty): ' + (p.transcriptHint || 'none')].join('\\n');\nconst content = [{ type: 'text', text: userText }];\nif (p.audio && p.audio.base64) content.push({ type: 'input_audio', input_audio: { data: p.audio.base64, format: formatFor(p.audio.mimeType) } });\nconst messages = [{ role: 'system', content: system }, { role: 'user', content }];\nconst freeContent = [{ type: 'text', text: userText + '\\nNo audio is attached. Use the browser speech hint as the transcript.' }];\nconst freeMessages = [{ role: 'system', content: system }, { role: 'user', content: freeContent }];\nconst freeModel = (p.transcriptHint || '').trim() ? 'nvidia/nemotron-3.5-super-vl:free' : '';\nreturn [{ json: { freeModel, paidModel: 'google/gemini-2.5-flash', messages, freeMessages } }];"
+      },
+      "id": "build",
+      "name": "Build request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: $(\"Build request\").first().json.freeModel, messages: $(\"Build request\").first().json.freeMessages, temperature: 0.2 }) }}",
+        "options": {
+          "timeout": 90000
+        }
+      },
+      "id": "OpenRouter free",
+      "name": "OpenRouter free",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        200
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "REPLACE_WITH_OPENROUTER_CREDENTIAL",
+          "name": "OpenRouter (Authorization: Bearer ...)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "has-reply",
+              "leftValue": "={{ $json.choices?.[0]?.message?.content ?? \"\" }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-ok",
+      "name": "Free model replied?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        720,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: $(\"Build request\").first().json.paidModel, messages: $(\"Build request\").first().json.messages, temperature: 0.2 }) }}",
+        "options": {
+          "timeout": 90000
+        }
+      },
+      "id": "OpenRouter paid fallback",
+      "name": "OpenRouter paid fallback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        340
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "REPLACE_WITH_OPENROUTER_CREDENTIAL",
+          "name": "OpenRouter (Authorization: Bearer ...)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json.choices[0].message.content;\nconst start = raw.indexOf('{');\nconst end = raw.lastIndexOf('}');\nif (start === -1 || end <= start) throw new Error('Model reply contained no JSON');\nreturn [{ json: JSON.parse(raw.slice(start, end + 1)) }];"
+      },
+      "id": "parse",
+      "name": "Parse evaluation",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "id": "respond",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1440,
+        200
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Build request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build request": {
+      "main": [
+        [
+          {
+            "node": "OpenRouter free",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter free": {
+      "main": [
+        [
+          {
+            "node": "Free model replied?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Free model replied?": {
+      "main": [
+        [
+          {
+            "node": "Parse evaluation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "OpenRouter paid fallback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter paid fallback": {
+      "main": [
+        [
+          {
+            "node": "Parse evaluation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse evaluation": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false
+}

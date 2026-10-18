@@ -1,0 +1,1005 @@
+[
+  {
+    "id": "a001",
+    "number": 1,
+    "title": "Работа в городе, жизнь в деревне",
+    "question": "Sommige mensen wonen in een dorp en reizen naar de stad voor hun werk. Wat vindt u daarvan? Vertel ook waarom.",
+    "keyPoints": [
+      "Сказать мнение",
+      "Объяснить причину"
+    ],
+    "modelAnswer": "Ik vind dat prima, want werk is belangrijk.",
+    "audio": "/spreken/audio/001.m4a"
+  },
+  {
+    "id": "a002",
+    "number": 2,
+    "title": "Новая профессия в 60 лет",
+    "question": "Ik ben zestig jaar oud en ik ga op cursus omdat ik een nieuwe baan wil. Wat vindt u daarvan? Vertel ook waarom.",
+    "keyPoints": [
+      "Сказать мнение",
+      "Объяснить причину"
+    ],
+    "modelAnswer": "Ik vind dat prima, want een nieuwe baan is belangrijk.",
+    "audio": "/spreken/audio/002.m4a"
+  },
+  {
+    "id": "a003",
+    "number": 3,
+    "title": "Что брать с собой из дома",
+    "question": "Ik neem een fles water mee als ik van huis ga. Wat neemt u mee als u van huis gaat? Vertel ook waarom.",
+    "keyPoints": [
+      "Назвать, что берёшь",
+      "Объяснить причину"
+    ],
+    "modelAnswer": "Wat toevallig! Ik neem ook een fles water mee, want dat is gezond.",
+    "audio": "/spreken/audio/003.m4a"
+  },
+  {
+    "id": "a004",
+    "number": 4,
+    "title": "Где живёшь и где хочешь жить",
+    "question": "Waar woont u nu? Vertel ook waar u graag zou willen wonen.",
+    "keyPoints": [
+      "Назвать нынешнее место жительства",
+      "Назвать желаемое место жительства"
+    ],
+    "modelAnswer": "Ik woon nu in Nederland. Ik wil graag in Portugal wonen.",
+    "audio": "/spreken/audio/004.mp3"
+  },
+  {
+    "id": "a005",
+    "number": 5,
+    "title": "Важен ли школьный аттестат",
+    "question": "Wat vindt u van een schooldiploma? Vindt u het belangrijk? Vertel ook waarom.",
+    "keyPoints": [
+      "Сказать мнение об аттестате и его важности",
+      "Объяснить причину"
+    ],
+    "modelAnswer": "Ik vind een schooldiploma belangrijk, want werk is belangrijk voor mij.",
+    "audio": "/spreken/audio/005.mp3"
+  },
+  {
+    "id": "a006",
+    "number": 6,
+    "title": "В какое время дня нравится работать",
+    "question": "In welk deel van de dag werkt u het liefst? Vertel ook waarom.",
+    "keyPoints": [
+      "Назвать время дня",
+      "Объяснить причину"
+    ],
+    "modelAnswer": "Ik werk het liefst in de avond, want dan ben ik vrij.",
+    "audio": "/spreken/audio/006.mp3"
+  },
+  {
+    "id": "a007",
+    "number": 7,
+    "title": "Мусор на улице",
+    "question": "U loopt op straat en u ziet dat iemand afval op de grond gooit. Wat doet u dan? Vertel ook waarom.",
+    "keyPoints": [
+      "Назвать своё действие в ситуации",
+      "Объяснить причину"
+    ],
+    "modelAnswer": "Ik pak het afval op, want mijn buurt is belangrijk voor mij.",
+    "audio": "/spreken/audio/007.mp3"
+  },
+  {
+    "id": "a008",
+    "number": 8,
+    "title": "Любимый спорт и частота занятий",
+    "question": "Wat is uw favoriete sport? Hoe vaak doet u die sport?",
+    "keyPoints": [
+      "Назвать любимый спорт",
+      "Назвать частоту занятий"
+    ],
+    "modelAnswer": "Ik fiets graag. Ik fiets elke dag.",
+    "audio": "/spreken/audio/008.mp3"
+  },
+  {
+    "id": "a009",
+    "number": 9,
+    "title": "Преподаватель нидерландского",
+    "question": "Ik heb veel geleerd van mijn leraar Nederlands. Wat heeft u geleerd van uw leraar Nederlands? Vertel ook waar uw leraar goed in is.",
+    "keyPoints": [
+      "Сказать, чему научился у преподавателя",
+      "Сказать, что преподаватель умеет хорошо"
+    ],
+    "modelAnswer": "Ik heb geen leraar want dat is duur. Ik studeer met chat gpt en tiktok want dat is gratis",
+    "audio": "/spreken/audio/009.mp3"
+  },
+  {
+    "id": "a010",
+    "number": 10,
+    "title": "Когда лучше всего работается",
+    "question": "Ik werk het best in de avond. Wanneer werkt u het best? Vertel ook waarom.",
+    "keyPoints": [
+      "Назвать время",
+      "Объяснить причину"
+    ],
+    "modelAnswer": "Wat toevallig! Ik werk ook het best in de avond, want dan ben ik vrij.",
+    "audio": "/spreken/audio/010.mp3"
+  },
+  {
+    "id": "a011",
+    "number": 11,
+    "title": "Где находится твой врач",
+    "question": "Mijn huisarts is in de straat \"Waterkersweg\". Waar is uw huisarts? Wat vindt u van hem?",
+    "keyPoints": [
+      "Назвать местонахождение врача",
+      "Сказать мнение о враче"
+    ],
+    "modelAnswer": "Mijn huisarts is in mijn buurt. Ik vind hem aardig.",
+    "audio": "/spreken/audio/011.mp3"
+  },
+  {
+    "id": "a012",
+    "number": 12,
+    "title": "Отношение к велосипеду",
+    "question": "Wat vind je van fietsen? Vertel ook of u zelf fietst.",
+    "keyPoints": [
+      "Сказать мнение о велосипеде",
+      "Сказать, ездишь ли сам"
+    ],
+    "modelAnswer": "Ik vind fietsen prima, want dat is gezond. Ik fiets zelf ook.",
+    "audio": "/spreken/audio/012.mp3"
+  },
+  {
+    "id": "a013",
+    "number": 13,
+    "title": "Перерыв на работе",
+    "question": "Ik neem pauze op het werk. Neemt u ook pauze? Vertel ook wat u dan doet.",
+    "keyPoints": [
+      "Сказать, делаешь ли перерыв",
+      "Назвать занятие во время перерыва"
+    ],
+    "modelAnswer": "Wat toevallig! Ik neem ook pauze op het werk. Ik drink dan koffie.",
+    "audio": "/spreken/audio/013.mp3"
+  },
+  {
+    "id": "a014",
+    "number": 14,
+    "title": "Когда отпуск и сколько он длится",
+    "question": "Ik heb binnenkort vakantie. Wanneer heeft u vakantie? Hoe lang duurt uw vakantie?",
+    "keyPoints": [
+      "Назвать время отпуска",
+      "Назвать длительность"
+    ],
+    "modelAnswer": "Ik heb in september vakantie. Mijn vakantie duurt twee weken.",
+    "audio": "/spreken/audio/014.mp3"
+  },
+  {
+    "id": "a015",
+    "number": 15,
+    "title": "Что должен уметь преподаватель",
+    "question": "Ik ben leraar Nederlands. Wat moet een goede leraar kunnen doen? Vertel ook waarom?",
+    "keyPoints": [
+      "Назвать умение хорошего преподавателя",
+      "Объяснить причину"
+    ],
+    "modelAnswer": "Een goede leraar moet goed Nederlands kunnen spreken, want dat is belangrijk.",
+    "audio": "/spreken/audio/015.mp3"
+  },
+  {
+    "id": "a016",
+    "number": 16,
+    "title": "Любимый школьный предмет",
+    "question": "Mijn favoriete vak op school is Nederlands. Wat is uw favoriete vak? Wat doet u daar graag?",
+    "keyPoints": [
+      "Назвать любимый предмет",
+      "Назвать занятие на нём"
+    ],
+    "modelAnswer": "Wat toevallig! Mijn favoriete vak is ook Nederlands. Ik schrijf daar graag.",
+    "audio": "/spreken/audio/016.mp3"
+  },
+  {
+    "id": "a017",
+    "number": 17,
+    "title": "Любимые и нелюбимые вечерние занятия",
+    "question": "Wat doet u graag in de avond? Wat doet u niet graag in de avond?",
+    "keyPoints": [
+      "Назвать любимое вечернее занятие",
+      "Назвать нелюбимое вечернее занятие"
+    ],
+    "modelAnswer": "Ik kijk graag tiktok in de avond. Ik werk niet graag in de avond.",
+    "audio": "/spreken/audio/017.mp3"
+  },
+  {
+    "id": "a018",
+    "number": 18,
+    "title": "Самое важное в телефоне",
+    "question": "Ik vind de camera in mijn telefoon belangrijk. Wat vindt u het belangrijkste in uw telefoon? Vertel ook waarom",
+    "keyPoints": [
+      "Назвать самое важное в телефоне",
+      "Объяснить причину"
+    ],
+    "modelAnswer": "Wat toevallig! Ik vind de camera ook het belangrijkste, want ik maak graag foto's.",
+    "audio": "/spreken/audio/018.mp3"
+  },
+  {
+    "id": "a019",
+    "number": 19,
+    "title": "Ходьба босиком",
+    "question": "Ik loop vaak op blote voeten. Hoe vaak loopt u op blote voeten? Vertel ook waarom.",
+    "keyPoints": [
+      "Назвать частоту",
+      "Объяснить причину"
+    ],
+    "modelAnswer": "Ik loop nooit op blote voeten, want dat vind ik niet prettig.",
+    "audio": "/spreken/audio/019.mp3"
+  },
+  {
+    "id": "a020",
+    "number": 20,
+    "title": "Что делал вчера и где",
+    "question": "Wat hebt u gisteren gedaan? Zeg ook waar u dat hebt gedaan.",
+    "keyPoints": [
+      "Назвать вчерашнее действие",
+      "Назвать место"
+    ],
+    "modelAnswer": "Ik was in het park en ik ga elke dag naar het park. Ik drink koffie in het park.",
+    "audio": "/spreken/audio/020.mp3"
+  },
+  {
+    "id": "a021",
+    "number": 21,
+    "title": "Что делать при плохом настроении",
+    "question": "Als ik een slecht humeur heb, blijf ik thuis. Wat doet u als u een slecht humeur hebt? Vertel ook waarom",
+    "keyPoints": [
+      "Назвать своё действие",
+      "Объяснить причину"
+    ],
+    "modelAnswer": "Wat toevallig! Ik blijf ook thuis, want ik kijk graag tiktok.",
+    "audio": "/spreken/audio/021.mp3"
+  },
+  {
+    "id": "a022",
+    "number": 22,
+    "title": "Пролитый кофе",
+    "question": "Ik heb koffie op tafel gemorst. Overkomt u dat vaak? Wat doet u dan? Vertel ook waarom.",
+    "keyPoints": [
+      "Сказать, часто ли это случается",
+      "Назвать действие",
+      "Объяснить причину"
+    ],
+    "modelAnswer": "Dat gebeurt soms. Ik maak de tafel schoon, want dat is belangrijk.",
+    "audio": "/spreken/audio/022.mp3"
+  },
+  {
+    "id": "a023",
+    "number": 23,
+    "title": "Сломался компьютер",
+    "question": "Uw computer is kapot. Wat doet u dan? Vertel ook waarom",
+    "keyPoints": [
+      "Назвать действие при поломке",
+      "Объяснить причину"
+    ],
+    "modelAnswer": "Ik gebruik mijn telefoon, want ik heb niet genoeg geld voor een nieuwe computer.",
+    "audio": "/spreken/audio/023.mp3"
+  },
+  {
+    "id": "a024",
+    "number": 24,
+    "title": "Деревня или город",
+    "question": "Woont u liever in een dorp of in de stad? Vertel ook waarom.",
+    "keyPoints": [
+      "Выбрать деревню или город",
+      "Объяснить причину"
+    ],
+    "modelAnswer": "Ik woon liever in de stad, want mijn werk is daar.",
+    "audio": "/spreken/audio/024.mp3"
+  },
+  {
+    "id": "a025",
+    "number": 25,
+    "title": "Знак зодиака и твои умения",
+    "question": "Ik ben van sterrenbeeld Leeuw. Ik kan goed leren. Wat is uw sterrenbeeld? Wat kunt u goed?",
+    "keyPoints": [
+      "Назвать знак зодиака",
+      "Назвать своё умение"
+    ],
+    "modelAnswer": "Wat toevallig! Ik ben ook Leeuw. Ik kan goed kebab maken.",
+    "audio": "/spreken/audio/025.mp3"
+  },
+  {
+    "id": "a026",
+    "number": 26,
+    "title": "Когда есть свободное время",
+    "question": "Ik ben vrij op maandagavond, omdat ik vrij heb. Wanneer bent u vrij? Vertel ook waarom.",
+    "keyPoints": [
+      "Назвать свободное время",
+      "Объяснить причину"
+    ],
+    "modelAnswer": "Wat toevallig! Ik ben ook op maandagavond vrij, want dan werk ik niet.",
+    "audio": "/spreken/audio/026.mp3"
+  },
+  {
+    "id": "a027",
+    "number": 27,
+    "title": "Работа и занятия в выходные",
+    "question": "Sommige mensen werken in het weekend. Werkt u in het weekend? Wat doet u dan? Wat vindt u daarvan?",
+    "keyPoints": [
+      "Сказать, работаешь ли в выходные",
+      "Назвать занятие",
+      "Сказать мнение"
+    ],
+    "modelAnswer": "Ja, ik werk in het weekend. Ik maak kebab. Ik vind dat prima.",
+    "audio": "/spreken/audio/027.mp3"
+  },
+  {
+    "id": "a028",
+    "number": 28,
+    "title": "Сколько спален и как они выглядят",
+    "question": "Mijn huis heeft twee slaapkamers. Hoeveel slaapkamers heeft uw huis? Vertel ook hoe uw slaapkamers eruitzien?",
+    "keyPoints": [
+      "Назвать число спален",
+      "Описать их вид"
+    ],
+    "modelAnswer": "Wat toevallig! Mijn huis heeft ook twee slaapkamers. Ze zijn klein en mooi.",
+    "audio": "/spreken/audio/028.mp3"
+  },
+  {
+    "id": "a029",
+    "number": 29,
+    "title": "Для чего нужен интернет",
+    "question": "Ik gebruik internet om nieuws te lezen. Waarvoor gebruikt u internet? Vertel ook waarom",
+    "keyPoints": [
+      "Назвать цель использования интернета",
+      "Объяснить причину"
+    ],
+    "modelAnswer": "Ik gebruik internet om tiktok te kijken, want dat is gratis.",
+    "audio": "/spreken/audio/029.mp3"
+  },
+  {
+    "id": "a030",
+    "number": 30,
+    "title": "Когда делать домашнее задание",
+    "question": "Ik maak mijn huiswerk het liefst in de avond. Wanneer maakt u uw huiswerk het liefst? Vertel ook waarom.",
+    "keyPoints": [
+      "Назвать время домашнего задания",
+      "Объяснить причину"
+    ],
+    "modelAnswer": "Wat toevallig! Ik maak mijn huiswerk ook het liefst in de avond, want dan ben ik vrij.",
+    "audio": "/spreken/audio/030.mp3"
+  },
+  {
+    "id": "a031",
+    "number": 31,
+    "title": "Чтение в библиотеке",
+    "question": "Ik lees graag in de bibliotheek. Leest u daar ook graag? Vertel ook waarom?",
+    "keyPoints": [
+      "Сказать, нравится ли читать в библиотеке",
+      "Объяснить причину"
+    ],
+    "modelAnswer": "Wat toevallig! Ik lees daar ook graag, want dat is gratis.",
+    "audio": "/spreken/audio/031.mp3"
+  },
+  {
+    "id": "a032",
+    "number": 32,
+    "title": "Как задать вопрос преподавателю",
+    "question": "Als ik iets aan de docent wil vragen, steek ik mijn hand op. Wat doet u als u iets aan uw docent wilt vragen? Vertel ook wat uw docent dan doet?",
+    "keyPoints": [
+      "Назвать своё действие",
+      "Назвать действие преподавателя"
+    ],
+    "modelAnswer": "Wat toevallig! Ik steek ook mijn hand op. De docent geeft dan antwoord.",
+    "audio": "/spreken/audio/032.mp3"
+  },
+  {
+    "id": "a033",
+    "number": 33,
+    "title": "Последний трудный экзамен и подготовка",
+    "question": "Morgen heb ik een moeilijk examen. Wanneer had u voor het laatst een moeilijk examen? Vertel ook wat u voor de examens doet?",
+    "keyPoints": [
+      "Назвать время последнего трудного экзамена",
+      "Назвать подготовку к экзаменам"
+    ],
+    "modelAnswer": "Mijn laatste moeilijke examen was in september. Voor een examen studeer ik elke dag.",
+    "audio": "/spreken/audio/033.mp3"
+  },
+  {
+    "id": "a034",
+    "number": 34,
+    "title": "Как часто и во сколько чистить зубы",
+    "question": "Ik poets mijn tanden twee keer per dag. Hoe vaak poetst u uw tanden? Vertel ook hoe laat u uw tanden poetst?",
+    "keyPoints": [
+      "Назвать частоту",
+      "Назвать время"
+    ],
+    "modelAnswer": "Wat toevallig! Ik poets ook twee keer per dag mijn tanden. Om acht uur en om tien uur in de avond.",
+    "audio": "/spreken/audio/034.mp3"
+  },
+  {
+    "id": "a035",
+    "number": 35,
+    "title": "Кто учил нидерландскому и когда начал",
+    "question": "Ik heb Nederlands geleerd van mijn ouders. Wie heeft u Nederlands geleerd? Wanneer bent u begonnen met Nederlands leren?",
+    "keyPoints": [
+      "Назвать, кто учил языку",
+      "Назвать время начала"
+    ],
+    "modelAnswer": "Ik heb Nederlands geleerd van mijn leraar. Ik ben in september begonnen.",
+    "audio": "/spreken/audio/035.mp3"
+  },
+  {
+    "id": "a036",
+    "number": 36,
+    "title": "Как договориться о встрече с друзьями",
+    "question": "Als ik mijn vrienden wil zien, maak ik een afspraak. Wat vindt u daarvan? Wat doet u als u uw vrienden wilt zien?",
+    "keyPoints": [
+      "Сказать мнение",
+      "Назвать своё действие"
+    ],
+    "modelAnswer": "Ik vind dat prima. Ik maak ook een afspraak met mijn vrienden.",
+    "audio": "/spreken/audio/036.mp3"
+  },
+  {
+    "id": "a037",
+    "number": 37,
+    "title": "Что делаешь вечером и что не каждый вечер",
+    "question": "Wat doet u meestal in de avond en wat doet u juist niet elke avond?",
+    "keyPoints": [
+      "Назвать обычное вечернее занятие",
+      "Назвать то, что делаешь не каждый вечер"
+    ],
+    "modelAnswer": "Ik kijk meestal tiktok in de avond. Ik werk niet elke avond.",
+    "audio": "/spreken/audio/037.mp3"
+  },
+  {
+    "id": "a038",
+    "number": 38,
+    "title": "Братья, сёстры и общение с ними",
+    "question": "Heeft u broers of zussen? Hoeveel heeft u er en hoe vaak ziet of spreekt u hen?",
+    "keyPoints": [
+      "Сказать, есть ли братья или сёстры",
+      "Назвать число",
+      "Назвать частоту общения"
+    ],
+    "modelAnswer": "Ja, ik heb een broer. Ik spreek hem elke dag.",
+    "audio": "/spreken/audio/038.mp3"
+  },
+  {
+    "id": "a039",
+    "number": 39,
+    "title": "В какое время лучше сдавать экзамены",
+    "question": "Wanneer doet u het liefst examens en waarom voelt u zich dan het beste?",
+    "keyPoints": [
+      "Назвать время",
+      "Объяснить, почему тогда лучше себя чувствуешь"
+    ],
+    "modelAnswer": "Ik doe het liefst examens in de avond, want dan ben ik vrij.",
+    "audio": "/spreken/audio/039.mp3"
+  },
+  {
+    "id": "a040",
+    "number": 40,
+    "title": "Чистка зубов и время дня",
+    "question": "Hoe vaak poetst u uw tanden en op welke momenten van de dag doet u dat precies?",
+    "keyPoints": [
+      "Назвать частоту",
+      "Назвать время дня"
+    ],
+    "modelAnswer": "Ik poets twee keer per dag mijn tanden. In de ochtend en in de avond.",
+    "audio": "/spreken/audio/040.mp3"
+  },
+  {
+    "id": "a041",
+    "number": 41,
+    "title": "Сколько было экзаменов и как готовиться",
+    "question": "Hoe vaak heeft u in het verleden examens gedaan? Wat doet u meestal om u goed voor te bereiden?",
+    "keyPoints": [
+      "Назвать число или частоту прошлых экзаменов",
+      "Назвать способ подготовки"
+    ],
+    "modelAnswer": "Ik heb twee keer examen gedaan. Ik studeer elke dag voor een examen.",
+    "audio": "/spreken/audio/041.mp3"
+  },
+  {
+    "id": "a042",
+    "number": 42,
+    "title": "Где живёшь, описание и желаемое жильё",
+    "question": "Waar woont u nu? Kunt u beschrijven hoe uw woonplaats eruitziet? Waar zou u graag willen wonen en waarom juist daar?",
+    "keyPoints": [
+      "Назвать нынешнее место",
+      "Описать его",
+      "Назвать желаемое место",
+      "Объяснить выбор"
+    ],
+    "modelAnswer": "Ik woon in Nederland. Mijn woonplaats is mooi en heeft een park. Ik wil graag in Portugal wonen, want het weer is mooi.",
+    "audio": "/spreken/audio/042.mp3"
+  },
+  {
+    "id": "a043",
+    "number": 43,
+    "title": "Маленькая кухня",
+    "question": "Ik heb een kleine keuken. En u? Wat vindt u daarvan?",
+    "keyPoints": [
+      "Описать свою кухню",
+      "Сказать мнение"
+    ],
+    "modelAnswer": "Wat toevallig! Ik heb ook een kleine keuken. Ik vind dat prima.",
+    "audio": "/spreken/audio/043.mp3"
+  },
+  {
+    "id": "a044",
+    "number": 44,
+    "title": "Чему хочешь научиться и где",
+    "question": "Ik wil graag iets nieuws leren. Wat wilt u leren, waar wilt u dat leren en waarom juist dat?",
+    "keyPoints": [
+      "Назвать, чему хочешь научиться",
+      "Назвать место или площадку",
+      "Объяснить выбор"
+    ],
+    "modelAnswer": "Ik wil kebab leren maken. Ik wil dat thuis met tiktok leren, want ik eet graag kebab.",
+    "audio": "/spreken/audio/044.mp3"
+  },
+  {
+    "id": "a045",
+    "number": 45,
+    "title": "Другие способы использования интернета",
+    "question": "Ik gebruik internet om het nieuws te lezen. Waarvoor gebruikt u internet nog meer? Waarom gebruikt u internet juist voor deze dingen?",
+    "keyPoints": [
+      "Назвать другую цель использования интернета",
+      "Объяснить причину"
+    ],
+    "modelAnswer": "Ik gebruik internet ook om tiktok te kijken, want dat is gratis.",
+    "audio": "/spreken/audio/045.mp3"
+  },
+  {
+    "id": "a046",
+    "number": 46,
+    "title": "Мнение о работе в выходные",
+    "question": "Ik werk soms in het weekend. Wat vindt u daarvan? Vindt u werken in het weekend goed of juist lastig, en waarom?",
+    "keyPoints": [
+      "Сказать мнение о работе в выходные",
+      "Объяснить причину"
+    ],
+    "modelAnswer": "Ik vind werken in het weekend prima, want werk is belangrijk voor mij.",
+    "audio": "/spreken/audio/046.mp3"
+  },
+  {
+    "id": "a047",
+    "number": 47,
+    "title": "Лучшее время для домашних заданий",
+    "question": "Ik maak mijn huiswerk het liefst in de avond. Wanneer maakt u uw huiswerk het liefst? Waarom werkt dat moment voor u het beste?",
+    "keyPoints": [
+      "Назвать время",
+      "Объяснить, почему оно подходит"
+    ],
+    "modelAnswer": "Wat toevallig! Ik maak mijn huiswerk ook het liefst in de avond, want dan ben ik vrij.",
+    "audio": "/spreken/audio/047.mp3"
+  },
+  {
+    "id": "a048",
+    "number": 48,
+    "title": "Как часто ходишь на рынок и зачем",
+    "question": "Hoe vaak gaat u naar de markt? Wat doet u daar meestal en waarom gaat u naar de markt?",
+    "keyPoints": [
+      "Назвать частоту",
+      "Назвать действие на рынке",
+      "Объяснить причину"
+    ],
+    "modelAnswer": "Ik ga elke week naar de markt. Ik koop daar eten, want dat is niet duur.",
+    "audio": "/spreken/audio/048.mp3"
+  },
+  {
+    "id": "a049",
+    "number": 49,
+    "title": "Уборка дома",
+    "question": "Hoe vaak maakt u uw huis schoon? Vindt u schoonmaken prettig of juist vervelend, en waarom?",
+    "keyPoints": [
+      "Назвать частоту уборки",
+      "Сказать отношение к уборке",
+      "Объяснить причину"
+    ],
+    "modelAnswer": "Ik maak elke week mijn huis schoon. Ik vind dat prettig, want mijn huis is belangrijk voor mij.",
+    "audio": "/spreken/audio/049.mp3"
+  },
+  {
+    "id": "a050",
+    "number": 50,
+    "title": "Сколько домашнего задания и где его делать",
+    "question": "Hoeveel huiswerk voor Nederlands krijgt u meestal? Waar maakt u uw huiswerk en waarom kiest u die plek?",
+    "keyPoints": [
+      "Назвать объём заданий",
+      "Назвать место",
+      "Объяснить выбор места"
+    ],
+    "modelAnswer": "Ik krijg meestal twee opdrachten. Ik maak mijn huiswerk op mijn slaapkamer, want het is mooi.",
+    "audio": "/spreken/audio/050.mp3"
+  },
+  {
+    "id": "a051",
+    "number": 51,
+    "title": "Оранжевая одежда в День короля",
+    "question": "Binnenkort is het Koningsdag en veel mensen dragen oranje kleding. Draagt u dan ook oranje? Waarom wel of waarom niet?",
+    "keyPoints": [
+      "Сказать, надеваешь ли оранжевое",
+      "Объяснить причину"
+    ],
+    "modelAnswer": "Nee, ik draag geen oranje, want ik heb geen oranje kleding.",
+    "audio": "/spreken/audio/051.mp3"
+  },
+  {
+    "id": "a052",
+    "number": 52,
+    "title": "Что не нравится в Нидерландах",
+    "question": "Ik houd niet van het snelle tempo in Nederland. Wat vindt u niet prettig aan Nederland en waarom?",
+    "keyPoints": [
+      "Назвать, что не нравится",
+      "Объяснить причину"
+    ],
+    "modelAnswer": "Ik vind het snelle tempo ook niet prettig, want ik heb graag tijd voor mijn vrienden.",
+    "audio": "/spreken/audio/052.mp3"
+  },
+  {
+    "id": "a053",
+    "number": 53,
+    "title": "Обеденный перерыв и любимая еда",
+    "question": "Ik heb om 12 uur lunchpauze op mijn werk. Wanneer heeft u lunchpauze? Wat eet u meestal en waarom kiest u daarvoor?",
+    "keyPoints": [
+      "Назвать время обеда",
+      "Назвать еду",
+      "Объяснить выбор"
+    ],
+    "modelAnswer": "Ik heb ook om twaalf uur lunchpauze. Ik eet meestal kebab, want dat is lekker.",
+    "audio": "/spreken/audio/053.mp3"
+  },
+  {
+    "id": "a054",
+    "number": 54,
+    "title": "Где покупать продукты",
+    "question": "Waar koopt u het liefst uw boodschappen? Wat koopt u daar meestal en waarom vindt u die plek fijn?",
+    "keyPoints": [
+      "Назвать место покупок",
+      "Назвать покупки",
+      "Объяснить выбор места"
+    ],
+    "modelAnswer": "Ik koop mijn boodschappen op de markt. Ik koop daar eten, want dat is niet duur.",
+    "audio": "/spreken/audio/054.mp3"
+  },
+  {
+    "id": "a055",
+    "number": 55,
+    "title": "Сколько часов работаешь",
+    "question": "Ik werk acht uur per dag. Hoeveel uur per dag werkt u? Wat vindt u daarvan?",
+    "keyPoints": [
+      "Назвать число часов",
+      "Сказать мнение"
+    ],
+    "modelAnswer": "Wat toevallig! Ik werk ook acht uur per dag. Ik vind dat prima.",
+    "audio": "/spreken/audio/055.mp3"
+  },
+  {
+    "id": "a056",
+    "number": 56,
+    "title": "Кто готовит дома и любимая еда",
+    "question": "Wie kookt er bij u thuis? Wat eet u het liefst en waarom vindt u dat zo lekker?",
+    "keyPoints": [
+      "Назвать, кто готовит",
+      "Назвать любимую еду",
+      "Объяснить, что в ней нравится"
+    ],
+    "modelAnswer": "Ik kook thuis. Ik eet het liefst kebab, want ik vind het vlees lekker.",
+    "audio": "/spreken/audio/056.mp3"
+  },
+  {
+    "id": "a057",
+    "number": 57,
+    "title": "Как учить и практиковать нидерландский",
+    "question": "Hoe leert u Nederlands? Welke manieren gebruikt u om de taal te oefenen?",
+    "keyPoints": [
+      "Назвать способ изучения языка",
+      "Назвать конкретные способы практики"
+    ],
+    "modelAnswer": "Ik studeer met chat gpt en tiktok. Ik luister en ik spreek Nederlands.",
+    "audio": "/spreken/audio/057.mp3"
+  },
+  {
+    "id": "a058",
+    "number": 58,
+    "title": "Посещение театра",
+    "question": "Bent u wel eens naar het theater geweest? Wat vindt u leuk aan het theater en waarom",
+    "keyPoints": [
+      "Сказать, был ли в театре",
+      "Назвать, что нравится",
+      "Объяснить причину"
+    ],
+    "modelAnswer": "Ja, ik ben naar het theater geweest. Ik vind de muziek leuk, want muziek is belangrijk voor mij.",
+    "audio": "/spreken/audio/058.mp3"
+  },
+  {
+    "id": "a059",
+    "number": 59,
+    "title": "Какие фильмы нравятся",
+    "question": "Vindt u het leuk om films te kijken? Wat voor soort films kijkt u graag en waarom?",
+    "keyPoints": [
+      "Сказать, нравятся ли фильмы",
+      "Назвать вид фильмов",
+      "Объяснить причину"
+    ],
+    "modelAnswer": "Ja, ik kijk graag films over koken, want ik kook graag kebab.",
+    "audio": "/spreken/audio/059.mp3"
+  },
+  {
+    "id": "a060",
+    "number": 60,
+    "title": "Что нравится в Нидерландах",
+    "question": "Ik vind de parken in Nederland erg mooi. Wat vindt u mooi of prettig in Nederland en waarom?",
+    "keyPoints": [
+      "Назвать, что нравится в Нидерландах",
+      "Объяснить причину"
+    ],
+    "modelAnswer": "Wat toevallig! Ik vind de parken ook mooi, want ik drink daar graag koffie.",
+    "audio": "/spreken/audio/060.mp3"
+  },
+  {
+    "id": "a061",
+    "number": 61,
+    "title": "Любимый ресторан и обычный заказ",
+    "question": "Wat is uw favoriete restaurant? Waar ligt het restaurant en wat bestelt u daar meestal?",
+    "keyPoints": [
+      "Назвать любимый ресторан",
+      "Назвать его местонахождение",
+      "Назвать обычный заказ"
+    ],
+    "modelAnswer": "Mijn favoriete restaurant is het kebabrestaurant in mijn buurt. Ik bestel daar meestal kebab.",
+    "audio": "/spreken/audio/061.mp3"
+  },
+  {
+    "id": "a062",
+    "number": 62,
+    "title": "У кого просишь совет и о чём",
+    "question": "Ik vraag altijd advies aan mijn tante. Aan wie vraagt u advies? Waarover vraagt u advies?",
+    "keyPoints": [
+      "Назвать, у кого спрашиваешь совет",
+      "Назвать тему совета"
+    ],
+    "modelAnswer": "Wat toevallig! Ik vraag ook advies aan mijn tante. Ik vraag advies over mijn werk.",
+    "audio": "/spreken/audio/062.mp3"
+  },
+  {
+    "id": "a063",
+    "number": 63,
+    "title": "Поездки на автобусе",
+    "question": "Ik ga vaak met de bus. Hoe vaak gaat u met de bus? Waar gaat u naartoe?",
+    "keyPoints": [
+      "Назвать частоту",
+      "Назвать направление"
+    ],
+    "modelAnswer": "Ik ga ook vaak met de bus. Ik ga naar mijn werk.",
+    "audio": "/spreken/audio/063.mp3"
+  },
+  {
+    "id": "a064",
+    "number": 64,
+    "title": "Что пить на работе",
+    "question": "Ik drink koffie op mijn werk. Wat drinkt u op uw werk? Waarom?",
+    "keyPoints": [
+      "Назвать напиток",
+      "Объяснить причину"
+    ],
+    "modelAnswer": "Wat toevallig! Ik drink ook koffie op mijn werk, want dat vind ik lekker.",
+    "audio": "/spreken/audio/064.mp3"
+  },
+  {
+    "id": "a065",
+    "number": 65,
+    "title": "Фотографии и свободные дни",
+    "question": "Ik maak graag foto’s op mijn vrije dag. En u? Hoeveel vrije dagen heeft u? Wat doet u dan?",
+    "keyPoints": [
+      "Сказать, фотографируешь ли тоже",
+      "Назвать число свободных дней",
+      "Назвать занятия"
+    ],
+    "modelAnswer": "Ik maak ook graag foto's. Ik heb twee vrije dagen. Dan kijk ik tiktok en maak ik foto's.",
+    "audio": "/spreken/audio/065.mp3"
+  },
+  {
+    "id": "a066",
+    "number": 66,
+    "title": "Разговоры с друзьями о семье",
+    "question": "Ik praat vaak met vrienden over mijn familie. Praat u ook met vrienden over uw familie? Hoe vaak doet u dat?",
+    "keyPoints": [
+      "Сказать, обсуждаешь ли семью",
+      "Назвать частоту"
+    ],
+    "modelAnswer": "Ja, ik praat ook met vrienden over mijn familie. Ik doe dat elke week.",
+    "audio": "/spreken/audio/066.mp3"
+  },
+  {
+    "id": "a067",
+    "number": 67,
+    "title": "Хочешь ли учить другой язык",
+    "question": "Ik leer een nieuwe taal: Spaans. Wilt u ook nog een andere taal leren? Waarom?",
+    "keyPoints": [
+      "Сказать, хочешь ли учить другой язык",
+      "Объяснить причину"
+    ],
+    "modelAnswer": "Nee, ik wil nu geen andere taal leren, want Nederlands is mijn prioriteit.",
+    "audio": "/spreken/audio/067.mp3"
+  },
+  {
+    "id": "a068",
+    "number": 68,
+    "title": "Работаешь ли в выходные",
+    "question": "Ik werk vaak in het weekend. Werkt u ook in het weekend? Wat vindt u daarvan?",
+    "keyPoints": [
+      "Сказать, работаешь ли в выходные",
+      "Сказать мнение"
+    ],
+    "modelAnswer": "Ik werk ook in het weekend. Ik vind dat prima.",
+    "audio": "/spreken/audio/068.mp3"
+  },
+  {
+    "id": "a069",
+    "number": 69,
+    "title": "Важные функции телефона",
+    "question": "Ik ben blij dat ik een goede camera op mijn telefoon heb. Wat vindt u belangrijk aan uw telefoon? Waarom?",
+    "keyPoints": [
+      "Назвать важную функцию телефона",
+      "Объяснить причину"
+    ],
+    "modelAnswer": "Ik vind de camera ook belangrijk, want ik maak graag foto's.",
+    "audio": "/spreken/audio/069.mp3"
+  },
+  {
+    "id": "a070",
+    "number": 70,
+    "title": "Покупки через интернет",
+    "question": "Ik koop schoolboeken via internet. Wat vindt u daarvan? Waar koopt u uw spullen?",
+    "keyPoints": [
+      "Сказать мнение",
+      "Назвать место покупок"
+    ],
+    "modelAnswer": "Ik vind dat prima. Ik koop mijn spullen ook via internet.",
+    "audio": "/spreken/audio/070.mp3"
+  },
+  {
+    "id": "a071",
+    "number": 71,
+    "title": "Как помочь упавшему другу",
+    "question": "Uw collega of vriend valt. Wat doet u in deze situatie? Hoe helpt u uw collega of vriend?",
+    "keyPoints": [
+      "Назвать своё действие",
+      "Объяснить, как помогаешь"
+    ],
+    "modelAnswer": "Ik ga naar mijn vriend. Ik help hem opstaan.",
+    "audio": "/spreken/audio/071.mp3"
+  },
+  {
+    "id": "a072",
+    "number": 72,
+    "title": "Занятия в снегу",
+    "question": "Ik loop graag in de sneeuw. Wat doet u graag in de sneeuw? Houdt u van sneeuw? Waarom wel of waarom niet?",
+    "keyPoints": [
+      "Назвать занятие в снегу",
+      "Сказать отношение к снегу",
+      "Объяснить причину"
+    ],
+    "modelAnswer": "Ik loop ook graag in de sneeuw. Ik houd van sneeuw, want het is mooi.",
+    "audio": "/spreken/audio/072.mp3"
+  },
+  {
+    "id": "a073",
+    "number": 73,
+    "title": "Велосипед вместо автомобиля",
+    "question": "Ik ga nu minder vaak met de auto en vaker met de fiets. Wat vindt u daarvan?",
+    "keyPoints": [
+      "Сказать мнение"
+    ],
+    "modelAnswer": "Ik vind dat prima, want fietsen is gezond.",
+    "audio": "/spreken/audio/073.mp3"
+  },
+  {
+    "id": "a074",
+    "number": 74,
+    "title": "Что в сумке и куда идёшь",
+    "question": "Ik heb boeken in mijn tas. Wat heeft u in uw tas? Waar gaat u met die tas naartoe?",
+    "keyPoints": [
+      "Назвать содержимое сумки",
+      "Назвать направление"
+    ],
+    "modelAnswer": "Ik heb een fles water in mijn tas. Ik ga naar mijn werk.",
+    "audio": "/spreken/audio/074.mp3"
+  },
+  {
+    "id": "a075",
+    "number": 75,
+    "title": "Отпуск — куда, занятия, частота, причина",
+    "question": "Ik ga elke zomer naar Spanje. Waar gaat u op vakantie? Wat doet u daar? Hoe vaak gaat u daarheen? Waarom?",
+    "keyPoints": [
+      "Назвать место отпуска",
+      "Назвать занятие",
+      "Назвать частоту",
+      "Объяснить причину"
+    ],
+    "modelAnswer": "Ik ga elke zomer naar Portugal. Ik drink daar koffie. Ik ga daarheen, want het weer is mooi.",
+    "audio": "/spreken/audio/075.mp3"
+  },
+  {
+    "id": "a076",
+    "number": 76,
+    "title": "Какой спорт нравится и почему",
+    "question": "Ik doe graag aan sport. Welke sport vindt u leuk? Waarom?",
+    "keyPoints": [
+      "Назвать любимый спорт",
+      "Объяснить причину"
+    ],
+    "modelAnswer": "Ik vind fietsen leuk, want dat is gezond.",
+    "audio": "/spreken/audio/076.mp3"
+  },
+  {
+    "id": "a077",
+    "number": 77,
+    "title": "Пример - домашнее задание в спальне",
+    "question": "Ik maak graag mijn huiswerk op mijn slaapkamer. Waar maakt u uw huiswerk? Vertel ook waarom?",
+    "keyPoints": [
+      "Назвать место, где делаешь домашнее задание",
+      "Объяснить, почему выбираешь это место"
+    ],
+    "modelAnswer": "Wat toevallig! Ik maak ook graag mijn huiswerk op mijn slaapkamer want het is mooi.",
+    "audio": "/spreken/audio/077.mp3"
+  },
+  {
+    "id": "a078",
+    "number": 78,
+    "title": "Пример - готовить кебаб по TikTok",
+    "question": "Wat kookt u graag? Vertel ook hoe u dat kookt?",
+    "keyPoints": [
+      "Назвать, что любишь готовить",
+      "Сказать, как это готовишь"
+    ],
+    "modelAnswer": "Ik kook kebab met recepten van tiktok",
+    "audio": "/spreken/audio/078.mp3"
+  },
+  {
+    "id": "a079",
+    "number": 79,
+    "title": "Пример - опоздание на работу",
+    "question": "Ik kom wel eens te laat op mijn werk. Komt u wel eens te laat? Waarom komt u te laat? Vertel ook wat u doet als u te laat komt?",
+    "keyPoints": [
+      "Сказать, опаздываешь ли",
+      "Объяснить опоздания",
+      "Назвать действие при опоздании"
+    ],
+    "modelAnswer": "Ik kom niet te laat want mijn werk is belangrijk",
+    "audio": "/spreken/audio/079.mp3"
+  },
+  {
+    "id": "a080",
+    "number": 80,
+    "title": "Пример - любимая телепередача",
+    "question": "Wat is uw favoriete tv programma? Vertel ook waarover dit programma gaat?",
+    "keyPoints": [
+      "Назвать любимую передачу",
+      "Сказать, о чём она"
+    ],
+    "modelAnswer": "Ik kijk geen tv, ik kijk alleen tiktok",
+    "audio": "/spreken/audio/080.mp3"
+  },
+  {
+    "id": "a081",
+    "number": 81,
+    "title": "Пример - вчера в парке",
+    "question": "Wat heb je gisteren gedaan? Vertel ook waar je dat gedaan hebt",
+    "keyPoints": [
+      "Назвать вчерашнее действие",
+      "Назвать место"
+    ],
+    "modelAnswer": "Ik was in het park en ik ga elke dag naar het park. Ik drink koffie in het park.",
+    "audio": "/spreken/audio/081.mp3"
+  },
+  {
+    "id": "a082",
+    "number": 82,
+    "title": "Пример - нынешняя и прежняя работа",
+    "question": "Wat voor werk heb je nu? Vertel ook wat voor werk je vroeger had?",
+    "keyPoints": [
+      "Назвать нынешнюю работу",
+      "Сказать о прежней работе или что это первая"
+    ],
+    "modelAnswer": "Ik ben manager en dit is mijn eerste werk.",
+    "audio": "/spreken/audio/082.mp3"
+  }
+]
