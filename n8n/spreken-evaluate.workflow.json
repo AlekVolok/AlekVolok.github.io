@@ -1,5 +1,5 @@
 {
-  "name": "Spreken A2 — evaluate",
+  "name": "Spreken A2 - evaluate",
   "nodes": [
     {
       "parameters": {
@@ -10,7 +10,7 @@
           "allowedOrigins": "https://alekvolok.github.io,http://localhost:4321"
         }
       },
-      "id": "webhook",
+      "id": "webhook1",
       "name": "Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
@@ -22,9 +22,9 @@
     },
     {
       "parameters": {
-        "jsCode": "const p = $input.first().json.body;\nconst formatFor = (mime) => (mime || '').includes('mp4') ? 'mp4' : (mime || '').includes('wav') ? 'wav' : (mime || '').includes('mpeg') ? 'mp3' : 'webm';\nconst system = \"You are an examiner for the Dutch Inburgering A2 speaking exam (Spreken).\\nYou receive one exam question: its block type, the instruction, the question text, key points a good answer covers, an optional picture description, a reference answer and the candidate audio.\\nBlock types by pictureCount: 0 = listen to the question and answer in one or two sentences; 1 = describe at least three things on the picture; 2 = choose one of two pictures and explain why; 3 = name all pictures and say what you can do with them.\\nStep 1: transcribe the candidate audio in Dutch. Ignore hesitation words. If there is no audio, use the speech hint as transcript.\\nStep 2: grade the transcript for task completion, vocabulary and grammar. Ignore punctuation, capitalisation and obvious recognition errors. Judge the language the candidate actually produced.\\nReply with JSON only, no markdown, in this shape:\\n{\\\"transcript\\\": \\\"<Dutch transcript>\\\", \\\"score\\\": <integer 0-10>, \\\"completed\\\": <true or false>, \\\"strengths\\\": [\\\"<English>\\\"], \\\"missingPoints\\\": [\\\"<key points not covered>\\\"], \\\"mistakes\\\": [{\\\"original\\\": \\\"<exact fragment from transcript>\\\", \\\"correction\\\": \\\"<Dutch correction>\\\", \\\"explanation\\\": \\\"<short English explanation of the rule>\\\"}], \\\"feedback\\\": \\\"<2-3 sentences in English with the most useful advice>\\\"}\\nList at most 6 mistakes, the most important first. If there are no mistakes return an empty array.\";\nconst userText = ['Block pictureCount: ' + p.pictureCount + ' (0 = audio-only question)', 'Instruction (Dutch): ' + p.instruction, 'Question (Dutch): ' + (p.question || 'audio only, not shown to candidate'), 'Key points: ' + (p.keyPoints || []).join('; '), 'Picture description: ' + (p.pictureDescription || 'none'), 'Reference answer (Dutch): ' + (p.referenceAnswer || 'none'), 'Browser speech hint (may be wrong or empty): ' + (p.transcriptHint || 'none')].join('\\n');\nconst content = [{ type: 'text', text: userText }];\nif (p.audio && p.audio.base64) content.push({ type: 'input_audio', input_audio: { data: p.audio.base64, format: formatFor(p.audio.mimeType) } });\nconst messages = [{ role: 'system', content: system }, { role: 'user', content }];\nconst freeContent = [{ type: 'text', text: userText + '\\nNo audio is attached. Use the browser speech hint as the transcript.' }];\nconst freeMessages = [{ role: 'system', content: system }, { role: 'user', content: freeContent }];\nconst freeModel = (p.transcriptHint || '').trim() ? 'nvidia/nemotron-3.5-super-vl:free' : '';\nreturn [{ json: { freeModel, paidModel: 'google/gemini-2.5-flash', messages, freeMessages } }];"
+        "jsCode": "const p = $input.first().json.body;\nconst formatFor = (mime) => (mime || '').includes('mp4') ? 'mp4' : (mime || '').includes('wav') ? 'wav' : (mime || '').includes('mpeg') ? 'mp3' : 'webm';\nconst system = \"You are an examiner for the Dutch Inburgering A2 speaking exam (Spreken). You grade ONE answer of a candidate.\\n\\nINPUT: block type (pictureCount), instruction, question (Dutch, may be missing for audio-only items), key points, picture description, reference answer, the candidate audio and a browser speech hint (may be wrong or empty).\\n\\nBLOCKS: pictureCount 0 = the candidate listens to a question and answers in one or two sentences. 1 = describe at least three things on one picture. 2 = choose one of two pictures and explain why. 3 = name what is on all three pictures and say what you can do with them.\\n\\nSTEP 1 - TRANSCRIPT: transcribe the candidate audio in Dutch. Ignore hesitations. If there is no audio, use the speech hint as transcript. If there is neither, the transcript is an empty string.\\n\\nSTEP 2 - VERDICT:\\n- \\\"no-answer\\\": transcript is empty, silence, or not Dutch at all.\\n- \\\"answered\\\": the candidate addressed the task (every part of the question, or the required number of picture items / a choice with a reason). Grammar may be imperfect; the answer must still be understandable.\\n- \\\"incorrect\\\": the candidate answered but missed part of the task, or the answer is not understandable, or it has grammar mistakes that change the meaning.\\n\\nSTRATEGIES THE CANDIDATE IS ALLOWED TO USE (do NOT penalise them as wrong answers if the task is still addressed):\\n1. \\\"Hitri papugai\\\" (clever parrot): repeat the question's words and answer in parallel, e.g. \\\"Wat toevallig! Ik ook ...\\\" (What a coincidence! Me too ...).\\n2. \\\"Denial\\\": deny one part of a question, e.g. \\\"Ik kijk geen tv, ik kijk alleen TikTok.\\\" Allowed at most twice in the exam.\\n3. \\\"Makhmud\\\": say something plausible even if it is not true.\\n4. Universal answers:\\n- Wat vindt u daarvan? / Wat vindt u van ...? -> \\\"Ik vind dat normaal / prima / belangrijk.\\\"\\n- Waarom? -> \\\"want het is belangrijk voor mij\\\", \\\"want dat is gezond\\\", \\\"want dat is gratis / niet duur\\\", \\\"want ik heb niet genoeg geld voor ...\\\", \\\"dat is mijn prioriteit\\\".\\n- Wanneer? -> \\\"vaak\\\", \\\"regelmatig\\\", \\\"soms\\\".\\n- Wat heb je gisteren gedaan? -> turn the past into a routine: \\\"Ik was in het park en ik ga elke dag naar het park.\\\"\\n- Wat voor werk heb je nu? -> \\\"Ik ben manager en dit is mijn eerste werk.\\\"\\n- Hoe lang? -> \\\"sinds september\\\", \\\"twee weken\\\".\\n- A question about a teacher, school, lessons: \\\"Ik heb geen leraar want dat is duur. Ik studeer met chat gpt en tiktok want dat is gratis.\\\"\\n5. Picture templates: \\\"Ik zie [X] op het eerste / tweede / derde plaatje. Die / Dat is voor [situatie].\\\"\\n6. Topic clusters:\\n- Broken (personal): \\\"Y is kapot. X kan dat repareren. Of X kan een nieuwe Y kopen. Maar een nieuwe Y is duur.\\\"\\n- Broken (public place): \\\"Ik zie de X. De plaats is niet schoon. Dat is niet goed. Ik moet de gemeente / de politie bellen.\\\"\\n- Work: \\\"X praat met collega's, X helpt andere mensen, X werkt op de computer. X controleert Y. X repareert Y. X maakt Y schoon.\\\"\\n- Study: \\\"X leert andere mensen. X beantwoordt de vragen. X schrijft een project.\\\"\\n- Choice of things: \\\"Ik vind X beter. Dat is niet duur. Dat is modern. Dat is lekker. Dat helpt mij. Dat is interessant.\\\"\\n- Home choice: \\\"Ik wil wonen in het huis. Ik houd van natuur. Ik houd van bloemen.\\\"\\n- Animals: \\\"Ik vind X beter. Dat is grappig. Dat is mooi.\\\"\\n- Activity: \\\"Ik vind X beter. Dat is interessant. Dat is mijn hobby. Ik kan mensen helpen.\\\"\\n- People: \\\"... is mooi en sportief. ... heeft een hobby.\\\"\\n- Health: \\\"X heeft pijn. X moet de dokter bellen. X moet paracetamol kopen / thuis blijven.\\\"\\n\\nSTEP 3 - MISTAKES: list at most 6 real grammar or word-choice mistakes, most important first. \\\"original\\\" must be an exact fragment of the transcript. \\\"correction\\\" is the corrected Dutch fragment. \\\"explanation\\\" is a short English rule, e.g. \\\"verb second: the finite verb comes in position 2 in main clauses\\\". Do not list pronunciation or speech-recognition artifacts as mistakes.\\n\\nSTEP 4 - PROPOSED ANSWER: if the verdict is \\\"incorrect\\\" or \\\"no-answer\\\", write a correct A2 Dutch answer to the question that uses the templates above and covers every key point. Audio questions: one or two short sentences. Picture questions: follow the block instruction. If the verdict is \\\"answered\\\", proposedAnswer is an empty string.\\n\\nSTEP 5 - SCORE: integer 0-10. \\\"answered\\\" scores 6 or more. \\\"no-answer\\\" scores 0.\\n\\nReply with JSON only, no markdown, in this exact shape:\\n{\\\"transcript\\\": \\\"<Dutch transcript>\\\", \\\"verdict\\\": \\\"answered\\\" | \\\"incorrect\\\" | \\\"no-answer\\\", \\\"score\\\": <integer>, \\\"completed\\\": <true or false>, \\\"strengths\\\": [\\\"<English>\\\"], \\\"missingPoints\\\": [\\\"<key points not covered, English>\\\"], \\\"mistakes\\\": [{\\\"original\\\": \\\"<exact fragment>\\\", \\\"correction\\\": \\\"<Dutch>\\\", \\\"explanation\\\": \\\"<English>\\\"}], \\\"proposedAnswer\\\": \\\"<Dutch or empty string>\\\", \\\"feedback\\\": \\\"<2-3 sentences in English with the most useful advice>\\\"}\";\nconst userText = ['Block pictureCount: ' + p.pictureCount + ' (0 = audio-only question)', 'Instruction (Dutch): ' + p.instruction, 'Question (Dutch): ' + (p.question || 'audio only, not shown to candidate'), 'Key points: ' + (p.keyPoints || []).join('; '), 'Picture description: ' + (p.pictureDescription || 'none'), 'Reference answer (Dutch): ' + (p.referenceAnswer || 'none'), 'Browser speech hint (may be wrong or empty): ' + (p.transcriptHint || 'none')].join('\\n');\nconst content = [{ type: 'text', text: userText }];\nif (p.audio && p.audio.base64) content.push({ type: 'input_audio', input_audio: { data: p.audio.base64, format: formatFor(p.audio.mimeType) } });\nconst messages = [{ role: 'system', content: system }, { role: 'user', content }];\nreturn [{ json: { freeModel: 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free', paidModel: 'google/gemini-2.5-flash-lite', messages, contextText: userText } }];"
       },
-      "id": "build",
+      "id": "build1",
       "name": "Build request",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -37,30 +37,24 @@
       "parameters": {
         "method": "POST",
         "url": "https://openrouter.ai/api/v1/chat/completions",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openRouterApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ model: $(\"Build request\").first().json.freeModel, messages: $(\"Build request\").first().json.freeMessages, temperature: 0.2 }) }}",
+        "jsonBody": "={{ JSON.stringify({ model: $('Build request').first().json.freeModel, messages: $('Build request').first().json.messages, temperature: 0.2 }) }}",
         "options": {
-          "timeout": 90000
+          "timeout": 120000
         }
       },
-      "id": "OpenRouter free",
-      "name": "OpenRouter free",
+      "id": "Gradefree",
+      "name": "Grade free",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
         480,
         200
       ],
-      "onError": "continueRegularOutput",
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "REPLACE_WITH_OPENROUTER_CREDENTIAL",
-          "name": "OpenRouter (Authorization: Bearer ...)"
-        }
-      }
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -85,7 +79,7 @@
         },
         "options": {}
       },
-      "id": "if-ok",
+      "id": "if1",
       "name": "Free model replied?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
@@ -98,37 +92,31 @@
       "parameters": {
         "method": "POST",
         "url": "https://openrouter.ai/api/v1/chat/completions",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openRouterApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ model: $(\"Build request\").first().json.paidModel, messages: $(\"Build request\").first().json.messages, temperature: 0.2 }) }}",
+        "jsonBody": "={{ JSON.stringify({ model: $('Build request').first().json.paidModel, messages: $('Build request').first().json.messages, temperature: 0.2 }) }}",
         "options": {
-          "timeout": 90000
+          "timeout": 120000
         }
       },
-      "id": "OpenRouter paid fallback",
-      "name": "OpenRouter paid fallback",
+      "id": "Gradepaid",
+      "name": "Grade paid",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
         960,
         340
       ],
-      "onError": "continueRegularOutput",
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "REPLACE_WITH_OPENROUTER_CREDENTIAL",
-          "name": "OpenRouter (Authorization: Bearer ...)"
-        }
-      }
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
-        "jsCode": "const raw = $input.first().json.choices[0].message.content;\nconst start = raw.indexOf('{');\nconst end = raw.lastIndexOf('}');\nif (start === -1 || end <= start) throw new Error('Model reply contained no JSON');\nreturn [{ json: JSON.parse(raw.slice(start, end + 1)) }];"
+        "jsCode": "const grade = $input.first().json;\nconst draft = grade.choices && grade.choices[0] && grade.choices[0].message ? grade.choices[0].message.content : '';\nif (!draft) throw new Error('Grading failed on the free and the paid model');\nconst context = $('Build request').first().json.contextText;\nconst user = context + '\\n\\nDraft grading (JSON):\\n' + draft;\nconst messages = [{ role: 'system', content: \"You are a second examiner doing the final check of a grading for the Dutch Inburgering A2 speaking exam. You receive the question context, the transcript and a DRAFT grading in JSON.\\n\\nCheck the draft and return a corrected version in the same JSON shape, JSON only, no markdown:\\n- verdict: \\\"no-answer\\\" when the transcript is empty; otherwise \\\"answered\\\" or \\\"incorrect\\\". Make sure the verdict matches the transcript and the task.\\n- mistakes: keep only real grammar or word-choice errors. Each \\\"original\\\" must be an exact fragment of the transcript. Each \\\"correction\\\" must be correct Dutch and as minimal as possible. Remove invalid items and add missing important ones.\\n- proposedAnswer: empty when the verdict is \\\"answered\\\"; otherwise a correct, short A2 Dutch answer covering every key point.\\n- score: 0 for \\\"no-answer\\\", 6 or more for \\\"answered\\\", and consistent with the mistakes otherwise.\\n- Keep the strategies the candidate used (parrot, denial, Makhmud, universal answers) as valid when the task is still addressed.\\nKeep the feedback in English. Fields: transcript, verdict, score, completed, strengths, missingPoints, mistakes, proposedAnswer, feedback.\" }, { role: 'user', content: user }];\nreturn [{ json: { verifyModel: 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free', draft, messages } }];"
       },
-      "id": "parse",
-      "name": "Parse evaluation",
+      "id": "prepare1",
+      "name": "Prepare verify",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
@@ -138,16 +126,52 @@
     },
     {
       "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openRouterApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: $json.verifyModel, messages: $json.messages, temperature: 0.1 }) }}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "id": "verify1",
+      "name": "Verify (final check)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1440,
+        200
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const reply = $input.first().json;\nconst fromModel = reply.choices && reply.choices[0] && reply.choices[0].message ? reply.choices[0].message.content : '';\nconst draft = $('Prepare verify').first().json.draft;\nconst pick = (raw) => { const start = raw.indexOf('{'); const end = raw.lastIndexOf('}'); if (start === -1 || end <= start) throw new Error('no JSON'); return JSON.parse(raw.slice(start, end + 1)); };\nlet result;\ntry { result = pick(fromModel); } catch (error) { result = pick(draft); }\nreturn [{ json: result }];"
+      },
+      "id": "parse1",
+      "name": "Parse evaluation",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1680,
+        200
+      ]
+    },
+    {
+      "parameters": {
         "respondWith": "json",
         "responseBody": "={{ $json }}",
         "options": {}
       },
-      "id": "respond",
+      "id": "respond1",
       "name": "Respond",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        1440,
+        1920,
         200
       ]
     }
@@ -168,14 +192,14 @@
       "main": [
         [
           {
-            "node": "OpenRouter free",
+            "node": "Grade free",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "OpenRouter free": {
+    "Grade free": {
       "main": [
         [
           {
@@ -190,21 +214,43 @@
       "main": [
         [
           {
-            "node": "Parse evaluation",
+            "node": "Prepare verify",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "OpenRouter paid fallback",
+            "node": "Grade paid",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "OpenRouter paid fallback": {
+    "Grade paid": {
+      "main": [
+        [
+          {
+            "node": "Prepare verify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare verify": {
+      "main": [
+        [
+          {
+            "node": "Verify (final check)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify (final check)": {
       "main": [
         [
           {
