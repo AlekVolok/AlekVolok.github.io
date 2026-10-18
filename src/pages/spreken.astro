@@ -327,7 +327,7 @@ import '../styles/global.css';
 
   // The n8n server rejects request bodies over about 1 MB (HTTP 413, which the browser
   // reports as "Failed to fetch"). Recordings are therefore resampled to 16 kHz mono
-  // and encoded as 32 kbps MP3, and pictures are sent as small JPEG thumbnails.
+  // and encoded as 32 kbps MP3.
   const maxBodyBytes = 950 * 1024;
   const speechSampleRate = 16000;
 
@@ -348,16 +348,6 @@ import '../styles/global.css';
     }
   }
 
-  async function pictureThumbnail(src) {
-    const bitmap = await createImageBitmap(await (await fetch(src)).blob());
-    const scale = Math.min(1, 384 / Math.max(bitmap.width, bitmap.height));
-    const canvas = document.createElement('canvas');
-    canvas.width = Math.round(bitmap.width * scale);
-    canvas.height = Math.round(bitmap.height * scale);
-    canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-    return canvas.toDataURL('image/jpeg', 0.7);
-  }
-
   async function evaluate(questionIndex) {
     const answer = answers[questionIndex];
     const item = questions[questionIndex];
@@ -369,16 +359,11 @@ import '../styles/global.css';
         // Keep the original recording if this browser cannot decode it.
       }
     }
-    let images = [];
-    try {
-      images = await Promise.all((item.pictures || []).map(pictureThumbnail));
-    } catch {
-      // Grade without pictures if they cannot be loaded.
-    }
+    // Pictures are not sent: each slide has a written Dutch description in
+    // spreken-pictures.json, which the payload carries as pictureDescription.
     const body = buildEvaluationPayload(item, {
       audioBase64: audioBlob ? await blobToBase64(audioBlob) : '',
       mimeType: audioBlob ? audioBlob.type : '',
-      images,
       transcriptHint: answer.transcript,
     });
     const json = JSON.stringify(body);

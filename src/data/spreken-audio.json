@@ -2,7 +2,7 @@
   {
     "id": "a001",
     "number": 1,
-    "title": "Работа в городе, жизнь в деревне",
+    "title": "Werken in de stad, wonen in een dorp",
     "question": "Sommige mensen wonen in een dorp en reizen naar de stad voor hun werk. Wat vindt u daarvan? Vertel ook waarom.",
     "keyPoints": [
       "Сказать мнение",
@@ -15,7 +15,7 @@
   {
     "id": "a002",
     "number": 2,
-    "title": "Новая профессия в 60 лет",
+    "title": "Een nieuw beroep op je zestigste",
     "question": "Ik ben zestig jaar oud en ik ga op cursus omdat ik een nieuwe baan wil. Wat vindt u daarvan? Vertel ook waarom.",
     "keyPoints": [
       "Сказать мнение",
@@ -28,7 +28,7 @@
   {
     "id": "a003",
     "number": 3,
-    "title": "Что брать с собой из дома",
+    "title": "Wat neem je mee van huis",
     "question": "Ik neem een fles water mee als ik van huis ga. Wat neemt u mee als u van huis gaat? Vertel ook waarom.",
     "keyPoints": [
       "Назвать, что берёшь",
@@ -41,7 +41,7 @@
   {
     "id": "a004",
     "number": 4,
-    "title": "Где живёшь и где хочешь жить",
+    "title": "Waar woon je en waar wil je wonen",
     "question": "Waar woont u nu? Vertel ook waar u graag zou willen wonen.",
     "keyPoints": [
       "Назвать нынешнее место жительства",
@@ -54,7 +54,7 @@
   {
     "id": "a005",
     "number": 5,
-    "title": "Важен ли школьный аттестат",
+    "title": "Is een schooldiploma belangrijk",
     "question": "Wat vindt u van een schooldiploma? Vindt u het belangrijk? Vertel ook waarom.",
     "keyPoints": [
       "Сказать мнение об аттестате и его важности",
@@ -67,7 +67,7 @@
   {
     "id": "a006",
     "number": 6,
-    "title": "В какое время дня нравится работать",
+    "title": "Op welk deel van de dag werk je graag",
     "question": "In welk deel van de dag werkt u het liefst? Vertel ook waarom.",
     "keyPoints": [
       "Назвать время дня",
@@ -80,7 +80,7 @@
   {
     "id": "a007",
     "number": 7,
-    "title": "Мусор на улице",
+    "title": "Afval op straat",
     "question": "U loopt op straat en u ziet dat iemand afval op de grond gooit. Wat doet u dan? Vertel ook waarom.",
     "keyPoints": [
       "Назвать своё действие в ситуации",
@@ -93,7 +93,7 @@
   {
     "id": "a008",
     "number": 8,
-    "title": "Любимый спорт и частота занятий",
+    "title": "Favoriete sport en hoe vaak",
     "question": "Wat is uw favoriete sport? Hoe vaak doet u die sport?",
     "keyPoints": [
       "Назвать любимый спорт",
@@ -106,7 +106,7 @@
   {
     "id": "a009",
     "number": 9,
-    "title": "Преподаватель нидерландского",
+    "title": "Je leraar Nederlands",
     "question": "Ik heb veel geleerd van mijn leraar Nederlands. Wat heeft u geleerd van uw leraar Nederlands? Vertel ook waar uw leraar goed in is.",
     "keyPoints": [
       "Сказать, чему научился у преподавателя",
@@ -119,7 +119,7 @@
   {
     "id": "a010",
     "number": 10,
-    "title": "Когда лучше всего работается",
+    "title": "Wanneer werk je het best",
     "question": "Ik werk het best in de avond. Wanneer werkt u het best? Vertel ook waarom.",
     "keyPoints": [
       "Назвать время",
@@ -132,7 +132,7 @@
   {
     "id": "a011",
     "number": 11,
-    "title": "Где находится твой врач",
+    "title": "Waar is je huisarts",
     "question": "Mijn huisarts is in de straat \"Waterkersweg\". Waar is uw huisarts? Wat vindt u van hem?",
     "keyPoints": [
       "Назвать местонахождение врача",
@@ -145,7 +145,7 @@
   {
     "id": "a012",
     "number": 12,
-    "title": "Отношение к велосипеду",
+    "title": "Wat vind je van fietsen",
     "question": "Wat vind je van fietsen? Vertel ook of u zelf fietst.",
     "keyPoints": [
       "Сказать мнение о велосипеде",
@@ -158,7 +158,7 @@
   {
     "id": "a013",
     "number": 13,
-    "title": "Перерыв на работе",
+    "title": "Pauze op het werk",
     "question": "Ik neem pauze op het werk. Neemt u ook pauze? Vertel ook wat u dan doet.",
     "keyPoints": [
       "Сказать, делаешь ли перерыв",
@@ -171,7 +171,7 @@
   {
     "id": "a014",
     "number": 14,
-    "title": "Когда отпуск и сколько он длится",
+    "title": "Wanneer is je vakantie en hoe lang",
     "question": "Ik heb binnenkort vakantie. Wanneer heeft u vakantie? Hoe lang duurt uw vakantie?",
     "keyPoints": [
       "Назвать время отпуска",
@@ -184,7 +184,7 @@
   {
     "id": "a015",
     "number": 15,
-    "title": "Что должен уметь преподаватель",
+    "title": "Wat moet een goede leraar kunnen",
     "question": "Ik ben leraar Nederlands. Wat moet een goede leraar kunnen doen? Vertel ook waarom?",
     "keyPoints": [
       "Назвать умение хорошего преподавателя",
@@ -197,7 +197,7 @@
   {
     "id": "a016",
     "number": 16,
-    "title": "Любимый школьный предмет",
+    "title": "Favoriete vak op school",
     "question": "Mijn favoriete vak op school is Nederlands. Wat is uw favoriete vak? Wat doet u daar graag?",
     "keyPoints": [
       "Назвать любимый предмет",
@@ -210,7 +210,7 @@
   {
     "id": "a017",
     "number": 17,
-    "title": "Любимые и нелюбимые вечерние занятия",
+    "title": "Wat je 's avonds wel en niet graag doet",
     "question": "Wat doet u graag in de avond? Wat doet u niet graag in de avond?",
     "keyPoints": [
       "Назвать любимое вечернее занятие",
@@ -223,7 +223,7 @@
   {
     "id": "a018",
     "number": 18,
-    "title": "Самое важное в телефоне",
+    "title": "Het belangrijkste aan je telefoon",
     "question": "Ik vind de camera in mijn telefoon belangrijk. Wat vindt u het belangrijkste in uw telefoon? Vertel ook waarom",
     "keyPoints": [
       "Назвать самое важное в телефоне",
@@ -236,7 +236,7 @@
   {
     "id": "a019",
     "number": 19,
-    "title": "Ходьба босиком",
+    "title": "Op blote voeten lopen",
     "question": "Ik loop vaak op blote voeten. Hoe vaak loopt u op blote voeten? Vertel ook waarom.",
     "keyPoints": [
       "Назвать частоту",
@@ -249,7 +249,7 @@
   {
     "id": "a020",
     "number": 20,
-    "title": "Что делал вчера и где",
+    "title": "Wat deed je gisteren en waar",
     "question": "Wat hebt u gisteren gedaan? Zeg ook waar u dat hebt gedaan.",
     "keyPoints": [
       "Назвать вчерашнее действие",
@@ -262,7 +262,7 @@
   {
     "id": "a021",
     "number": 21,
-    "title": "Что делать при плохом настроении",
+    "title": "Wat doe je bij een slecht humeur",
     "question": "Als ik een slecht humeur heb, blijf ik thuis. Wat doet u als u een slecht humeur hebt? Vertel ook waarom",
     "keyPoints": [
       "Назвать своё действие",
@@ -275,7 +275,7 @@
   {
     "id": "a022",
     "number": 22,
-    "title": "Пролитый кофе",
+    "title": "Koffie gemorst",
     "question": "Ik heb koffie op tafel gemorst. Overkomt u dat vaak? Wat doet u dan? Vertel ook waarom.",
     "keyPoints": [
       "Сказать, часто ли это случается",
@@ -289,7 +289,7 @@
   {
     "id": "a023",
     "number": 23,
-    "title": "Сломался компьютер",
+    "title": "Je computer is kapot",
     "question": "Uw computer is kapot. Wat doet u dan? Vertel ook waarom",
     "keyPoints": [
       "Назвать действие при поломке",
@@ -302,7 +302,7 @@
   {
     "id": "a024",
     "number": 24,
-    "title": "Деревня или город",
+    "title": "Dorp of stad",
     "question": "Woont u liever in een dorp of in de stad? Vertel ook waarom.",
     "keyPoints": [
       "Выбрать деревню или город",
@@ -315,7 +315,7 @@
   {
     "id": "a025",
     "number": 25,
-    "title": "Знак зодиака и твои умения",
+    "title": "Je sterrenbeeld en wat je goed kunt",
     "question": "Ik ben van sterrenbeeld Leeuw. Ik kan goed leren. Wat is uw sterrenbeeld? Wat kunt u goed?",
     "keyPoints": [
       "Назвать знак зодиака",
@@ -328,7 +328,7 @@
   {
     "id": "a026",
     "number": 26,
-    "title": "Когда есть свободное время",
+    "title": "Wanneer ben je vrij",
     "question": "Ik ben vrij op maandagavond, omdat ik vrij heb. Wanneer bent u vrij? Vertel ook waarom.",
     "keyPoints": [
       "Назвать свободное время",
@@ -341,7 +341,7 @@
   {
     "id": "a027",
     "number": 27,
-    "title": "Работа и занятия в выходные",
+    "title": "Werken in het weekend",
     "question": "Sommige mensen werken in het weekend. Werkt u in het weekend? Wat doet u dan? Wat vindt u daarvan?",
     "keyPoints": [
       "Сказать, работаешь ли в выходные",
@@ -355,7 +355,7 @@
   {
     "id": "a028",
     "number": 28,
-    "title": "Сколько спален и как они выглядят",
+    "title": "Hoeveel slaapkamers en hoe ze eruitzien",
     "question": "Mijn huis heeft twee slaapkamers. Hoeveel slaapkamers heeft uw huis? Vertel ook hoe uw slaapkamers eruitzien?",
     "keyPoints": [
       "Назвать число спален",
@@ -368,7 +368,7 @@
   {
     "id": "a029",
     "number": 29,
-    "title": "Для чего нужен интернет",
+    "title": "Waarvoor gebruik je internet",
     "question": "Ik gebruik internet om nieuws te lezen. Waarvoor gebruikt u internet? Vertel ook waarom",
     "keyPoints": [
       "Назвать цель использования интернета",
@@ -381,7 +381,7 @@
   {
     "id": "a030",
     "number": 30,
-    "title": "Когда делать домашнее задание",
+    "title": "Wanneer maak je je huiswerk",
     "question": "Ik maak mijn huiswerk het liefst in de avond. Wanneer maakt u uw huiswerk het liefst? Vertel ook waarom.",
     "keyPoints": [
       "Назвать время домашнего задания",
@@ -394,7 +394,7 @@
   {
     "id": "a031",
     "number": 31,
-    "title": "Чтение в библиотеке",
+    "title": "Lezen in de bibliotheek",
     "question": "Ik lees graag in de bibliotheek. Leest u daar ook graag? Vertel ook waarom?",
     "keyPoints": [
       "Сказать, нравится ли читать в библиотеке",
@@ -407,7 +407,7 @@
   {
     "id": "a032",
     "number": 32,
-    "title": "Как задать вопрос преподавателю",
+    "title": "Een vraag stellen aan de docent",
     "question": "Als ik iets aan de docent wil vragen, steek ik mijn hand op. Wat doet u als u iets aan uw docent wilt vragen? Vertel ook wat uw docent dan doet?",
     "keyPoints": [
       "Назвать своё действие",
@@ -420,7 +420,7 @@
   {
     "id": "a033",
     "number": 33,
-    "title": "Последний трудный экзамен и подготовка",
+    "title": "Je laatste moeilijke examen",
     "question": "Morgen heb ik een moeilijk examen. Wanneer had u voor het laatst een moeilijk examen? Vertel ook wat u voor de examens doet?",
     "keyPoints": [
       "Назвать время последнего трудного экзамена",
@@ -433,7 +433,7 @@
   {
     "id": "a034",
     "number": 34,
-    "title": "Как часто и во сколько чистить зубы",
+    "title": "Hoe vaak en hoe laat poets je je tanden",
     "question": "Ik poets mijn tanden twee keer per dag. Hoe vaak poetst u uw tanden? Vertel ook hoe laat u uw tanden poetst?",
     "keyPoints": [
       "Назвать частоту",
@@ -446,7 +446,7 @@
   {
     "id": "a035",
     "number": 35,
-    "title": "Кто учил нидерландскому и когда начал",
+    "title": "Wie leerde je Nederlands en wanneer",
     "question": "Ik heb Nederlands geleerd van mijn ouders. Wie heeft u Nederlands geleerd? Wanneer bent u begonnen met Nederlands leren?",
     "keyPoints": [
       "Назвать, кто учил языку",
@@ -459,7 +459,7 @@
   {
     "id": "a036",
     "number": 36,
-    "title": "Как договориться о встрече с друзьями",
+    "title": "Afspreken met vrienden",
     "question": "Als ik mijn vrienden wil zien, maak ik een afspraak. Wat vindt u daarvan? Wat doet u als u uw vrienden wilt zien?",
     "keyPoints": [
       "Сказать мнение",
@@ -472,7 +472,7 @@
   {
     "id": "a037",
     "number": 37,
-    "title": "Что делаешь вечером и что не каждый вечер",
+    "title": "Wat doe je 's avonds",
     "question": "Wat doet u meestal in de avond en wat doet u juist niet elke avond?",
     "keyPoints": [
       "Назвать обычное вечернее занятие",
@@ -485,7 +485,7 @@
   {
     "id": "a038",
     "number": 38,
-    "title": "Братья, сёстры и общение с ними",
+    "title": "Broers, zussen en contact",
     "question": "Heeft u broers of zussen? Hoeveel heeft u er en hoe vaak ziet of spreekt u hen?",
     "keyPoints": [
       "Сказать, есть ли братья или сёстры",
@@ -499,7 +499,7 @@
   {
     "id": "a039",
     "number": 39,
-    "title": "В какое время лучше сдавать экзамены",
+    "title": "Wanneer doe je het liefst examen",
     "question": "Wanneer doet u het liefst examens en waarom voelt u zich dan het beste?",
     "keyPoints": [
       "Назвать время",
@@ -512,7 +512,7 @@
   {
     "id": "a040",
     "number": 40,
-    "title": "Чистка зубов и время дня",
+    "title": "Tandenpoetsen en het tijdstip",
     "question": "Hoe vaak poetst u uw tanden en op welke momenten van de dag doet u dat precies?",
     "keyPoints": [
       "Назвать частоту",
@@ -525,7 +525,7 @@
   {
     "id": "a041",
     "number": 41,
-    "title": "Сколько было экзаменов и как готовиться",
+    "title": "Hoeveel examens en hoe voorbereiden",
     "question": "Hoe vaak heeft u in het verleden examens gedaan? Wat doet u meestal om u goed voor te bereiden?",
     "keyPoints": [
       "Назвать число или частоту прошлых экзаменов",
@@ -538,7 +538,7 @@
   {
     "id": "a042",
     "number": 42,
-    "title": "Где живёшь, описание и желаемое жильё",
+    "title": "Je huis nu en je droomhuis",
     "question": "Waar woont u nu? Kunt u beschrijven hoe uw woonplaats eruitziet? Waar zou u graag willen wonen en waarom juist daar?",
     "keyPoints": [
       "Назвать нынешнее место",
@@ -553,7 +553,7 @@
   {
     "id": "a043",
     "number": 43,
-    "title": "Маленькая кухня",
+    "title": "Een kleine keuken",
     "question": "Ik heb een kleine keuken. En u? Wat vindt u daarvan?",
     "keyPoints": [
       "Описать свою кухню",
@@ -566,7 +566,7 @@
   {
     "id": "a044",
     "number": 44,
-    "title": "Чему хочешь научиться и где",
+    "title": "Wat wil je leren en waar",
     "question": "Ik wil graag iets nieuws leren. Wat wilt u leren, waar wilt u dat leren en waarom juist dat?",
     "keyPoints": [
       "Назвать, чему хочешь научиться",
@@ -580,7 +580,7 @@
   {
     "id": "a045",
     "number": 45,
-    "title": "Другие способы использования интернета",
+    "title": "Internet op een andere manier gebruiken",
     "question": "Ik gebruik internet om het nieuws te lezen. Waarvoor gebruikt u internet nog meer? Waarom gebruikt u internet juist voor deze dingen?",
     "keyPoints": [
       "Назвать другую цель использования интернета",
@@ -593,7 +593,7 @@
   {
     "id": "a046",
     "number": 46,
-    "title": "Мнение о работе в выходные",
+    "title": "Wat vind je van werken in het weekend",
     "question": "Ik werk soms in het weekend. Wat vindt u daarvan? Vindt u werken in het weekend goed of juist lastig, en waarom?",
     "keyPoints": [
       "Сказать мнение о работе в выходные",
@@ -606,7 +606,7 @@
   {
     "id": "a047",
     "number": 47,
-    "title": "Лучшее время для домашних заданий",
+    "title": "De beste tijd voor huiswerk",
     "question": "Ik maak mijn huiswerk het liefst in de avond. Wanneer maakt u uw huiswerk het liefst? Waarom werkt dat moment voor u het beste?",
     "keyPoints": [
       "Назвать время",
@@ -619,7 +619,7 @@
   {
     "id": "a048",
     "number": 48,
-    "title": "Как часто ходишь на рынок и зачем",
+    "title": "Hoe vaak ga je naar de markt",
     "question": "Hoe vaak gaat u naar de markt? Wat doet u daar meestal en waarom gaat u naar de markt?",
     "keyPoints": [
       "Назвать частоту",
@@ -633,7 +633,7 @@
   {
     "id": "a049",
     "number": 49,
-    "title": "Уборка дома",
+    "title": "Het huis schoonmaken",
     "question": "Hoe vaak maakt u uw huis schoon? Vindt u schoonmaken prettig of juist vervelend, en waarom?",
     "keyPoints": [
       "Назвать частоту уборки",
@@ -647,7 +647,7 @@
   {
     "id": "a050",
     "number": 50,
-    "title": "Сколько домашнего задания и где его делать",
+    "title": "Hoeveel huiswerk en waar je het maakt",
     "question": "Hoeveel huiswerk voor Nederlands krijgt u meestal? Waar maakt u uw huiswerk en waarom kiest u die plek?",
     "keyPoints": [
       "Назвать объём заданий",
@@ -661,7 +661,7 @@
   {
     "id": "a051",
     "number": 51,
-    "title": "Оранжевая одежда в День короля",
+    "title": "Oranje kleding op Koningsdag",
     "question": "Binnenkort is het Koningsdag en veel mensen dragen oranje kleding. Draagt u dan ook oranje? Waarom wel of waarom niet?",
     "keyPoints": [
       "Сказать, надеваешь ли оранжевое",
@@ -674,7 +674,7 @@
   {
     "id": "a052",
     "number": 52,
-    "title": "Что не нравится в Нидерландах",
+    "title": "Wat je niet leuk vindt in Nederland",
     "question": "Ik houd niet van het snelle tempo in Nederland. Wat vindt u niet prettig aan Nederland en waarom?",
     "keyPoints": [
       "Назвать, что не нравится",
@@ -687,7 +687,7 @@
   {
     "id": "a053",
     "number": 53,
-    "title": "Обеденный перерыв и любимая еда",
+    "title": "Lunchpauze en favoriet eten",
     "question": "Ik heb om 12 uur lunchpauze op mijn werk. Wanneer heeft u lunchpauze? Wat eet u meestal en waarom kiest u daarvoor?",
     "keyPoints": [
       "Назвать время обеда",
@@ -701,7 +701,7 @@
   {
     "id": "a054",
     "number": 54,
-    "title": "Где покупать продукты",
+    "title": "Waar koop je je boodschappen",
     "question": "Waar koopt u het liefst uw boodschappen? Wat koopt u daar meestal en waarom vindt u die plek fijn?",
     "keyPoints": [
       "Назвать место покупок",
@@ -715,7 +715,7 @@
   {
     "id": "a055",
     "number": 55,
-    "title": "Сколько часов работаешь",
+    "title": "Hoeveel uur werk je",
     "question": "Ik werk acht uur per dag. Hoeveel uur per dag werkt u? Wat vindt u daarvan?",
     "keyPoints": [
       "Назвать число часов",
@@ -728,7 +728,7 @@
   {
     "id": "a056",
     "number": 56,
-    "title": "Кто готовит дома и любимая еда",
+    "title": "Wie kookt er thuis",
     "question": "Wie kookt er bij u thuis? Wat eet u het liefst en waarom vindt u dat zo lekker?",
     "keyPoints": [
       "Назвать, кто готовит",
@@ -742,7 +742,7 @@
   {
     "id": "a057",
     "number": 57,
-    "title": "Как учить и практиковать нидерландский",
+    "title": "Nederlands leren en oefenen",
     "question": "Hoe leert u Nederlands? Welke manieren gebruikt u om de taal te oefenen?",
     "keyPoints": [
       "Назвать способ изучения языка",
@@ -755,7 +755,7 @@
   {
     "id": "a058",
     "number": 58,
-    "title": "Посещение театра",
+    "title": "Naar het theater",
     "question": "Bent u wel eens naar het theater geweest? Wat vindt u leuk aan het theater en waarom",
     "keyPoints": [
       "Сказать, был ли в театре",
@@ -769,7 +769,7 @@
   {
     "id": "a059",
     "number": 59,
-    "title": "Какие фильмы нравятся",
+    "title": "Welke films vind je leuk",
     "question": "Vindt u het leuk om films te kijken? Wat voor soort films kijkt u graag en waarom?",
     "keyPoints": [
       "Сказать, нравятся ли фильмы",
@@ -783,7 +783,7 @@
   {
     "id": "a060",
     "number": 60,
-    "title": "Что нравится в Нидерландах",
+    "title": "Wat je mooi vindt in Nederland",
     "question": "Ik vind de parken in Nederland erg mooi. Wat vindt u mooi of prettig in Nederland en waarom?",
     "keyPoints": [
       "Назвать, что нравится в Нидерландах",
@@ -796,7 +796,7 @@
   {
     "id": "a061",
     "number": 61,
-    "title": "Любимый ресторан и обычный заказ",
+    "title": "Favoriet restaurant en wat je bestelt",
     "question": "Wat is uw favoriete restaurant? Waar ligt het restaurant en wat bestelt u daar meestal?",
     "keyPoints": [
       "Назвать любимый ресторан",
@@ -810,7 +810,7 @@
   {
     "id": "a062",
     "number": 62,
-    "title": "У кого просишь совет и о чём",
+    "title": "Aan wie vraag je advies",
     "question": "Ik vraag altijd advies aan mijn tante. Aan wie vraagt u advies? Waarover vraagt u advies?",
     "keyPoints": [
       "Назвать, у кого спрашиваешь совет",
@@ -823,7 +823,7 @@
   {
     "id": "a063",
     "number": 63,
-    "title": "Поездки на автобусе",
+    "title": "Met de bus reizen",
     "question": "Ik ga vaak met de bus. Hoe vaak gaat u met de bus? Waar gaat u naartoe?",
     "keyPoints": [
       "Назвать частоту",
@@ -836,7 +836,7 @@
   {
     "id": "a064",
     "number": 64,
-    "title": "Что пить на работе",
+    "title": "Wat drink je op het werk",
     "question": "Ik drink koffie op mijn werk. Wat drinkt u op uw werk? Waarom?",
     "keyPoints": [
       "Назвать напиток",
@@ -849,7 +849,7 @@
   {
     "id": "a065",
     "number": 65,
-    "title": "Фотографии и свободные дни",
+    "title": "Foto's en vrije dagen",
     "question": "Ik maak graag foto’s op mijn vrije dag. En u? Hoeveel vrije dagen heeft u? Wat doet u dan?",
     "keyPoints": [
       "Сказать, фотографируешь ли тоже",
@@ -863,7 +863,7 @@
   {
     "id": "a066",
     "number": 66,
-    "title": "Разговоры с друзьями о семье",
+    "title": "Met vrienden praten over familie",
     "question": "Ik praat vaak met vrienden over mijn familie. Praat u ook met vrienden over uw familie? Hoe vaak doet u dat?",
     "keyPoints": [
       "Сказать, обсуждаешь ли семью",
@@ -876,7 +876,7 @@
   {
     "id": "a067",
     "number": 67,
-    "title": "Хочешь ли учить другой язык",
+    "title": "Wil je nog een taal leren",
     "question": "Ik leer een nieuwe taal: Spaans. Wilt u ook nog een andere taal leren? Waarom?",
     "keyPoints": [
       "Сказать, хочешь ли учить другой язык",
@@ -889,7 +889,7 @@
   {
     "id": "a068",
     "number": 68,
-    "title": "Работаешь ли в выходные",
+    "title": "Werk je in het weekend",
     "question": "Ik werk vaak in het weekend. Werkt u ook in het weekend? Wat vindt u daarvan?",
     "keyPoints": [
       "Сказать, работаешь ли в выходные",
@@ -902,7 +902,7 @@
   {
     "id": "a069",
     "number": 69,
-    "title": "Важные функции телефона",
+    "title": "Belangrijke functies van je telefoon",
     "question": "Ik ben blij dat ik een goede camera op mijn telefoon heb. Wat vindt u belangrijk aan uw telefoon? Waarom?",
     "keyPoints": [
       "Назвать важную функцию телефона",
@@ -915,7 +915,7 @@
   {
     "id": "a070",
     "number": 70,
-    "title": "Покупки через интернет",
+    "title": "Online winkelen",
     "question": "Ik koop schoolboeken via internet. Wat vindt u daarvan? Waar koopt u uw spullen?",
     "keyPoints": [
       "Сказать мнение",
@@ -928,7 +928,7 @@
   {
     "id": "a071",
     "number": 71,
-    "title": "Как помочь упавшему другу",
+    "title": "Een vriend helpen die gevallen is",
     "question": "Uw collega of vriend valt. Wat doet u in deze situatie? Hoe helpt u uw collega of vriend?",
     "keyPoints": [
       "Назвать своё действие",
@@ -941,7 +941,7 @@
   {
     "id": "a072",
     "number": 72,
-    "title": "Занятия в снегу",
+    "title": "Spelen in de sneeuw",
     "question": "Ik loop graag in de sneeuw. Wat doet u graag in de sneeuw? Houdt u van sneeuw? Waarom wel of waarom niet?",
     "keyPoints": [
       "Назвать занятие в снегу",
@@ -955,7 +955,7 @@
   {
     "id": "a073",
     "number": 73,
-    "title": "Велосипед вместо автомобиля",
+    "title": "De fiets in plaats van de auto",
     "question": "Ik ga nu minder vaak met de auto en vaker met de fiets. Wat vindt u daarvan?",
     "keyPoints": [
       "Сказать мнение"
@@ -967,7 +967,7 @@
   {
     "id": "a074",
     "number": 74,
-    "title": "Что в сумке и куда идёшь",
+    "title": "Wat zit er in je tas",
     "question": "Ik heb boeken in mijn tas. Wat heeft u in uw tas? Waar gaat u met die tas naartoe?",
     "keyPoints": [
       "Назвать содержимое сумки",
@@ -980,7 +980,7 @@
   {
     "id": "a075",
     "number": 75,
-    "title": "Отпуск — куда, занятия, частота, причина",
+    "title": "Vakantie: waarheen en waarom",
     "question": "Ik ga elke zomer naar Spanje. Waar gaat u op vakantie? Wat doet u daar? Hoe vaak gaat u daarheen? Waarom?",
     "keyPoints": [
       "Назвать место отпуска",
@@ -995,7 +995,7 @@
   {
     "id": "a076",
     "number": 76,
-    "title": "Какой спорт нравится и почему",
+    "title": "Welke sport vind je leuk",
     "question": "Ik doe graag aan sport. Welke sport vindt u leuk? Waarom?",
     "keyPoints": [
       "Назвать любимый спорт",
@@ -1008,7 +1008,7 @@
   {
     "id": "a077",
     "number": 77,
-    "title": "Пример - домашнее задание в спальне",
+    "title": "Huiswerk op je slaapkamer",
     "question": "Ik maak graag mijn huiswerk op mijn slaapkamer. Waar maakt u uw huiswerk? Vertel ook waarom?",
     "keyPoints": [
       "Назвать место, где делаешь домашнее задание",
@@ -1021,7 +1021,7 @@
   {
     "id": "a078",
     "number": 78,
-    "title": "Пример - готовить кебаб по TikTok",
+    "title": "Wat kook je graag",
     "question": "Wat kookt u graag? Vertel ook hoe u dat kookt?",
     "keyPoints": [
       "Назвать, что любишь готовить",
@@ -1034,7 +1034,7 @@
   {
     "id": "a079",
     "number": 79,
-    "title": "Пример - опоздание на работу",
+    "title": "Te laat op je werk",
     "question": "Ik kom wel eens te laat op mijn werk. Komt u wel eens te laat? Waarom komt u te laat? Vertel ook wat u doet als u te laat komt?",
     "keyPoints": [
       "Сказать, опаздываешь ли",
@@ -1048,7 +1048,7 @@
   {
     "id": "a080",
     "number": 80,
-    "title": "Пример - любимая телепередача",
+    "title": "Je favoriete tv-programma",
     "question": "Wat is uw favoriete tv programma? Vertel ook waarover dit programma gaat?",
     "keyPoints": [
       "Назвать любимую передачу",
@@ -1061,7 +1061,7 @@
   {
     "id": "a081",
     "number": 81,
-    "title": "Пример - вчера в парке",
+    "title": "Gisteren in het park",
     "question": "Wat heb je gisteren gedaan? Vertel ook waar je dat gedaan hebt",
     "keyPoints": [
       "Назвать вчерашнее действие",
@@ -1074,7 +1074,7 @@
   {
     "id": "a082",
     "number": 82,
-    "title": "Пример - нынешняя и прежняя работа",
+    "title": "Je werk nu en vroeger",
     "question": "Wat voor werk heb je nu? Vertel ook wat voor werk je vroeger had?",
     "keyPoints": [
       "Назвать нынешнюю работу",
