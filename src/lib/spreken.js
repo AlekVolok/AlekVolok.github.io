@@ -45,6 +45,7 @@ export function buildExam(config, audioPool, picturePool, random = Math.random) 
         && (!exclude || !exclude.test(slide.question)));
     return pickRandom(pool, block.count, random).map((item) => ({
       ...item,
+      title: item.title || item.question.split(/[.?!]/)[0].slice(0, 60),
       blockId: block.id,
       blockTitle: block.title,
       instruction: block.instruction,
@@ -127,6 +128,7 @@ export function parseEvaluation(text) {
   const asList = (value) => (Array.isArray(value) ? value.map(String) : []);
   const verdicts = ['answered', 'incorrect', 'no-answer'];
   return {
+    error: String(raw.error || ''),
     transcript: String(raw.transcript || ''),
     verdict: verdicts.includes(raw.verdict) ? raw.verdict : 'incorrect',
     proposedAnswer: String(raw.proposedAnswer || ''),

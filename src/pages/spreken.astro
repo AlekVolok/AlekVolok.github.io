@@ -268,11 +268,13 @@ import '../styles/global.css';
     }
     // Capture the answer now: the user may navigate to another question before onstop fires.
     const answer = answers[index];
-    // A new recording replaces the previous answer, including its transcript and audio.
+    const questionIndex = index;
+    // A new recording replaces the previous answer, including its transcript, audio and grading.
     answer.transcript = '';
     answer.audioBlob = null;
     answer.audioUrl = '';
     answer.mimeType = '';
+    answer.grading = null;
     transcriptBox.value = '';
     showPlayback(answer);
     renderNav();
@@ -289,6 +291,7 @@ import '../styles/global.css';
       currentStream.getTracks().forEach((track) => track.stop());
       if (answers[index] === answer) showPlayback(answer);
       renderNav();
+      enqueueGrade(questionIndex);
     };
     recorder.start();
     startSpeechPreview(answer);
@@ -350,7 +353,7 @@ import '../styles/global.css';
       transcriptHint: answer.transcript,
     });
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 120000);
+    const timeout = setTimeout(() => controller.abort(), 300000);
     try {
       const response = await fetch(config.evaluateUrl, {
         method: 'POST',
@@ -379,7 +382,11 @@ import '../styles/global.css';
       article.className = `review-item ${result && result.score >= 6 ? 'correct' : 'incorrect'}`;
 
       const heading = document.createElement('strong');
-      heading.textContent = `${entryIndex + 1}. ${item.blockTitle}${result ? ` — ${result.score} / 10 · ${verdictLabels[result.verdict]}` : ''}`;
+      heading.textContent = `Vraag ${entryIndex + 1} · ${item.title}`;
+      const status = document.createElement('p');
+      status.className = 'kicker';
+      status.textContent = `${item.blockTitle}${result ? ` · ${result.score} / 10 · ${verdictLabels[result.verdict]}` : ''}`;
+      article.append(status);
       const questionLine = document.createElement('p');
       questionLine.textContent = `Vraag: ${item.question}`;
       const transcriptLine = document.createElement('p');
@@ -441,8 +448,52 @@ import '../styles/global.css';
     };
   }
 
+  // Grading runs in the background while the exam is still going: each answer is queued
+  // as soon as its recording stops, and at most three requests run at the same time.
+  const gradeQueue = [];
+  let gradesRunning = 0;
+
+  function pumpGrades() {
+    while (gradesRunning < 3 && gradeQueue.length) {
+      const job = gradeQueue.shift();
+      gradesRunning += 1;
+      job().finally(() => {
+        gradesRunning -= 1;
+        pumpGrades();
+      });
+    }
+  }
+
+  // Retries once on a network error (the browser reports these as "Failed to fetch").
+  async function gradeWithRetry(questionIndex) {
+    for (let attempt = 1; attempt <= 2; attempt += 1) {
+      try {
+        const result = await evaluate(questionIndex);
+        return { result, error: result.error || '' };
+      } catch (error) {
+        if (error.name === 'AbortError') return { result: null, error: 'Beoordeling duurde te lang.' };
+        if (attempt === 2 || error.name !== 'TypeError') return { result: null, error: error.message };
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+      }
+    }
+    return { result: null, error: 'Beoordeling mislukt.' };
+  }
+
+  function enqueueGrade(questionIndex) {
+    const answer = answers[questionIndex];
+    if (!answer.grading) {
+      answer.grading = new Promise((resolve) => {
+        gradeQueue.push(async () => resolve(await gradeWithRetry(questionIndex)));
+        pumpGrades();
+      });
+    }
+    return answer.grading;
+  }
+
   async function completeExam() {
     stopRecording();
+    // Let a recording that is still stopping store its audio before grading starts.
+    await new Promise((resolve) => setTimeout(resolve, 400));
     clearInterval(clock);
     exam.hidden = true;
     results.hidden = false;
@@ -459,30 +510,20 @@ import '../styles/global.css';
       result: null,
       error: '',
     }));
-    // Grading takes tens of seconds per question, so a few run at the same time.
-    const pending = entries.map((_, questionIndex) => questionIndex);
     let finished = 0;
     const showProgress = () => {
       $('#averageScore').textContent = `Bezig met beoordelen… ${finished} van ${entries.length}`;
     };
     showProgress();
 
-    async function gradeNext() {
-      while (pending.length) {
-        const questionIndex = pending.shift();
-        const entry = entries[questionIndex];
-        try {
-          entry.result = await evaluate(questionIndex);
-          entry.transcript = entry.result.transcript || entry.transcript;
-        } catch (error) {
-          entry.error = error.name === 'AbortError' ? 'Beoordeling duurde te lang.' : error.message;
-        }
-        finished += 1;
-        showProgress();
-      }
-    }
-
-    await Promise.all(Array.from({ length: 4 }, gradeNext));
+    await Promise.all(entries.map(async (entry, questionIndex) => {
+      const outcome = await enqueueGrade(questionIndex);
+      entry.result = outcome.result;
+      entry.error = outcome.error;
+      if (outcome.result) entry.transcript = outcome.result.transcript || entry.transcript;
+      finished += 1;
+      showProgress();
+    }));
     renderResults(entries);
   }
 
