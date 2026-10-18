@@ -95,7 +95,7 @@ import '../styles/global.css';
   import config from '../data/spreken-config.json';
   import audioPool from '../data/spreken-audio.json';
   import picturePool from '../data/spreken-pictures.json';
-  import { buildExam, buildEvaluationPayload, buildReportMarkdown, encodeWav, parseEvaluation, verdictLabels } from '../lib/spreken.js';
+  import { assessPass, buildExam, buildEvaluationPayload, buildReportMarkdown, encodeWav, parseEvaluation, verdictLabels } from '../lib/spreken.js';
 
   const $ = (selector) => document.querySelector(selector);
   const intro = $('#intro');
@@ -369,9 +369,8 @@ import '../styles/global.css';
     const scored = entries.filter((entry) => entry.result);
     const average = scored.length ? scored.reduce((sum, entry) => sum + entry.result.score, 0) / scored.length : 0;
     $('#averageScore').textContent = scored.length ? `${average.toFixed(1)} / 10` : 'Geen beoordeling';
-    $('#resultSummary').textContent = scored.length < entries.length
-      ? `${scored.length} van ${entries.length} vragen zijn beoordeeld. Zie de details hieronder.`
-      : 'Alle vragen zijn beoordeeld. Gebruik de fouten en het voorbeeldantwoord om te leren.';
+    const pass = assessPass(entries, config.passRule);
+    $('#resultSummary').textContent = `${pass.passed ? 'Mogelijk geslaagd' : 'Mogelijk niet geslaagd'}: ${pass.answered} van ${pass.total} antwoorden goed (nodig: ${pass.required}). ${pass.note}`;
 
     const review = $('#review');
     review.replaceChildren(...entries.map((entry, entryIndex) => {
@@ -433,7 +432,7 @@ import '../styles/global.css';
     const download = $('#download');
     download.hidden = false;
     download.onclick = () => {
-      const blob = new Blob([buildReportMarkdown(entries)], { type: 'text/markdown' });
+      const blob = new Blob([buildReportMarkdown(entries, config.passRule)], { type: 'text/markdown' });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
       link.download = `spreken-a2-${new Date().toISOString().slice(0, 10)}.md`;

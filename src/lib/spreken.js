@@ -145,6 +145,23 @@ export function parseEvaluation(text) {
   };
 }
 
+/**
+ * Estimates whether the candidate would pass, from the number of answers judged "answered".
+ * @param {{ result: object | null }[]} entries
+ * @param {{ answeredRequired: number, note: string }} passRule
+ * @returns {{ answered: number, total: number, required: number, passed: boolean, note: string }}
+ */
+export function assessPass(entries, passRule) {
+  const answered = entries.filter((entry) => entry.result && entry.result.verdict === 'answered').length;
+  return {
+    answered,
+    total: entries.length,
+    required: passRule.answeredRequired,
+    passed: answered >= passRule.answeredRequired,
+    note: passRule.note,
+  };
+}
+
 export const verdictLabels = {
   answered: 'goed beantwoord',
   incorrect: 'niet goed genoeg — zie de verbeterpunten',
@@ -156,13 +173,22 @@ export const verdictLabels = {
  * @param {Date} [date]
  * @returns {string} Markdown report
  */
-export function buildReportMarkdown(entries, date = new Date()) {
+export function buildReportMarkdown(entries, passRule, date = new Date()) {
   const lines = ['# Spreken A2 — rapport', '', `Datum: ${date.toISOString().slice(0, 10)}`, ''];
   const scored = entries.filter((entry) => entry.result);
   if (scored.length) {
     const average = scored.reduce((sum, entry) => sum + entry.result.score, 0) / scored.length;
     lines.push(`Gemiddelde score: ${average.toFixed(1)} / 10`, '');
   }
+  const pass = assessPass(entries, passRule);
+  lines.push(
+    `## Inschatting slagen`,
+    '',
+    `${pass.passed ? 'Mogelijk geslaagd' : 'Mogelijk niet geslaagd'}: ${pass.answered} van ${pass.total} antwoorden goed (nodig: ${pass.required}).`,
+    '',
+    `> ${pass.note}`,
+    '',
+  );
 
   entries.forEach((entry, index) => {
     const { item, result } = entry;
