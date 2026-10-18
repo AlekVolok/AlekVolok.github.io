@@ -453,19 +453,37 @@ import '../styles/global.css';
     $('#review').replaceChildren();
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    const entries = [];
-    for (let questionIndex = 0; questionIndex < questions.length; questionIndex += 1) {
-      const answer = answers[questionIndex];
-      const entry = { item: questions[questionIndex], transcript: answer.transcript, result: null, error: '' };
-      entries.push(entry);
-      // Empty answers are sent too: the grader proposes an answer for them.
-      try {
-        entry.result = await evaluate(questionIndex);
-        entry.transcript = entry.result.transcript || entry.transcript;
-      } catch (error) {
-        entry.error = error.name === 'AbortError' ? 'Beoordeling duurde te lang.' : error.message;
+    // Empty answers are sent too: the grader proposes an answer for them.
+    const entries = questions.map((item, questionIndex) => ({
+      item,
+      transcript: answers[questionIndex].transcript,
+      result: null,
+      error: '',
+    }));
+    // Grading takes tens of seconds per question, so a few run at the same time.
+    const pending = entries.map((_, questionIndex) => questionIndex);
+    let finished = 0;
+    const showProgress = () => {
+      $('#averageScore').textContent = `Bezig met beoordelen… ${finished} van ${entries.length}`;
+    };
+    showProgress();
+
+    async function gradeNext() {
+      while (pending.length) {
+        const questionIndex = pending.shift();
+        const entry = entries[questionIndex];
+        try {
+          entry.result = await evaluate(questionIndex);
+          entry.transcript = entry.result.transcript || entry.transcript;
+        } catch (error) {
+          entry.error = error.name === 'AbortError' ? 'Beoordeling duurde te lang.' : error.message;
+        }
+        finished += 1;
+        showProgress();
       }
     }
+
+    await Promise.all(Array.from({ length: 4 }, gradeNext));
     renderResults(entries);
   }
 
