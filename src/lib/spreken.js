@@ -125,8 +125,11 @@ export function parseEvaluation(text) {
   if (start === -1 || end <= start) throw new Error('Geen JSON in het antwoord van de webhook.');
   const raw = JSON.parse(text.slice(start, end + 1));
   const asList = (value) => (Array.isArray(value) ? value.map(String) : []);
+  const verdicts = ['answered', 'incorrect', 'no-answer'];
   return {
     transcript: String(raw.transcript || ''),
+    verdict: verdicts.includes(raw.verdict) ? raw.verdict : 'incorrect',
+    proposedAnswer: String(raw.proposedAnswer || ''),
     score: Math.max(0, Math.min(10, Math.round(Number(raw.score) || 0))),
     completed: Boolean(raw.completed),
     strengths: asList(raw.strengths),
@@ -141,6 +144,12 @@ export function parseEvaluation(text) {
     feedback: String(raw.feedback || ''),
   };
 }
+
+export const verdictLabels = {
+  answered: 'goed beantwoord',
+  incorrect: 'niet goed genoeg — zie de verbeterpunten',
+  'no-answer': 'geen antwoord — zie het voorstel',
+};
 
 /**
  * @param {{ item: object, transcript: string, result: object | null, error: string }[]} entries
@@ -158,13 +167,14 @@ export function buildReportMarkdown(entries, date = new Date()) {
   entries.forEach((entry, index) => {
     const { item, result } = entry;
     lines.push(`## ${index + 1}. ${item.blockTitle}`, '', `Vraag: ${item.question}`, '');
-    if (result) lines.push(`Score: ${result.score} / 10`, '');
+    if (result) lines.push(`Score: ${result.score} / 10 — ${verdictLabels[result.verdict]}`, '');
     if (entry.error) lines.push(`Let op: ${entry.error}`, '');
 
     lines.push('### Transcript', '');
     const transcript = (result?.transcript || entry.transcript || '').trim();
     lines.push(transcript ? `> ${transcript}` : '> (geen antwoord opgenomen)', '');
 
+    if (result?.proposedAnswer) lines.push('### Voorstel voor het antwoord', '', `> ${result.proposedAnswer}`, '');
     if (item.modelAnswer) lines.push('### Voorbeeldantwoord', '', `> ${item.modelAnswer}`, '');
 
     if (result) {

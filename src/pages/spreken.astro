@@ -95,7 +95,7 @@ import '../styles/global.css';
   import config from '../data/spreken-config.json';
   import audioPool from '../data/spreken-audio.json';
   import picturePool from '../data/spreken-pictures.json';
-  import { buildExam, buildEvaluationPayload, buildReportMarkdown, encodeWav, parseEvaluation } from '../lib/spreken.js';
+  import { buildExam, buildEvaluationPayload, buildReportMarkdown, encodeWav, parseEvaluation, verdictLabels } from '../lib/spreken.js';
 
   const $ = (selector) => document.querySelector(selector);
   const intro = $('#intro');
@@ -268,6 +268,14 @@ import '../styles/global.css';
     }
     // Capture the answer now: the user may navigate to another question before onstop fires.
     const answer = answers[index];
+    // A new recording replaces the previous answer, including its transcript and audio.
+    answer.transcript = '';
+    answer.audioBlob = null;
+    answer.audioUrl = '';
+    answer.mimeType = '';
+    transcriptBox.value = '';
+    showPlayback(answer);
+    renderNav();
     const currentStream = stream;
     const item = questions[index];
     chunks = [];
@@ -372,13 +380,19 @@ import '../styles/global.css';
       article.className = `review-item ${result && result.score >= 6 ? 'correct' : 'incorrect'}`;
 
       const heading = document.createElement('strong');
-      heading.textContent = `${entryIndex + 1}. ${item.blockTitle}${result ? ` — ${result.score} / 10` : ''}`;
+      heading.textContent = `${entryIndex + 1}. ${item.blockTitle}${result ? ` — ${result.score} / 10 · ${verdictLabels[result.verdict]}` : ''}`;
       const questionLine = document.createElement('p');
       questionLine.textContent = `Vraag: ${item.question}`;
       const transcriptLine = document.createElement('p');
       transcriptLine.textContent = `Jouw antwoord: ${(result?.transcript || entry.transcript).trim() || '—'}`;
       article.append(heading, questionLine, transcriptLine);
 
+      if (result?.proposedAnswer) {
+        const proposal = document.createElement('p');
+        proposal.className = 'proposal';
+        proposal.textContent = `Voorstel: ${result.proposedAnswer}`;
+        article.append(proposal);
+      }
       if (item.modelAnswer) {
         const model = document.createElement('p');
         model.textContent = `Voorbeeldantwoord: ${item.modelAnswer}`;
@@ -444,10 +458,7 @@ import '../styles/global.css';
       const answer = answers[questionIndex];
       const entry = { item: questions[questionIndex], transcript: answer.transcript, result: null, error: '' };
       entries.push(entry);
-      if (!answer.audioBlob && !answer.transcript.trim()) {
-        entry.error = 'Geen antwoord opgenomen.';
-        continue;
-      }
+      // Empty answers are sent too: the grader proposes an answer for them.
       try {
         entry.result = await evaluate(questionIndex);
         entry.transcript = entry.result.transcript || entry.transcript;
@@ -516,7 +527,8 @@ import '../styles/global.css';
   .picture-grid { display: grid; gap: var(--sp-3); margin-bottom: var(--sp-4); grid-template-columns: 1fr; }
   .picture-grid[data-count="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .picture-grid[data-count="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .picture-grid img { width: 100%; height: auto; display: block; border-radius: var(--r-core); border: 1px solid var(--hairline); background: #fff; }
+  .picture-grid img { width: 100%; height: 260px; object-fit: contain; display: block; border-radius: var(--r-core); border: 1px solid var(--hairline); background: #fff; }
+  .proposal { color: var(--accent-hi); }
   .question-text { font-family: var(--font-sans); font-size: clamp(1.1rem, 2vw, 1.35rem); line-height: 1.4; margin: var(--sp-2) 0 var(--sp-5); }
   .record-row { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; margin-bottom: var(--sp-5); }
   .record-button { display: inline-flex; align-items: center; gap: 10px; border-radius: 999px; padding: 12px 18px; border: 1px solid var(--hairline); background: var(--bg-core); color: var(--text); font-weight: 600; }
