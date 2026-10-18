@@ -9,6 +9,7 @@
     "preview": "astro preview"
   },
   "dependencies": {
+    "@breezystack/lamejs": "^1.2.7",
     "astro": "^5.12.0"
   }
 }

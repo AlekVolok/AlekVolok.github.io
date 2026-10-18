@@ -7,6 +7,8 @@
  * OpenRouter key never reaches the browser.
  */
 
+import { Mp3Encoder } from '@breezystack/lamejs';
+
 /**
  * Picks `count` random items from a pool without repeats.
  * @template T
@@ -53,6 +55,37 @@ export function buildExam(config, audioPool, picturePool, random = Math.random) 
       pictureCount: block.source === 'audio' ? 0 : block.pictureCount,
     }));
   });
+}
+
+/**
+ * Encodes mono float samples (-1..1) as MP3. The n8n server rejects request bodies
+ * over about 1 MB, and a 90-second WAV is several MB; 32 kbps MP3 keeps it near 360 KB.
+ * @param {Float32Array} samples
+ * @param {number} sampleRate
+ * @param {number} [kbps]
+ * @returns {Uint8Array}
+ */
+export function encodeMp3(samples, sampleRate, kbps = 32) {
+  const encoder = new Mp3Encoder(1, sampleRate, kbps);
+  const pcm = new Int16Array(samples.length);
+  for (let i = 0; i < samples.length; i += 1) {
+    const sample = Math.max(-1, Math.min(1, samples[i]));
+    pcm[i] = sample < 0 ? sample * 0x8000 : sample * 0x7fff;
+  }
+  const chunks = [];
+  for (let start = 0; start < pcm.length; start += 1152) {
+    const chunk = encoder.encodeBuffer(pcm.subarray(start, start + 1152));
+    if (chunk.length) chunks.push(chunk);
+  }
+  const tail = encoder.flush();
+  if (tail.length) chunks.push(tail);
+  const output = new Uint8Array(chunks.reduce((sum, chunk) => sum + chunk.length, 0));
+  let offset = 0;
+  for (const chunk of chunks) {
+    output.set(chunk, offset);
+    offset += chunk.length;
+  }
+  return output;
 }
 
 /**
@@ -111,6 +144,7 @@ export function buildEvaluationPayload(item, recording) {
     referenceAnswer: item.modelAnswer || '',
     language: 'nl',
     audio: { base64: recording.audioBase64, mimeType: recording.mimeType },
+    images: recording.images || [],
     transcriptHint: recording.transcriptHint,
   };
 }

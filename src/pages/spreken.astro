@@ -95,7 +95,7 @@ import '../styles/global.css';
   import config from '../data/spreken-config.json';
   import audioPool from '../data/spreken-audio.json';
   import picturePool from '../data/spreken-pictures.json';
-  import { assessPass, buildExam, buildEvaluationPayload, buildReportMarkdown, encodeWav, parseEvaluation, verdictLabels } from '../lib/spreken.js';
+  import { assessPass, buildExam, buildEvaluationPayload, buildReportMarkdown, encodeMp3, parseEvaluation, verdictLabels } from '../lib/spreken.js';
 
   const $ = (selector) => document.querySelector(selector);
   const intro = $('#intro');
@@ -325,40 +325,73 @@ import '../styles/global.css';
     });
   }
 
-  // Browsers record webm or mp4; OpenRouter takes WAV, so decode and re-encode when possible.
-  async function toWav(blob) {
+  // The n8n server rejects request bodies over about 1 MB (HTTP 413, which the browser
+  // reports as "Failed to fetch"). Recordings are therefore resampled to 16 kHz mono
+  // and encoded as 32 kbps MP3, and pictures are sent as small JPEG thumbnails.
+  const maxBodyBytes = 950 * 1024;
+  const speechSampleRate = 16000;
+
+  async function toMp3(blob) {
     const context = new AudioContext();
     try {
       const decoded = await context.decodeAudioData(await blob.arrayBuffer());
-      const channels = Array.from({ length: decoded.numberOfChannels }, (_, channel) => decoded.getChannelData(channel));
-      return new Blob([encodeWav(channels, decoded.sampleRate)], { type: 'audio/wav' });
+      const frames = Math.ceil(decoded.duration * speechSampleRate);
+      const offline = new OfflineAudioContext(1, frames, speechSampleRate);
+      const source = offline.createBufferSource();
+      source.buffer = decoded;
+      source.connect(offline.destination);
+      source.start();
+      const rendered = await offline.startRendering();
+      return new Blob([encodeMp3(rendered.getChannelData(0), speechSampleRate)], { type: 'audio/mpeg' });
     } finally {
       context.close();
     }
   }
 
+  async function pictureThumbnail(src) {
+    const bitmap = await createImageBitmap(await (await fetch(src)).blob());
+    const scale = Math.min(1, 384 / Math.max(bitmap.width, bitmap.height));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(bitmap.width * scale);
+    canvas.height = Math.round(bitmap.height * scale);
+    canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    return canvas.toDataURL('image/jpeg', 0.7);
+  }
+
   async function evaluate(questionIndex) {
     const answer = answers[questionIndex];
+    const item = questions[questionIndex];
     let audioBlob = answer.audioBlob;
     if (audioBlob) {
       try {
-        audioBlob = await toWav(audioBlob);
+        audioBlob = await toMp3(audioBlob);
       } catch {
         // Keep the original recording if this browser cannot decode it.
       }
     }
-    const body = buildEvaluationPayload(questions[questionIndex], {
+    let images = [];
+    try {
+      images = await Promise.all((item.pictures || []).map(pictureThumbnail));
+    } catch {
+      // Grade without pictures if they cannot be loaded.
+    }
+    const body = buildEvaluationPayload(item, {
       audioBase64: audioBlob ? await blobToBase64(audioBlob) : '',
       mimeType: audioBlob ? audioBlob.type : '',
+      images,
       transcriptHint: answer.transcript,
     });
+    const json = JSON.stringify(body);
+    if (json.length > maxBodyBytes) {
+      throw new Error('De opname is te lang om te beoordelen. Probeer een korter antwoord.');
+    }
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 300000);
     try {
       const response = await fetch(config.evaluateUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+        body: json,
         signal: controller.signal,
       });
       if (!response.ok) throw new Error(`Webhook gaf status ${response.status}`);
