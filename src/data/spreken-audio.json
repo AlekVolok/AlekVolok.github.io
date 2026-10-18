@@ -9,7 +9,8 @@
       "Объяснить причину"
     ],
     "modelAnswer": "Ik vind dat prima, want werk is belangrijk.",
-    "audio": "/spreken/audio/001.m4a"
+    "audio": "/spreken/audio/001-q.mp3",
+    "modelAudio": "/spreken/audio/001-a.mp3"
   },
   {
     "id": "a002",
@@ -21,7 +22,8 @@
       "Объяснить причину"
     ],
     "modelAnswer": "Ik vind dat prima, want een nieuwe baan is belangrijk.",
-    "audio": "/spreken/audio/002.m4a"
+    "audio": "/spreken/audio/002-q.mp3",
+    "modelAudio": "/spreken/audio/002-a.mp3"
   },
   {
     "id": "a003",
@@ -33,7 +35,8 @@
       "Объяснить причину"
     ],
     "modelAnswer": "Wat toevallig! Ik neem ook een fles water mee, want dat is gezond.",
-    "audio": "/spreken/audio/003.m4a"
+    "audio": "/spreken/audio/003-q.mp3",
+    "modelAudio": "/spreken/audio/003-a.mp3"
   },
   {
     "id": "a004",
@@ -45,7 +48,8 @@
       "Назвать желаемое место жительства"
     ],
     "modelAnswer": "Ik woon nu in Nederland. Ik wil graag in Portugal wonen.",
-    "audio": "/spreken/audio/004.mp3"
+    "audio": "/spreken/audio/004-q.mp3",
+    "modelAudio": "/spreken/audio/004-a.mp3"
   },
   {
     "id": "a005",
@@ -57,7 +61,8 @@
       "Объяснить причину"
     ],
     "modelAnswer": "Ik vind een schooldiploma belangrijk, want werk is belangrijk voor mij.",
-    "audio": "/spreken/audio/005.mp3"
+    "audio": "/spreken/audio/005-q.mp3",
+    "modelAudio": "/spreken/audio/005-a.mp3"
   },
   {
     "id": "a006",
@@ -69,7 +74,8 @@
       "Объяснить причину"
     ],
     "modelAnswer": "Ik werk het liefst in de avond, want dan ben ik vrij.",
-    "audio": "/spreken/audio/006.mp3"
+    "audio": "/spreken/audio/006-q.mp3",
+    "modelAudio": "/spreken/audio/006-a.mp3"
   },
   {
     "id": "a007",
@@ -81,7 +87,8 @@
       "Объяснить причину"
     ],
     "modelAnswer": "Ik pak het afval op, want mijn buurt is belangrijk voor mij.",
-    "audio": "/spreken/audio/007.mp3"
+    "audio": "/spreken/audio/007-q.mp3",
+    "modelAudio": "/spreken/audio/007-a.mp3"
   },
   {
     "id": "a008",
@@ -93,7 +100,8 @@
       "Назвать частоту занятий"
     ],
     "modelAnswer": "Ik fiets graag. Ik fiets elke dag.",
-    "audio": "/spreken/audio/008.mp3"
+    "audio": "/spreken/audio/008-q.mp3",
+    "modelAudio": "/spreken/audio/008-a.mp3"
   },
   {
     "id": "a009",
@@ -105,7 +113,8 @@
       "Сказать, что преподаватель умеет хорошо"
     ],
     "modelAnswer": "Ik heb geen leraar want dat is duur. Ik studeer met chat gpt en tiktok want dat is gratis",
-    "audio": "/spreken/audio/009.mp3"
+    "audio": "/spreken/audio/009-q.mp3",
+    "modelAudio": "/spreken/audio/009-a.mp3"
   },
   {
     "id": "a010",
@@ -117,7 +126,8 @@
       "Объяснить причину"
     ],
     "modelAnswer": "Wat toevallig! Ik werk ook het best in de avond, want dan ben ik vrij.",
-    "audio": "/spreken/audio/010.mp3"
+    "audio": "/spreken/audio/010-q.mp3",
+    "modelAudio": "/spreken/audio/010-a.mp3"
   },
   {
     "id": "a011",
@@ -129,7 +139,8 @@
       "Сказать мнение о враче"
     ],
     "modelAnswer": "Mijn huisarts is in mijn buurt. Ik vind hem aardig.",
-    "audio": "/spreken/audio/011.mp3"
+    "audio": "/spreken/audio/011-q.mp3",
+    "modelAudio": "/spreken/audio/011-a.mp3"
   },
   {
     "id": "a012",
@@ -141,7 +152,8 @@
       "Сказать, ездишь ли сам"
     ],
     "modelAnswer": "Ik vind fietsen prima, want dat is gezond. Ik fiets zelf ook.",
-    "audio": "/spreken/audio/012.mp3"
+    "audio": "/spreken/audio/012-q.mp3",
+    "modelAudio": "/spreken/audio/012-a.mp3"
   },
   {
     "id": "a013",
@@ -153,7 +165,8 @@
       "Назвать занятие во время перерыва"
     ],
     "modelAnswer": "Wat toevallig! Ik neem ook pauze op het werk. Ik drink dan koffie.",
-    "audio": "/spreken/audio/013.mp3"
+    "audio": "/spreken/audio/013-q.mp3",
+    "modelAudio": "/spreken/audio/013-a.mp3"
   },
   {
     "id": "a014",
@@ -165,7 +178,8 @@
       "Назвать длительность"
     ],
     "modelAnswer": "Ik heb in september vakantie. Mijn vakantie duurt twee weken.",
-    "audio": "/spreken/audio/014.mp3"
+    "audio": "/spreken/audio/014-q.mp3",
+    "modelAudio": "/spreken/audio/014-a.mp3"
   },
   {
     "id": "a015",
@@ -177,7 +191,8 @@
       "Объяснить причину"
     ],
     "modelAnswer": "Een goede leraar moet goed Nederlands kunnen spreken, want dat is belangrijk.",
-    "audio": "/spreken/audio/015.mp3"
+    "audio": "/spreken/audio/015-q.mp3",
+    "modelAudio": "/spreken/audio/015-a.mp3"
   },
   {
     "id": "a016",
@@ -189,7 +204,8 @@
       "Назвать занятие на нём"
     ],
     "modelAnswer": "Wat toevallig! Mijn favoriete vak is ook Nederlands. Ik schrijf daar graag.",
-    "audio": "/spreken/audio/016.mp3"
+    "audio": "/spreken/audio/016-q.mp3",
+    "modelAudio": "/spreken/audio/016-a.mp3"
   },
   {
     "id": "a017",
@@ -201,7 +217,8 @@
       "Назвать нелюбимое вечернее занятие"
     ],
     "modelAnswer": "Ik kijk graag tiktok in de avond. Ik werk niet graag in de avond.",
-    "audio": "/spreken/audio/017.mp3"
+    "audio": "/spreken/audio/017-q.mp3",
+    "modelAudio": "/spreken/audio/017-a.mp3"
   },
   {
     "id": "a018",
@@ -213,7 +230,8 @@
       "Объяснить причину"
     ],
     "modelAnswer": "Wat toevallig! Ik vind de camera ook het belangrijkste, want ik maak graag foto's.",
-    "audio": "/spreken/audio/018.mp3"
+    "audio": "/spreken/audio/018-q.mp3",
+    "modelAudio": "/spreken/audio/018-a.mp3"
   },
   {
     "id": "a019",
@@ -225,7 +243,8 @@
       "Объяснить причину"
     ],
     "modelAnswer": "Ik loop nooit op blote voeten, want dat vind ik niet prettig.",
-    "audio": "/spreken/audio/019.mp3"
+    "audio": "/spreken/audio/019-q.mp3",
+    "modelAudio": "/spreken/audio/019-a.mp3"
   },
   {
     "id": "a020",
@@ -237,7 +256,8 @@
       "Назвать место"
     ],
     "modelAnswer": "Ik was in het park en ik ga elke dag naar het park. Ik drink koffie in het park.",
-    "audio": "/spreken/audio/020.mp3"
+    "audio": "/spreken/audio/020-q.mp3",
+    "modelAudio": "/spreken/audio/020-a.mp3"
   },
   {
     "id": "a021",
@@ -249,7 +269,8 @@
       "Объяснить причину"
     ],
     "modelAnswer": "Wat toevallig! Ik blijf ook thuis, want ik kijk graag tiktok.",
-    "audio": "/spreken/audio/021.mp3"
+    "audio": "/spreken/audio/021-q.mp3",
+    "modelAudio": "/spreken/audio/021-a.mp3"
   },
   {
     "id": "a022",
@@ -262,7 +283,8 @@
       "Объяснить причину"
     ],
     "modelAnswer": "Dat gebeurt soms. Ik maak de tafel schoon, want dat is belangrijk.",
-    "audio": "/spreken/audio/022.mp3"
+    "audio": "/spreken/audio/022-q.mp3",
+    "modelAudio": "/spreken/audio/022-a.mp3"
   },
   {
     "id": "a023",
@@ -274,7 +296,8 @@
       "Объяснить причину"
     ],
     "modelAnswer": "Ik gebruik mijn telefoon, want ik heb niet genoeg geld voor een nieuwe computer.",
-    "audio": "/spreken/audio/023.mp3"
+    "audio": "/spreken/audio/023-q.mp3",
+    "modelAudio": "/spreken/audio/023-a.mp3"
   },
   {
     "id": "a024",
@@ -286,7 +309,8 @@
       "Объяснить причину"
     ],
     "modelAnswer": "Ik woon liever in de stad, want mijn werk is daar.",
-    "audio": "/spreken/audio/024.mp3"
+    "audio": "/spreken/audio/024-q.mp3",
+    "modelAudio": "/spreken/audio/024-a.mp3"
   },
   {
     "id": "a025",
@@ -298,7 +322,8 @@
       "Назвать своё умение"
     ],
     "modelAnswer": "Wat toevallig! Ik ben ook Leeuw. Ik kan goed kebab maken.",
-    "audio": "/spreken/audio/025.mp3"
+    "audio": "/spreken/audio/025-q.mp3",
+    "modelAudio": "/spreken/audio/025-a.mp3"
   },
   {
     "id": "a026",
@@ -310,7 +335,8 @@
       "Объяснить причину"
     ],
     "modelAnswer": "Wat toevallig! Ik ben ook op maandagavond vrij, want dan werk ik niet.",
-    "audio": "/spreken/audio/026.mp3"
+    "audio": "/spreken/audio/026-q.mp3",
+    "modelAudio": "/spreken/audio/026-a.mp3"
   },
   {
     "id": "a027",
@@ -323,7 +349,8 @@
       "Сказать мнение"
     ],
     "modelAnswer": "Ja, ik werk in het weekend. Ik maak kebab. Ik vind dat prima.",
-    "audio": "/spreken/audio/027.mp3"
+    "audio": "/spreken/audio/027-q.mp3",
+    "modelAudio": "/spreken/audio/027-a.mp3"
   },
   {
     "id": "a028",
@@ -335,7 +362,8 @@
       "Описать их вид"
     ],
     "modelAnswer": "Wat toevallig! Mijn huis heeft ook twee slaapkamers. Ze zijn klein en mooi.",
-    "audio": "/spreken/audio/028.mp3"
+    "audio": "/spreken/audio/028-q.mp3",
+    "modelAudio": "/spreken/audio/028-a.mp3"
   },
   {
     "id": "a029",
@@ -347,7 +375,8 @@
       "Объяснить причину"
     ],
     "modelAnswer": "Ik gebruik internet om tiktok te kijken, want dat is gratis.",
-    "audio": "/spreken/audio/029.mp3"
+    "audio": "/spreken/audio/029-q.mp3",
+    "modelAudio": "/spreken/audio/029-a.mp3"
   },
   {
     "id": "a030",
@@ -359,7 +388,8 @@
       "Объяснить причину"
     ],
     "modelAnswer": "Wat toevallig! Ik maak mijn huiswerk ook het liefst in de avond, want dan ben ik vrij.",
-    "audio": "/spreken/audio/030.mp3"
+    "audio": "/spreken/audio/030-q.mp3",
+    "modelAudio": "/spreken/audio/030-a.mp3"
   },
   {
     "id": "a031",
@@ -371,7 +401,8 @@
       "Объяснить причину"
     ],
     "modelAnswer": "Wat toevallig! Ik lees daar ook graag, want dat is gratis.",
-    "audio": "/spreken/audio/031.mp3"
+    "audio": "/spreken/audio/031-q.mp3",
+    "modelAudio": "/spreken/audio/031-a.mp3"
   },
   {
     "id": "a032",
@@ -383,7 +414,8 @@
       "Назвать действие преподавателя"
     ],
     "modelAnswer": "Wat toevallig! Ik steek ook mijn hand op. De docent geeft dan antwoord.",
-    "audio": "/spreken/audio/032.mp3"
+    "audio": "/spreken/audio/032-q.mp3",
+    "modelAudio": "/spreken/audio/032-a.mp3"
   },
   {
     "id": "a033",
@@ -395,7 +427,8 @@
       "Назвать подготовку к экзаменам"
     ],
     "modelAnswer": "Mijn laatste moeilijke examen was in september. Voor een examen studeer ik elke dag.",
-    "audio": "/spreken/audio/033.mp3"
+    "audio": "/spreken/audio/033-q.mp3",
+    "modelAudio": "/spreken/audio/033-a.mp3"
   },
   {
     "id": "a034",
@@ -407,7 +440,8 @@
       "Назвать время"
     ],
     "modelAnswer": "Wat toevallig! Ik poets ook twee keer per dag mijn tanden. Om acht uur en om tien uur in de avond.",
-    "audio": "/spreken/audio/034.mp3"
+    "audio": "/spreken/audio/034-q.mp3",
+    "modelAudio": "/spreken/audio/034-a.mp3"
   },
   {
     "id": "a035",
@@ -419,7 +453,8 @@
       "Назвать время начала"
     ],
     "modelAnswer": "Ik heb Nederlands geleerd van mijn leraar. Ik ben in september begonnen.",
-    "audio": "/spreken/audio/035.mp3"
+    "audio": "/spreken/audio/035-q.mp3",
+    "modelAudio": "/spreken/audio/035-a.mp3"
   },
   {
     "id": "a036",
@@ -431,7 +466,8 @@
       "Назвать своё действие"
     ],
     "modelAnswer": "Ik vind dat prima. Ik maak ook een afspraak met mijn vrienden.",
-    "audio": "/spreken/audio/036.mp3"
+    "audio": "/spreken/audio/036-q.mp3",
+    "modelAudio": "/spreken/audio/036-a.mp3"
   },
   {
     "id": "a037",
@@ -443,7 +479,8 @@
       "Назвать то, что делаешь не каждый вечер"
     ],
     "modelAnswer": "Ik kijk meestal tiktok in de avond. Ik werk niet elke avond.",
-    "audio": "/spreken/audio/037.mp3"
+    "audio": "/spreken/audio/037-q.mp3",
+    "modelAudio": "/spreken/audio/037-a.mp3"
   },
   {
     "id": "a038",
@@ -456,7 +493,8 @@
       "Назвать частоту общения"
     ],
     "modelAnswer": "Ja, ik heb een broer. Ik spreek hem elke dag.",
-    "audio": "/spreken/audio/038.mp3"
+    "audio": "/spreken/audio/038-q.mp3",
+    "modelAudio": "/spreken/audio/038-a.mp3"
   },
   {
     "id": "a039",
@@ -468,7 +506,8 @@
       "Объяснить, почему тогда лучше себя чувствуешь"
     ],
     "modelAnswer": "Ik doe het liefst examens in de avond, want dan ben ik vrij.",
-    "audio": "/spreken/audio/039.mp3"
+    "audio": "/spreken/audio/039-q.mp3",
+    "modelAudio": "/spreken/audio/039-a.mp3"
   },
   {
     "id": "a040",
@@ -480,7 +519,8 @@
       "Назвать время дня"
     ],
     "modelAnswer": "Ik poets twee keer per dag mijn tanden. In de ochtend en in de avond.",
-    "audio": "/spreken/audio/040.mp3"
+    "audio": "/spreken/audio/040-q.mp3",
+    "modelAudio": "/spreken/audio/040-a.mp3"
   },
   {
     "id": "a041",
@@ -492,7 +532,8 @@
       "Назвать способ подготовки"
     ],
     "modelAnswer": "Ik heb twee keer examen gedaan. Ik studeer elke dag voor een examen.",
-    "audio": "/spreken/audio/041.mp3"
+    "audio": "/spreken/audio/041-q.mp3",
+    "modelAudio": "/spreken/audio/041-a.mp3"
   },
   {
     "id": "a042",
@@ -506,7 +547,8 @@
       "Объяснить выбор"
     ],
     "modelAnswer": "Ik woon in Nederland. Mijn woonplaats is mooi en heeft een park. Ik wil graag in Portugal wonen, want het weer is mooi.",
-    "audio": "/spreken/audio/042.mp3"
+    "audio": "/spreken/audio/042-q.mp3",
+    "modelAudio": "/spreken/audio/042-a.mp3"
   },
   {
     "id": "a043",
@@ -518,7 +560,8 @@
       "Сказать мнение"
     ],
     "modelAnswer": "Wat toevallig! Ik heb ook een kleine keuken. Ik vind dat prima.",
-    "audio": "/spreken/audio/043.mp3"
+    "audio": "/spreken/audio/043-q.mp3",
+    "modelAudio": "/spreken/audio/043-a.mp3"
   },
   {
     "id": "a044",
@@ -531,7 +574,8 @@
       "Объяснить выбор"
     ],
     "modelAnswer": "Ik wil kebab leren maken. Ik wil dat thuis met tiktok leren, want ik eet graag kebab.",
-    "audio": "/spreken/audio/044.mp3"
+    "audio": "/spreken/audio/044-q.mp3",
+    "modelAudio": "/spreken/audio/044-a.mp3"
   },
   {
     "id": "a045",
@@ -543,7 +587,8 @@
       "Объяснить причину"
     ],
     "modelAnswer": "Ik gebruik internet ook om tiktok te kijken, want dat is gratis.",
-    "audio": "/spreken/audio/045.mp3"
+    "audio": "/spreken/audio/045-q.mp3",
+    "modelAudio": "/spreken/audio/045-a.mp3"
   },
   {
     "id": "a046",
@@ -555,7 +600,8 @@
       "Объяснить причину"
     ],
     "modelAnswer": "Ik vind werken in het weekend prima, want werk is belangrijk voor mij.",
-    "audio": "/spreken/audio/046.mp3"
+    "audio": "/spreken/audio/046-q.mp3",
+    "modelAudio": "/spreken/audio/046-a.mp3"
   },
   {
     "id": "a047",
@@ -567,7 +613,8 @@
       "Объяснить, почему оно подходит"
     ],
     "modelAnswer": "Wat toevallig! Ik maak mijn huiswerk ook het liefst in de avond, want dan ben ik vrij.",
-    "audio": "/spreken/audio/047.mp3"
+    "audio": "/spreken/audio/047-q.mp3",
+    "modelAudio": "/spreken/audio/047-a.mp3"
   },
   {
     "id": "a048",
@@ -580,7 +627,8 @@
       "Объяснить причину"
     ],
     "modelAnswer": "Ik ga elke week naar de markt. Ik koop daar eten, want dat is niet duur.",
-    "audio": "/spreken/audio/048.mp3"
+    "audio": "/spreken/audio/048-q.mp3",
+    "modelAudio": "/spreken/audio/048-a.mp3"
   },
   {
     "id": "a049",
@@ -593,7 +641,8 @@
       "Объяснить причину"
     ],
     "modelAnswer": "Ik maak elke week mijn huis schoon. Ik vind dat prettig, want mijn huis is belangrijk voor mij.",
-    "audio": "/spreken/audio/049.mp3"
+    "audio": "/spreken/audio/049-q.mp3",
+    "modelAudio": "/spreken/audio/049-a.mp3"
   },
   {
     "id": "a050",
@@ -606,7 +655,8 @@
       "Объяснить выбор места"
     ],
     "modelAnswer": "Ik krijg meestal twee opdrachten. Ik maak mijn huiswerk op mijn slaapkamer, want het is mooi.",
-    "audio": "/spreken/audio/050.mp3"
+    "audio": "/spreken/audio/050-q.mp3",
+    "modelAudio": "/spreken/audio/050-a.mp3"
   },
   {
     "id": "a051",
@@ -618,7 +668,8 @@
       "Объяснить причину"
     ],
     "modelAnswer": "Nee, ik draag geen oranje, want ik heb geen oranje kleding.",
-    "audio": "/spreken/audio/051.mp3"
+    "audio": "/spreken/audio/051-q.mp3",
+    "modelAudio": "/spreken/audio/051-a.mp3"
   },
   {
     "id": "a052",
@@ -630,7 +681,8 @@
       "Объяснить причину"
     ],
     "modelAnswer": "Ik vind het snelle tempo ook niet prettig, want ik heb graag tijd voor mijn vrienden.",
-    "audio": "/spreken/audio/052.mp3"
+    "audio": "/spreken/audio/052-q.mp3",
+    "modelAudio": "/spreken/audio/052-a.mp3"
   },
   {
     "id": "a053",
@@ -643,7 +695,8 @@
       "Объяснить выбор"
     ],
     "modelAnswer": "Ik heb ook om twaalf uur lunchpauze. Ik eet meestal kebab, want dat is lekker.",
-    "audio": "/spreken/audio/053.mp3"
+    "audio": "/spreken/audio/053-q.mp3",
+    "modelAudio": "/spreken/audio/053-a.mp3"
   },
   {
     "id": "a054",
@@ -656,7 +709,8 @@
       "Объяснить выбор места"
     ],
     "modelAnswer": "Ik koop mijn boodschappen op de markt. Ik koop daar eten, want dat is niet duur.",
-    "audio": "/spreken/audio/054.mp3"
+    "audio": "/spreken/audio/054-q.mp3",
+    "modelAudio": "/spreken/audio/054-a.mp3"
   },
   {
     "id": "a055",
@@ -668,7 +722,8 @@
       "Сказать мнение"
     ],
     "modelAnswer": "Wat toevallig! Ik werk ook acht uur per dag. Ik vind dat prima.",
-    "audio": "/spreken/audio/055.mp3"
+    "audio": "/spreken/audio/055-q.mp3",
+    "modelAudio": "/spreken/audio/055-a.mp3"
   },
   {
     "id": "a056",
@@ -681,7 +736,8 @@
       "Объяснить, что в ней нравится"
     ],
     "modelAnswer": "Ik kook thuis. Ik eet het liefst kebab, want ik vind het vlees lekker.",
-    "audio": "/spreken/audio/056.mp3"
+    "audio": "/spreken/audio/056-q.mp3",
+    "modelAudio": "/spreken/audio/056-a.mp3"
   },
   {
     "id": "a057",
@@ -693,7 +749,8 @@
       "Назвать конкретные способы практики"
     ],
     "modelAnswer": "Ik studeer met chat gpt en tiktok. Ik luister en ik spreek Nederlands.",
-    "audio": "/spreken/audio/057.mp3"
+    "audio": "/spreken/audio/057-q.mp3",
+    "modelAudio": "/spreken/audio/057-a.mp3"
   },
   {
     "id": "a058",
@@ -706,7 +763,8 @@
       "Объяснить причину"
     ],
     "modelAnswer": "Ja, ik ben naar het theater geweest. Ik vind de muziek leuk, want muziek is belangrijk voor mij.",
-    "audio": "/spreken/audio/058.mp3"
+    "audio": "/spreken/audio/058-q.mp3",
+    "modelAudio": "/spreken/audio/058-a.mp3"
   },
   {
     "id": "a059",
@@ -719,7 +777,8 @@
       "Объяснить причину"
     ],
     "modelAnswer": "Ja, ik kijk graag films over koken, want ik kook graag kebab.",
-    "audio": "/spreken/audio/059.mp3"
+    "audio": "/spreken/audio/059-q.mp3",
+    "modelAudio": "/spreken/audio/059-a.mp3"
   },
   {
     "id": "a060",
@@ -731,7 +790,8 @@
       "Объяснить причину"
     ],
     "modelAnswer": "Wat toevallig! Ik vind de parken ook mooi, want ik drink daar graag koffie.",
-    "audio": "/spreken/audio/060.mp3"
+    "audio": "/spreken/audio/060-q.mp3",
+    "modelAudio": "/spreken/audio/060-a.mp3"
   },
   {
     "id": "a061",
@@ -744,7 +804,8 @@
       "Назвать обычный заказ"
     ],
     "modelAnswer": "Mijn favoriete restaurant is het kebabrestaurant in mijn buurt. Ik bestel daar meestal kebab.",
-    "audio": "/spreken/audio/061.mp3"
+    "audio": "/spreken/audio/061-q.mp3",
+    "modelAudio": "/spreken/audio/061-a.mp3"
   },
   {
     "id": "a062",
@@ -756,7 +817,8 @@
       "Назвать тему совета"
     ],
     "modelAnswer": "Wat toevallig! Ik vraag ook advies aan mijn tante. Ik vraag advies over mijn werk.",
-    "audio": "/spreken/audio/062.mp3"
+    "audio": "/spreken/audio/062-q.mp3",
+    "modelAudio": "/spreken/audio/062-a.mp3"
   },
   {
     "id": "a063",
@@ -768,7 +830,8 @@
       "Назвать направление"
     ],
     "modelAnswer": "Ik ga ook vaak met de bus. Ik ga naar mijn werk.",
-    "audio": "/spreken/audio/063.mp3"
+    "audio": "/spreken/audio/063-q.mp3",
+    "modelAudio": "/spreken/audio/063-a.mp3"
   },
   {
     "id": "a064",
@@ -780,7 +843,8 @@
       "Объяснить причину"
     ],
     "modelAnswer": "Wat toevallig! Ik drink ook koffie op mijn werk, want dat vind ik lekker.",
-    "audio": "/spreken/audio/064.mp3"
+    "audio": "/spreken/audio/064-q.mp3",
+    "modelAudio": "/spreken/audio/064-a.mp3"
   },
   {
     "id": "a065",
@@ -793,7 +857,8 @@
       "Назвать занятия"
     ],
     "modelAnswer": "Ik maak ook graag foto's. Ik heb twee vrije dagen. Dan kijk ik tiktok en maak ik foto's.",
-    "audio": "/spreken/audio/065.mp3"
+    "audio": "/spreken/audio/065-q.mp3",
+    "modelAudio": "/spreken/audio/065-a.mp3"
   },
   {
     "id": "a066",
@@ -805,7 +870,8 @@
       "Назвать частоту"
     ],
     "modelAnswer": "Ja, ik praat ook met vrienden over mijn familie. Ik doe dat elke week.",
-    "audio": "/spreken/audio/066.mp3"
+    "audio": "/spreken/audio/066-q.mp3",
+    "modelAudio": "/spreken/audio/066-a.mp3"
   },
   {
     "id": "a067",
@@ -817,7 +883,8 @@
       "Объяснить причину"
     ],
     "modelAnswer": "Nee, ik wil nu geen andere taal leren, want Nederlands is mijn prioriteit.",
-    "audio": "/spreken/audio/067.mp3"
+    "audio": "/spreken/audio/067-q.mp3",
+    "modelAudio": "/spreken/audio/067-a.mp3"
   },
   {
     "id": "a068",
@@ -829,7 +896,8 @@
       "Сказать мнение"
     ],
     "modelAnswer": "Ik werk ook in het weekend. Ik vind dat prima.",
-    "audio": "/spreken/audio/068.mp3"
+    "audio": "/spreken/audio/068-q.mp3",
+    "modelAudio": "/spreken/audio/068-a.mp3"
   },
   {
     "id": "a069",
@@ -841,7 +909,8 @@
       "Объяснить причину"
     ],
     "modelAnswer": "Ik vind de camera ook belangrijk, want ik maak graag foto's.",
-    "audio": "/spreken/audio/069.mp3"
+    "audio": "/spreken/audio/069-q.mp3",
+    "modelAudio": "/spreken/audio/069-a.mp3"
   },
   {
     "id": "a070",
@@ -853,7 +922,8 @@
       "Назвать место покупок"
     ],
     "modelAnswer": "Ik vind dat prima. Ik koop mijn spullen ook via internet.",
-    "audio": "/spreken/audio/070.mp3"
+    "audio": "/spreken/audio/070-q.mp3",
+    "modelAudio": "/spreken/audio/070-a.mp3"
   },
   {
     "id": "a071",
@@ -865,7 +935,8 @@
       "Объяснить, как помогаешь"
     ],
     "modelAnswer": "Ik ga naar mijn vriend. Ik help hem opstaan.",
-    "audio": "/spreken/audio/071.mp3"
+    "audio": "/spreken/audio/071-q.mp3",
+    "modelAudio": "/spreken/audio/071-a.mp3"
   },
   {
     "id": "a072",
@@ -878,7 +949,8 @@
       "Объяснить причину"
     ],
     "modelAnswer": "Ik loop ook graag in de sneeuw. Ik houd van sneeuw, want het is mooi.",
-    "audio": "/spreken/audio/072.mp3"
+    "audio": "/spreken/audio/072-q.mp3",
+    "modelAudio": "/spreken/audio/072-a.mp3"
   },
   {
     "id": "a073",
@@ -889,7 +961,8 @@
       "Сказать мнение"
     ],
     "modelAnswer": "Ik vind dat prima, want fietsen is gezond.",
-    "audio": "/spreken/audio/073.mp3"
+    "audio": "/spreken/audio/073-q.mp3",
+    "modelAudio": "/spreken/audio/073-a.mp3"
   },
   {
     "id": "a074",
@@ -901,7 +974,8 @@
       "Назвать направление"
     ],
     "modelAnswer": "Ik heb een fles water in mijn tas. Ik ga naar mijn werk.",
-    "audio": "/spreken/audio/074.mp3"
+    "audio": "/spreken/audio/074-q.mp3",
+    "modelAudio": "/spreken/audio/074-a.mp3"
   },
   {
     "id": "a075",
@@ -915,7 +989,8 @@
       "Объяснить причину"
     ],
     "modelAnswer": "Ik ga elke zomer naar Portugal. Ik drink daar koffie. Ik ga daarheen, want het weer is mooi.",
-    "audio": "/spreken/audio/075.mp3"
+    "audio": "/spreken/audio/075-q.mp3",
+    "modelAudio": "/spreken/audio/075-a.mp3"
   },
   {
     "id": "a076",
@@ -927,7 +1002,8 @@
       "Объяснить причину"
     ],
     "modelAnswer": "Ik vind fietsen leuk, want dat is gezond.",
-    "audio": "/spreken/audio/076.mp3"
+    "audio": "/spreken/audio/076-q.mp3",
+    "modelAudio": "/spreken/audio/076-a.mp3"
   },
   {
     "id": "a077",
@@ -939,7 +1015,8 @@
       "Объяснить, почему выбираешь это место"
     ],
     "modelAnswer": "Wat toevallig! Ik maak ook graag mijn huiswerk op mijn slaapkamer want het is mooi.",
-    "audio": "/spreken/audio/077.mp3"
+    "audio": "/spreken/audio/077-q.mp3",
+    "modelAudio": "/spreken/audio/077-a.mp3"
   },
   {
     "id": "a078",
@@ -951,7 +1028,8 @@
       "Сказать, как это готовишь"
     ],
     "modelAnswer": "Ik kook kebab met recepten van tiktok",
-    "audio": "/spreken/audio/078.mp3"
+    "audio": "/spreken/audio/078-q.mp3",
+    "modelAudio": "/spreken/audio/078-a.mp3"
   },
   {
     "id": "a079",
@@ -964,7 +1042,8 @@
       "Назвать действие при опоздании"
     ],
     "modelAnswer": "Ik kom niet te laat want mijn werk is belangrijk",
-    "audio": "/spreken/audio/079.mp3"
+    "audio": "/spreken/audio/079-q.mp3",
+    "modelAudio": "/spreken/audio/079-a.mp3"
   },
   {
     "id": "a080",
@@ -976,7 +1055,8 @@
       "Сказать, о чём она"
     ],
     "modelAnswer": "Ik kijk geen tv, ik kijk alleen tiktok",
-    "audio": "/spreken/audio/080.mp3"
+    "audio": "/spreken/audio/080-q.mp3",
+    "modelAudio": "/spreken/audio/080-a.mp3"
   },
   {
     "id": "a081",
@@ -988,7 +1068,8 @@
       "Назвать место"
     ],
     "modelAnswer": "Ik was in het park en ik ga elke dag naar het park. Ik drink koffie in het park.",
-    "audio": "/spreken/audio/081.mp3"
+    "audio": "/spreken/audio/081-q.mp3",
+    "modelAudio": "/spreken/audio/081-a.mp3"
   },
   {
     "id": "a082",
@@ -1000,6 +1081,7 @@
       "Сказать о прежней работе или что это первая"
     ],
     "modelAnswer": "Ik ben manager en dit is mijn eerste werk.",
-    "audio": "/spreken/audio/082.mp3"
+    "audio": "/spreken/audio/082-q.mp3",
+    "modelAudio": "/spreken/audio/082-a.mp3"
   }
 ]

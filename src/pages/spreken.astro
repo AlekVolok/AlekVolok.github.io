@@ -384,6 +384,14 @@ import '../styles/global.css';
         model.textContent = `Voorbeeldantwoord: ${item.modelAnswer}`;
         article.append(model);
       }
+      if (item.modelAudio) {
+        const modelAudio = document.createElement('audio');
+        modelAudio.controls = true;
+        modelAudio.preload = 'none';
+        modelAudio.src = item.modelAudio;
+        modelAudio.className = 'playback';
+        article.append(modelAudio);
+      }
       if (entry.error) {
         const errorLine = document.createElement('p');
         errorLine.textContent = entry.error;
