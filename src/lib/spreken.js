@@ -161,10 +161,14 @@ export function parseEvaluation(text) {
   const raw = JSON.parse(text.slice(start, end + 1));
   const asList = (value) => (Array.isArray(value) ? value.map(String) : []);
   const verdicts = ['answered', 'incorrect', 'no-answer'];
+  const transcript = String(raw.transcript || '');
+  let verdict = verdicts.includes(raw.verdict) ? raw.verdict : 'incorrect';
+  // An off-topic answer is still an answer: "no-answer" is only for silence.
+  if (verdict === 'no-answer' && transcript.trim()) verdict = 'incorrect';
   return {
     error: String(raw.error || ''),
-    transcript: String(raw.transcript || ''),
-    verdict: verdicts.includes(raw.verdict) ? raw.verdict : 'incorrect',
+    transcript,
+    verdict,
     proposedAnswer: String(raw.proposedAnswer || ''),
     score: Math.max(0, Math.min(10, Math.round(Number(raw.score) || 0))),
     completed: Boolean(raw.completed),
