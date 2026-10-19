@@ -82,6 +82,7 @@ import '../styles/global.css';
         <p id="resultSummary" class="lead"></p>
         <div id="review" class="review"></div>
         <div class="result-actions">
+          <button id="regrade" class="secondary-button" type="button" hidden>Opnieuw beoordelen</button>
           <button id="download" class="secondary-button" type="button" hidden>Download rapport (.md)</button>
           <button id="restart" class="primary-button" type="button">Nieuw oefenexamen <span>↻</span></button>
         </div>
@@ -483,6 +484,8 @@ import '../styles/global.css';
   }
 
   // Retries once on a network error (the browser reports these as "Failed to fetch").
+  const unreachableMessage = 'De beoordelingsserver is niet bereikbaar (netwerk of DNS). Probeer het later opnieuw met "Opnieuw beoordelen".';
+
   async function gradeWithRetry(questionIndex) {
     for (let attempt = 1; attempt <= 2; attempt += 1) {
       try {
@@ -490,7 +493,8 @@ import '../styles/global.css';
         return { result, error: result.error || '' };
       } catch (error) {
         if (error.name === 'AbortError') return { result: null, error: 'Beoordeling duurde te lang.' };
-        if (attempt === 2 || error.name !== 'TypeError') return { result: null, error: error.message };
+        if (attempt === 2 && error.name === 'TypeError') return { result: null, error: unreachableMessage };
+        if (error.name !== 'TypeError') return { result: null, error: error.message };
         await new Promise((resolve) => setTimeout(resolve, 2000));
       }
     }
@@ -515,9 +519,16 @@ import '../styles/global.css';
     clearInterval(clock);
     exam.hidden = true;
     results.hidden = false;
+    await gradeAll();
+  }
+
+  // Grades every answer (reusing gradings that already finished) and shows the results.
+  // "Opnieuw beoordelen" calls this again after clearing the failed gradings.
+  async function gradeAll() {
     $('#averageScore').textContent = 'Bezig met beoordelen…';
     $('#resultSummary').textContent = '';
     $('#download').hidden = true;
+    $('#regrade').hidden = true;
     $('#review').replaceChildren();
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -543,6 +554,13 @@ import '../styles/global.css';
       showProgress();
     }));
     renderResults(entries);
+    const failed = entries.map((entry, questionIndex) => (entry.result ? -1 : questionIndex)).filter((i) => i >= 0);
+    const regrade = $('#regrade');
+    regrade.hidden = failed.length === 0;
+    regrade.onclick = () => {
+      failed.forEach((questionIndex) => { answers[questionIndex].grading = null; });
+      gradeAll();
+    };
   }
 
   function startExam() {
