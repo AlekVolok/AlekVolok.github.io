@@ -159,6 +159,10 @@ export function parseEvaluation(text) {
   const end = text.lastIndexOf('}');
   if (start === -1 || end <= start) throw new Error('Geen JSON in het antwoord van de webhook.');
   const raw = JSON.parse(text.slice(start, end + 1));
+  if (!raw.error && (!['answered', 'incorrect', 'no-answer'].includes(raw.verdict)
+    || !Number.isFinite(Number(raw.score)) || raw.score === null || raw.score === '')) {
+    throw new Error('Onvolledige beoordeling ontvangen. Probeer opnieuw te beoordelen.');
+  }
   const asList = (value) => (Array.isArray(value) ? value.map(String) : []);
   const verdicts = ['answered', 'incorrect', 'no-answer'];
   const transcript = String(raw.transcript || '');
@@ -189,15 +193,17 @@ export function parseEvaluation(text) {
  * Estimates whether the candidate would pass, from the number of answers judged "answered".
  * @param {{ result: object | null }[]} entries
  * @param {{ answeredRequired: number, note: string }} passRule
- * @returns {{ answered: number, total: number, required: number, passed: boolean, note: string }}
+ * @returns {{ answered: number, total: number, required: number, pending: number, passed: boolean | null, note: string }}
  */
 export function assessPass(entries, passRule) {
-  const answered = entries.filter((entry) => entry.result && entry.result.verdict === 'answered').length;
+  const answered = entries.filter((entry) => entry.result && !entry.result.error && entry.result.verdict === 'answered').length;
+  const pending = entries.filter((entry) => !entry.result || entry.result.error).length;
   return {
     answered,
     total: entries.length,
     required: passRule.answeredRequired,
-    passed: answered >= passRule.answeredRequired,
+    pending,
+    passed: pending ? null : answered >= passRule.answeredRequired,
     note: passRule.note,
   };
 }
@@ -215,7 +221,7 @@ export const verdictLabels = {
  */
 export function buildReportMarkdown(entries, passRule, date = new Date()) {
   const lines = ['# Spreken A2 — rapport', '', `Datum: ${date.toISOString().slice(0, 10)}`, ''];
-  const scored = entries.filter((entry) => entry.result);
+  const scored = entries.filter((entry) => entry.result && !entry.result.error);
   if (scored.length) {
     const average = scored.reduce((sum, entry) => sum + entry.result.score, 0) / scored.length;
     lines.push(`Gemiddelde score: ${average.toFixed(1)} / 10`, '');
@@ -224,7 +230,7 @@ export function buildReportMarkdown(entries, passRule, date = new Date()) {
   lines.push(
     `## Inschatting slagen`,
     '',
-    `${pass.passed ? 'Mogelijk geslaagd' : 'Mogelijk niet geslaagd'}: ${pass.answered} van ${pass.total} antwoorden goed (nodig: ${pass.required}).`,
+    `${pass.pending ? `Nog geen volledige uitslag (${pass.pending} niet beoordeeld)` : (pass.passed ? 'Mogelijk geslaagd' : 'Mogelijk niet geslaagd')}: ${pass.answered} van ${pass.total} antwoorden goed (nodig: ${pass.required}).`,
     '',
     `> ${pass.note}`,
     '',

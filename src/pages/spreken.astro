@@ -96,6 +96,7 @@ import '../styles/global.css';
   import config from '../data/spreken-config.json';
   import audioPool from '../data/spreken-audio.json';
   import picturePool from '../data/spreken-pictures.json';
+  import { createRecording } from '../lib/spreken-recording.js';
   import { assessPass, buildExam, buildEvaluationPayload, buildReportMarkdown, encodeMp3, parseEvaluation, verdictLabels } from '../lib/spreken.js';
 
   const $ = (selector) => document.querySelector(selector);
@@ -132,9 +133,9 @@ import '../styles/global.css';
   let deadline = 0;
   let clock = null;
   let countdown = null;
-  let recorder = null;
-  let stream = null;
-  let chunks = [];
+  let recording = null;
+  let startingRecording = null;
+  let completing = false;
   let recognition = null;
   let recognitionActive = false;
 
@@ -161,11 +162,20 @@ import '../styles/global.css';
     if (remaining <= 0) completeExam();
   }
 
-  function stopRecording() {
+  async function stopRecording() {
+    if (startingRecording) await startingRecording;
     clearInterval(countdown);
     recognitionActive = false;
-    if (recognition) recognition.stop();
-    if (recorder && recorder.state !== 'inactive') recorder.stop();
+    if (recognition) {
+      recognition.onend = null;
+      try { recognition.stop(); } catch { /* Preview must never block audio capture. */ }
+      recognition = null;
+    }
+    const current = recording;
+    if (current) {
+      await current.stop();
+      if (recording === current) recording = null;
+    }
     recordButton.setAttribute('aria-pressed', 'false');
     recordButton.classList.remove('recording');
     recordLabel.textContent = 'Start opname';
@@ -215,7 +225,7 @@ import '../styles/global.css';
     clearInterval(countdown);
     questionTimer.textContent = formatTime(item.seconds * 1000);
     questionTimer.classList.remove('urgent');
-    recordStatus.textContent = '';
+    recordStatus.textContent = answer.recordingError || '';
     previous.disabled = index === 0;
     next.textContent = index === questions.length - 1 ? 'Naar afronden →' : 'Volgende →';
     renderNav();
@@ -229,7 +239,7 @@ import '../styles/global.css';
       button.classList.toggle('active', questionIndex === index);
       button.classList.toggle('answered', Boolean(answers[questionIndex].transcript.trim() || answers[questionIndex].audioBlob));
       button.setAttribute('aria-label', `Vraag ${questionIndex + 1}`);
-      button.addEventListener('click', () => { stopRecording(); index = questionIndex; renderQuestion(); });
+      button.addEventListener('click', () => navigateTo(questionIndex));
       return button;
     }));
   }
@@ -254,48 +264,77 @@ import '../styles/global.css';
       }
     };
     // Browsers stop recognition after silence; restart while the recording is still running.
-    recognition.onend = () => { if (recognitionActive) recognition.start(); };
+    const preview = recognition;
+    recognition.onend = () => {
+      if (recognitionActive && recognition === preview) {
+        try { preview.start(); } catch { /* Live preview is optional. */ }
+      }
+    };
+    recognition.onerror = () => { preview.onend = null; };
     recognitionActive = true;
     recognition.start();
   }
 
   async function startRecording() {
-    stopRecording();
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    } catch {
-      recordStatus.textContent = 'Geen toegang tot de microfoon. Controleer de browserrechten.';
-      return;
-    }
-    // Capture the answer now: the user may navigate to another question before onstop fires.
     const answer = answers[index];
     const questionIndex = index;
+    const item = questions[index];
+    let currentStream;
+    try {
+      currentStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch {
+      const message = 'Geen toegang tot de microfoon. Controleer de browserrechten.';
+      if (!answer.audioBlob) answer.recordingError = message;
+      recordStatus.textContent = message;
+      return;
+    }
+    let current;
+    try {
+      current = createRecording(currentStream);
+    } catch {
+      const message = 'Opnemen lukt niet. Probeer opnieuw of gebruik een andere browser.';
+      if (!answer.audioBlob) answer.recordingError = message;
+      recordStatus.textContent = message;
+      return;
+    }
+    recording = current;
     // A new recording replaces the previous answer, including its transcript, audio and grading.
     answer.transcript = '';
     answer.audioBlob = null;
+    if (answer.audioUrl) URL.revokeObjectURL(answer.audioUrl);
     answer.audioUrl = '';
+    answer.recordingError = '';
     answer.mimeType = '';
     answer.grading = null;
     transcriptBox.value = '';
     showPlayback(answer);
     renderNav();
-    const currentStream = stream;
-    const item = questions[index];
-    chunks = [];
-    recorder = new MediaRecorder(currentStream);
-    recorder.ondataavailable = (event) => { if (event.data.size) chunks.push(event.data); };
-    recorder.onstop = () => {
-      const blob = new Blob(chunks, { type: recorder.mimeType || 'audio/webm' });
+    current.done.then(({ blob, error }) => {
       answer.audioBlob = blob;
-      answer.mimeType = blob.type;
-      answer.audioUrl = URL.createObjectURL(blob);
-      currentStream.getTracks().forEach((track) => track.stop());
-      if (answers[index] === answer) showPlayback(answer);
+      answer.mimeType = blob?.type || '';
+      answer.audioUrl = blob ? URL.createObjectURL(blob) : '';
+      answer.recordingError = error?.message || '';
+      if (recording === current) {
+        clearInterval(countdown);
+        recognitionActive = false;
+        if (recognition) {
+          recognition.onend = null;
+          try { recognition.stop(); } catch { /* Preview is optional. */ }
+          recognition = null;
+        }
+        recordButton.setAttribute('aria-pressed', 'false');
+        recordButton.classList.remove('recording');
+        recordLabel.textContent = 'Start opname';
+        recording = null;
+      }
+      if (answers[index] === answer) {
+        showPlayback(answer);
+        recordStatus.textContent = error?.message || 'Opname opgeslagen. Je kunt hem hieronder beluisteren.';
+      }
       renderNav();
-      enqueueGrade(questionIndex);
-    };
-    recorder.start();
-    startSpeechPreview(answer);
+      if (blob) enqueueGrade(questionIndex);
+    });
+    try { startSpeechPreview(answer); } catch { /* Recognition failure must not stop recording. */ }
     recordButton.setAttribute('aria-pressed', 'true');
     recordButton.classList.add('recording');
     recordLabel.textContent = 'Stop opname';
@@ -311,10 +350,27 @@ import '../styles/global.css';
     }, 250);
   }
 
-  function toggleRecording() {
-    if (!canRecord) return;
-    if (recorder && recorder.state === 'recording') stopRecording();
-    else startRecording();
+  async function toggleRecording() {
+    if (!canRecord || startingRecording || recordButton.disabled) return;
+    recordButton.disabled = true;
+    try {
+      if (recording) await stopRecording();
+      else {
+        startingRecording = startRecording();
+        await startingRecording;
+      }
+    } finally {
+      startingRecording = null;
+      recordButton.disabled = false;
+    }
+  }
+
+  async function navigateTo(questionIndex) {
+    if (completing) return;
+    await stopRecording();
+    if (completing) return;
+    index = questionIndex;
+    renderQuestion();
   }
 
   function blobToBase64(blob) {
@@ -349,9 +405,8 @@ import '../styles/global.css';
     }
   }
 
-  async function evaluate(questionIndex) {
-    const answer = answers[questionIndex];
-    const item = questions[questionIndex];
+  async function evaluate(item, answer) {
+    if (answer.recordingError) throw new Error(answer.recordingError);
     let audioBlob = answer.audioBlob;
     if (audioBlob) {
       try {
@@ -381,7 +436,11 @@ import '../styles/global.css';
         signal: controller.signal,
       });
       if (!response.ok) throw new Error(`Webhook gaf status ${response.status}`);
-      return parseEvaluation(await response.text());
+      const result = parseEvaluation(await response.text());
+      if (audioBlob && !result.error && !result.transcript.trim()) {
+        throw new Error('De opname is opgeslagen, maar er is geen betrouwbaar transcript. Probeer opnieuw te beoordelen.');
+      }
+      return result;
     } finally {
       clearTimeout(timeout);
     }
@@ -392,7 +451,7 @@ import '../styles/global.css';
     const average = scored.length ? scored.reduce((sum, entry) => sum + entry.result.score, 0) / scored.length : 0;
     $('#averageScore').textContent = scored.length ? `${average.toFixed(1)} / 10` : 'Geen beoordeling';
     const pass = assessPass(entries, config.passRule);
-    $('#resultSummary').textContent = `${pass.passed ? 'Mogelijk geslaagd' : 'Mogelijk niet geslaagd'}: ${pass.answered} van ${pass.total} antwoorden goed (nodig: ${pass.required}). ${pass.note}`;
+    $('#resultSummary').textContent = `${pass.pending ? `Nog geen volledige uitslag: ${pass.pending} antwoorden niet beoordeeld` : (pass.passed ? 'Mogelijk geslaagd' : 'Mogelijk niet geslaagd')}: ${pass.answered} van ${pass.total} antwoorden goed (nodig: ${pass.required}). ${pass.note}`;
 
     const review = $('#review');
     review.replaceChildren(...entries.map((entry, entryIndex) => {
@@ -411,6 +470,13 @@ import '../styles/global.css';
       const transcriptLine = document.createElement('p');
       transcriptLine.textContent = `Jouw antwoord: ${(result?.transcript || entry.transcript).trim() || '—'}`;
       article.append(heading, questionLine, transcriptLine);
+      if (entry.audioUrl) {
+        const ownAudio = document.createElement('audio');
+        ownAudio.controls = true;
+        ownAudio.src = entry.audioUrl;
+        ownAudio.preload = 'none';
+        article.append(ownAudio);
+      }
 
       if (result?.proposedAnswer) {
         const proposal = document.createElement('p');
@@ -486,11 +552,11 @@ import '../styles/global.css';
   // Retries once on a network error (the browser reports these as "Failed to fetch").
   const unreachableMessage = 'De beoordelingsserver is niet bereikbaar (netwerk of DNS). Probeer het later opnieuw met "Opnieuw beoordelen".';
 
-  async function gradeWithRetry(questionIndex) {
+  async function gradeWithRetry(item, answer) {
     for (let attempt = 1; attempt <= 2; attempt += 1) {
       try {
-        const result = await evaluate(questionIndex);
-        return { result, error: result.error || '' };
+        const result = await evaluate(item, answer);
+        return { result: result.error ? null : result, error: result.error || '' };
       } catch (error) {
         if (error.name === 'AbortError') return { result: null, error: 'Beoordeling duurde te lang.' };
         if (attempt === 2 && error.name === 'TypeError') return { result: null, error: unreachableMessage };
@@ -504,8 +570,10 @@ import '../styles/global.css';
   function enqueueGrade(questionIndex) {
     const answer = answers[questionIndex];
     if (!answer.grading) {
+      const snapshot = { ...answer };
+      const item = questions[questionIndex];
       answer.grading = new Promise((resolve) => {
-        gradeQueue.push(async () => resolve(await gradeWithRetry(questionIndex)));
+        gradeQueue.push(async () => resolve(await gradeWithRetry(item, snapshot)));
         pumpGrades();
       });
     }
@@ -513,10 +581,10 @@ import '../styles/global.css';
   }
 
   async function completeExam() {
-    stopRecording();
-    // Let a recording that is still stopping store its audio before grading starts.
-    await new Promise((resolve) => setTimeout(resolve, 400));
+    if (completing) return;
+    completing = true;
     clearInterval(clock);
+    await stopRecording();
     exam.hidden = true;
     results.hidden = false;
     await gradeAll();
@@ -536,6 +604,7 @@ import '../styles/global.css';
     const entries = questions.map((item, questionIndex) => ({
       item,
       transcript: answers[questionIndex].transcript,
+      audioUrl: answers[questionIndex].audioUrl,
       result: null,
       error: '',
     }));
@@ -564,6 +633,8 @@ import '../styles/global.css';
   }
 
   function startExam() {
+    answers.forEach((answer) => { if (answer.audioUrl) URL.revokeObjectURL(answer.audioUrl); });
+    completing = false;
     questions = buildExam(config, audioPool, picturePool);
     answers = questions.map(() => ({ transcript: '', audioBlob: null, audioUrl: '', mimeType: '' }));
     index = 0;
@@ -581,9 +652,9 @@ import '../styles/global.css';
   $('#startExam').addEventListener('click', startExam);
   $('#restart').addEventListener('click', () => { results.hidden = true; intro.hidden = false; });
   recordButton.addEventListener('click', toggleRecording);
-  transcriptBox.addEventListener('input', () => { answers[index].transcript = transcriptBox.value; renderNav(); });
-  previous.addEventListener('click', () => { if (index > 0) { stopRecording(); index -= 1; renderQuestion(); } });
-  next.addEventListener('click', () => { if (index < questions.length - 1) { stopRecording(); index += 1; renderQuestion(); } else finish.focus(); });
+  transcriptBox.addEventListener('input', () => { answers[index].transcript = transcriptBox.value; answers[index].grading = null; renderNav(); });
+  previous.addEventListener('click', () => { if (index > 0) navigateTo(index - 1); });
+  next.addEventListener('click', () => { if (index < questions.length - 1) navigateTo(index + 1); else finish.focus(); });
   finish.addEventListener('click', completeExam);
 </script>
 
