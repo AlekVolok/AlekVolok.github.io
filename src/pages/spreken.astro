@@ -59,7 +59,7 @@ import '../styles/global.css';
             </div>
 
             <label class="transcript-label" for="transcript">Transcript (bewerkbaar)</label>
-            <textarea id="transcript" class="transcript" rows="4" placeholder="Je antwoord verschijnt hier tijdens het spreken, of typ het zelf."></textarea>
+            <textarea id="transcript" class="transcript" rows="4" placeholder="Het transcript verschijnt na het stoppen van de opname. Je kunt je antwoord ook typen."></textarea>
             <audio id="playback" class="playback" controls hidden></audio>
 
             <div class="exam-actions">
@@ -96,7 +96,7 @@ import '../styles/global.css';
   import config from '../data/spreken-config.json';
   import audioPool from '../data/spreken-audio.json';
   import picturePool from '../data/spreken-pictures.json';
-  import { createRecording } from '../lib/spreken-recording.js';
+  import { createRecording, requestMicrophone } from '../lib/spreken-recording.js';
   import { assessPass, buildExam, buildEvaluationPayload, buildReportMarkdown, encodeMp3, parseEvaluation, verdictLabels } from '../lib/spreken.js';
 
   const $ = (selector) => document.querySelector(selector);
@@ -123,7 +123,6 @@ import '../styles/global.css';
   const next = $('#next');
   const finish = $('#finish');
 
-  const SpeechRecognitionApi = window.SpeechRecognition || window.webkitSpeechRecognition;
   const canRecord = Boolean(navigator.mediaDevices?.getUserMedia && window.MediaRecorder);
   const examDurationMs = config.examMinutes * 60 * 1000;
 
@@ -136,8 +135,6 @@ import '../styles/global.css';
   let recording = null;
   let startingRecording = null;
   let completing = false;
-  let recognition = null;
-  let recognitionActive = false;
 
   $('#questionCount').textContent = String(config.blocks.reduce((sum, block) => sum + block.count, 0));
   $('#blockList').replaceChildren(...config.blocks.map((block) => {
@@ -165,12 +162,6 @@ import '../styles/global.css';
   async function stopRecording() {
     if (startingRecording) await startingRecording;
     clearInterval(countdown);
-    recognitionActive = false;
-    if (recognition) {
-      recognition.onend = null;
-      try { recognition.stop(); } catch { /* Preview must never block audio capture. */ }
-      recognition = null;
-    }
     const current = recording;
     if (current) {
       await current.stop();
@@ -244,46 +235,26 @@ import '../styles/global.css';
     }));
   }
 
-  function appendTranscript(answer, text) {
-    answer.transcript = `${answer.transcript} ${text}`.trim();
-    if (answers[index] === answer) transcriptBox.value = answer.transcript;
-  }
-
-  function startSpeechPreview(answer) {
-    if (!SpeechRecognitionApi) {
-      recordStatus.textContent = 'Live transcript niet beschikbaar in deze browser; het transcript wordt door de AI gemaakt.';
-      return;
-    }
-    recognition = new SpeechRecognitionApi();
-    recognition.lang = 'nl-NL';
-    recognition.continuous = true;
-    recognition.interimResults = false;
-    recognition.onresult = (event) => {
-      for (let i = event.resultIndex; i < event.results.length; i += 1) {
-        if (event.results[i].isFinal) appendTranscript(answer, event.results[i][0].transcript);
-      }
-    };
-    // Browsers stop recognition after silence; restart while the recording is still running.
-    const preview = recognition;
-    recognition.onend = () => {
-      if (recognitionActive && recognition === preview) {
-        try { preview.start(); } catch { /* Live preview is optional. */ }
-      }
-    };
-    recognition.onerror = () => { preview.onend = null; };
-    recognitionActive = true;
-    recognition.start();
-  }
-
   async function startRecording() {
     const answer = answers[index];
     const questionIndex = index;
     const item = questions[index];
+    // Pause question/playback audio before opening the microphone on mobile.
+    questionAudio.pause();
+    playback.pause();
+    recordLabel.textContent = 'Microfoon openen…';
+    recordStatus.textContent = 'Sta microfoontoegang toe als de browser daarom vraagt.';
     let currentStream;
     try {
-      currentStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    } catch {
-      const message = 'Geen toegang tot de microfoon. Controleer de browserrechten.';
+      currentStream = await requestMicrophone((constraints) => navigator.mediaDevices.getUserMedia(constraints));
+    } catch (error) {
+      const message = error.name === 'NotFoundError'
+        ? 'Geen microfoon gevonden. Sluit een microfoon aan en probeer opnieuw.'
+        : error.name === 'NotReadableError'
+          ? 'De microfoon is bezet. Sluit andere opnames of gesprekken en probeer opnieuw.'
+          : error.name === 'NotAllowedError'
+            ? 'Geen toegang tot de microfoon. Sta microfoontoegang toe voor deze website.'
+            : error.message || 'De microfoon kan niet worden geopend. Probeer opnieuw.';
       if (!answer.audioBlob) answer.recordingError = message;
       recordStatus.textContent = message;
       return;
@@ -316,12 +287,6 @@ import '../styles/global.css';
       answer.recordingError = error?.message || '';
       if (recording === current) {
         clearInterval(countdown);
-        recognitionActive = false;
-        if (recognition) {
-          recognition.onend = null;
-          try { recognition.stop(); } catch { /* Preview is optional. */ }
-          recognition = null;
-        }
         recordButton.setAttribute('aria-pressed', 'false');
         recordButton.classList.remove('recording');
         recordLabel.textContent = 'Start opname';
@@ -332,13 +297,29 @@ import '../styles/global.css';
         recordStatus.textContent = error?.message || 'Opname opgeslagen. Je kunt hem hieronder beluisteren.';
       }
       renderNav();
-      if (blob) enqueueGrade(questionIndex);
+      if (blob) {
+        const transcriptAtStop = answer.transcript;
+        const grading = enqueueGrade(questionIndex);
+        if (answers[index] === answer) recordStatus.textContent = 'Opname opgeslagen. Je kunt hem beluisteren; het transcript wordt gemaakt…';
+        grading.then(({ result, error: gradingError }) => {
+          if (answer.grading !== grading) return;
+          // Do not overwrite a typed correction, a newer recording or another exam.
+          if (result?.transcript && answer.transcript === transcriptAtStop) {
+            answer.transcript = result.transcript;
+            if (answers[index] === answer) transcriptBox.value = answer.transcript;
+          }
+          if (answers[index] === answer && !recording) {
+            recordStatus.textContent = gradingError
+              ? `Opname opgeslagen. ${gradingError}`
+              : 'Opname en transcript opgeslagen. Je kunt de opname beluisteren.';
+          }
+        });
+      }
     });
-    try { startSpeechPreview(answer); } catch { /* Recognition failure must not stop recording. */ }
     recordButton.setAttribute('aria-pressed', 'true');
     recordButton.classList.add('recording');
     recordLabel.textContent = 'Stop opname';
-    recordStatus.textContent = 'Aan het opnemen…';
+    recordStatus.textContent = 'Aan het opnemen… Het transcript verschijnt na het stoppen.';
 
     // The per-question timer is a suggestion: it warns but never stops the recording.
     const startedAt = Date.now();
@@ -362,6 +343,7 @@ import '../styles/global.css';
     } finally {
       startingRecording = null;
       recordButton.disabled = false;
+      if (!recording) recordLabel.textContent = 'Start opname';
     }
   }
 

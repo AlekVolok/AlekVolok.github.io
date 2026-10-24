@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import * as helpers from '../src/lib/spreken.js';
-import { createRecording } from '../src/lib/spreken-recording.js';
+import { createRecording, requestMicrophone } from '../src/lib/spreken-recording.js';
 import { assessPass, buildReportMarkdown, parseEvaluation } from '../src/lib/spreken.js';
 
 function microphone() {
@@ -75,6 +75,41 @@ test('recorder initialization failure releases the microphone', () => {
   class Unsupported { constructor() { throw new Error('unsupported'); } }
   assert.throws(() => createRecording(stream, Unsupported));
   assert.equal(stream.track.stopped, true);
+});
+
+test('a stalled microphone prompt times out and releases a late stream', async () => {
+  let grant;
+  const pending = new Promise(resolve => { grant = resolve; });
+  const request = requestMicrophone(() => pending, 10);
+  await assert.rejects(request, /microfoon reageert niet/);
+  const stream = microphone();
+  grant(stream);
+  await Promise.resolve();
+  await Promise.resolve();
+  assert.equal(stream.track.stopped, true);
+});
+
+test('microphone permission errors are preserved and a retry can succeed', async () => {
+  const denied = Object.assign(new Error('permission denied'), { name: 'NotAllowedError' });
+  await assert.rejects(requestMicrophone(() => Promise.reject(denied)), error => error === denied);
+  const stream = microphone();
+  assert.equal(await requestMicrophone(() => Promise.resolve(stream)), stream);
+});
+
+test('recorder selects the supported mobile format without periodic chunks', async () => {
+  let options;
+  let startArguments;
+  class MobileRecorder extends Recorder {
+    static isTypeSupported(type) { return type === 'audio/mp4'; }
+    constructor(stream, configuration) { super(stream); options = configuration; this.mimeType = configuration.mimeType; }
+    start(...args) { super.start(); startArguments = args; }
+  }
+  const recording = createRecording(microphone(), MobileRecorder);
+  assert.deepEqual(options, { mimeType: 'audio/mp4' });
+  assert.deepEqual(startArguments, []);
+  recording.stop();
+  Recorder.instances.at(-1).finish('audio data');
+  assert.equal((await recording.done).blob.type, 'audio/mp4');
 });
 
 test('technical errors cannot produce a failed exam or lower the average', () => {
@@ -177,12 +212,12 @@ test('both grading and verification receive the same communicative A2 rubric', (
   }
 });
 
-function examPage(getUserMedia = async () => microphone()) {
+function examPage(getUserMedia = async () => microphone(), gradeResult = null) {
   const elements = new Map();
   const element = () => ({
     hidden: false, value: '', textContent: '', dataset: {}, style: {}, disabled: false,
     classList: { toggle() {}, add() {}, remove() {} },
-    replaceChildren() {}, setAttribute() {}, removeAttribute() {}, addEventListener() {}, append() {},
+    replaceChildren() {}, setAttribute() {}, removeAttribute() {}, addEventListener() {}, append() {}, pause() {},
   });
   const document = {
     querySelector(selector) {
@@ -191,12 +226,14 @@ function examPage(getUserMedia = async () => microphone()) {
     },
     createElement: element,
   };
-  class BrokenPreview { start() { throw new Error('speech recognition unavailable'); } stop() {} }
+  let recognitionStarts = 0;
+  class BrokenPreview { start() { recognitionStarts += 1; throw new Error('speech recognition unavailable'); } stop() {} }
   const config = { blocks: [{ id: 'audio', source: 'audio', count: 1, seconds: 30 }], examMinutes: 45, passRule: { answeredRequired: 1, note: '' } };
   const source = fs.readFileSync(new URL('../src/pages/spreken.astro', import.meta.url), 'utf8')
     .match(/<script>([\s\S]*?)<\/script>/)[1].replace(/^\s*import .*;$/gm, '');
   const bindings = {
-    ...helpers, createRecording: stream => createRecording(stream, Recorder),
+    ...helpers, createRecording: stream => createRecording(stream, Recorder), requestMicrophone,
+    testGradeResult: gradeResult,
     config, audioPool: [{ id: 'test', question: 'Wat doe je?' }], picturePool: [], document,
     window: { MediaRecorder: Recorder, SpeechRecognition: BrokenPreview, scrollTo() {} },
     navigator: { mediaDevices: { getUserMedia } },
@@ -204,19 +241,24 @@ function examPage(getUserMedia = async () => microphone()) {
   };
   // Replace the external grading boundary; execute the actual page event logic.
   const page = new Function(...Object.keys(bindings), source + `
-    enqueueGrade = () => Promise.resolve({ result: null, error: 'offline' });
+    enqueueGrade = questionIndex => {
+      const answer = answers[questionIndex];
+      if (!answer.grading) answer.grading = Promise.resolve(testGradeResult || { result: null, error: 'offline' });
+      return answer.grading;
+    };
     return { startExam, toggleRecording, completeExam, navigateTo,
       answer: () => answers[index], currentIndex: () => index };
   `)(...Object.values(bindings));
-  return { page, elements };
+  return { page, elements, recognitionStarts: () => recognitionStarts };
 }
 
-test('page still captures audio when live speech recognition throws; finish awaits audio', async () => {
-  const { page, elements } = examPage();
+test('page records with one microphone consumer and finish awaits final audio', async () => {
+  const { page, elements, recognitionStarts } = examPage();
   page.startExam();
   await page.toggleRecording();
   const recorder = Recorder.instances.at(-1);
   assert.equal(recorder.state, 'recording');
+  assert.equal(recognitionStarts(), 0);
   let finished = false;
   const completion = page.completeExam().then(() => { finished = true; });
   await new Promise(resolve => setTimeout(resolve, 450));
@@ -227,8 +269,29 @@ test('page still captures audio when live speech recognition throws; finish awai
   assert.match(elements.get('#resultSummary').textContent, /geen volledige uitslag/);
 });
 
+test('server transcript becomes visible after recording stops', async () => {
+  const result = { transcript: 'Ik fiets naar mijn werk.', verdict: 'answered', score: 8 };
+  const { page, elements } = examPage(undefined, { result, error: '' });
+  page.startExam();
+  await page.toggleRecording();
+  const recorder = Recorder.instances.at(-1);
+  const stopping = page.toggleRecording();
+  recorder.finish('Dutch speech');
+  await stopping;
+  await Promise.resolve();
+  assert.equal(page.answer().transcript, result.transcript);
+  assert.equal(elements.get('#transcript').value, result.transcript);
+  assert.match(elements.get('#recordStatus').textContent, /transcript opgeslagen/);
+  // A second recording starts independently after the previous stream is released.
+  await page.toggleRecording();
+  assert.equal(Recorder.instances.at(-1).state, 'recording');
+  const finalStop = page.toggleRecording();
+  Recorder.instances.at(-1).finish('second answer');
+  await finalStop;
+});
+
 test('microphone permission failure is retained as a technical recording error', async () => {
-  const { page } = examPage(async () => { throw new Error('denied'); });
+  const { page } = examPage(async () => { throw Object.assign(new Error('denied'), { name: 'NotAllowedError' }); });
   page.startExam();
   await page.toggleRecording();
   assert.match(page.answer().recordingError, /microfoon/);
