@@ -109,7 +109,7 @@
           ]
         },
         "options": {
-          "timeout": 120000
+          "timeout": 20000
         }
       },
       "id": "whisper1",
@@ -143,9 +143,9 @@
         "nodeCredentialType": "openRouterApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ model: \"x-ai/grok-4.3\", messages: $json.messages, temperature: 0.2, response_format: { type: \"json_object\" } }) }}",
+        "jsonBody": "={{ JSON.stringify({ model: \"x-ai/grok-4.3\", messages: $json.messages, temperature: 0.2, max_tokens: 1600, reasoning: { effort: \"none\" }, response_format: { type: \"json_object\" } }) }}",
         "options": {
-          "timeout": 120000
+          "timeout": 20000
         }
       },
       "id": "GradeGrokviaOpenRouter",
@@ -199,9 +199,9 @@
         "nodeCredentialType": "groqApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ model: \"openai/gpt-oss-120b\", messages: $('Set transcript').first().json.messages, temperature: 0.2, response_format: { type: \"json_object\" } }) }}",
+        "jsonBody": "={{ JSON.stringify({ model: \"openai/gpt-oss-120b\", messages: $('Set transcript').first().json.messages, temperature: 0.2, max_tokens: 1600, response_format: { type: \"json_object\" } }) }}",
         "options": {
-          "timeout": 120000
+          "timeout": 20000
         }
       },
       "id": "GradebackupGroq",
@@ -235,9 +235,9 @@
         "nodeCredentialType": "openRouterApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ model: \"x-ai/grok-4.3\", messages: $json.messages, temperature: 0.2, response_format: { type: \"json_object\" } }) }}",
+        "jsonBody": "={{ JSON.stringify({ model: \"x-ai/grok-4.3\", messages: $json.messages, temperature: 0.2, max_tokens: 1600, reasoning: { effort: \"none\" }, response_format: { type: \"json_object\" } }) }}",
         "options": {
-          "timeout": 120000
+          "timeout": 20000
         }
       },
       "id": "VerifyGrokviaOpenRouter",

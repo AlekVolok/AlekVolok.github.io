@@ -61,6 +61,7 @@ import '../styles/global.css';
             <label class="transcript-label" for="transcript">Transcript (bewerkbaar)</label>
             <textarea id="transcript" class="transcript" rows="4" placeholder="Het transcript verschijnt na het stoppen van de opname. Je kunt je antwoord ook typen."></textarea>
             <audio id="playback" class="playback" controls hidden></audio>
+            <p id="answerFeedback" class="answer-feedback" aria-live="polite" hidden></p>
 
             <div class="exam-actions">
               <button id="previous" class="secondary-button" type="button">← Vorige</button>
@@ -115,6 +116,7 @@ import '../styles/global.css';
   const questionText = $('#questionText');
   const transcriptBox = $('#transcript');
   const playback = $('#playback');
+  const answerFeedback = $('#answerFeedback');
   const recordButton = $('#record');
   const recordLabel = $('#recordLabel');
   const recordStatus = $('#recordStatus');
@@ -182,6 +184,14 @@ import '../styles/global.css';
     }
   }
 
+  function showAnswerFeedback(answer) {
+    const outcome = answer.outcome;
+    answerFeedback.hidden = !outcome;
+    answerFeedback.textContent = outcome?.result
+      ? `${outcome.result.score} / 10 · ${verdictLabels[outcome.result.verdict]}. ${outcome.result.feedback || ''}`
+      : outcome?.error || '';
+  }
+
   function renderQuestion() {
     const item = questions[index];
     const answer = answers[index];
@@ -213,6 +223,7 @@ import '../styles/global.css';
 
     transcriptBox.value = answer.transcript;
     showPlayback(answer);
+    showAnswerFeedback(answer);
     clearInterval(countdown);
     questionTimer.textContent = formatTime(item.seconds * 1000);
     questionTimer.classList.remove('urgent');
@@ -277,8 +288,10 @@ import '../styles/global.css';
     answer.recordingError = '';
     answer.mimeType = '';
     answer.grading = null;
+    answer.outcome = null;
     transcriptBox.value = '';
     showPlayback(answer);
+    showAnswerFeedback(answer);
     renderNav();
     current.done.then(({ blob, error }) => {
       answer.audioBlob = blob;
@@ -303,12 +316,14 @@ import '../styles/global.css';
         if (answers[index] === answer) recordStatus.textContent = 'Opname opgeslagen. Je kunt hem beluisteren; het transcript wordt gemaakt…';
         grading.then(({ result, error: gradingError }) => {
           if (answer.grading !== grading) return;
+          answer.outcome = { result, error: gradingError };
           // Do not overwrite a typed correction, a newer recording or another exam.
           if (result?.transcript && answer.transcript === transcriptAtStop) {
             answer.transcript = result.transcript;
             if (answers[index] === answer) transcriptBox.value = answer.transcript;
           }
           if (answers[index] === answer && !recording) {
+            showAnswerFeedback(answer);
             recordStatus.textContent = gradingError
               ? `Opname opgeslagen. ${gradingError}`
               : 'Opname en transcript opgeslagen. Je kunt de opname beluisteren.';
@@ -335,7 +350,11 @@ import '../styles/global.css';
     if (!canRecord || startingRecording || recordButton.disabled) return;
     recordButton.disabled = true;
     try {
-      if (recording) await stopRecording();
+      if (recording) {
+        recordLabel.textContent = 'Opname opslaan…';
+        recordStatus.textContent = 'De opname wordt gestopt en opgeslagen…';
+        await stopRecording();
+      }
       else {
         startingRecording = startRecording();
         await startingRecording;
@@ -409,7 +428,7 @@ import '../styles/global.css';
       throw new Error('De opname is te lang om te beoordelen. Probeer een korter antwoord.');
     }
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 300000);
+    const timeout = setTimeout(() => controller.abort(), 90000);
     try {
       const response = await fetch(config.evaluateUrl, {
         method: 'POST',
@@ -634,7 +653,7 @@ import '../styles/global.css';
   $('#startExam').addEventListener('click', startExam);
   $('#restart').addEventListener('click', () => { results.hidden = true; intro.hidden = false; });
   recordButton.addEventListener('click', toggleRecording);
-  transcriptBox.addEventListener('input', () => { answers[index].transcript = transcriptBox.value; answers[index].grading = null; renderNav(); });
+  transcriptBox.addEventListener('input', () => { answers[index].transcript = transcriptBox.value; answers[index].grading = null; answers[index].outcome = null; showAnswerFeedback(answers[index]); renderNav(); });
   previous.addEventListener('click', () => { if (index > 0) navigateTo(index - 1); });
   next.addEventListener('click', () => { if (index < questions.length - 1) navigateTo(index + 1); else finish.focus(); });
   finish.addEventListener('click', completeExam);

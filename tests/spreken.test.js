@@ -33,7 +33,7 @@ test('stop waits for final audio event, even beyond the old 400 ms delay', async
   const done = recording.stop().then(result => { saved = true; return result; });
   await new Promise(resolve => setTimeout(resolve, 450));
   assert.equal(saved, false);
-  assert.equal(stream.track.stopped, false);
+  assert.equal(stream.track.stopped, true);
   Recorder.instances.at(-1).finish('final audio');
   assert.equal(await (await done).blob.text(), 'final audio');
   assert.equal(stream.track.stopped, true);
@@ -68,6 +68,15 @@ test('empty recording and recorder errors are technical failures', async () => {
   recorder.finish('partial');
   assert.equal((await failed.done).blob, null);
   assert.ok((await failed.done).error);
+});
+
+test('a missing browser stop event cannot leave the record button waiting forever', async () => {
+  const stream = microphone();
+  const recording = createRecording(stream, Recorder, 10);
+  const outcome = await recording.stop();
+  assert.equal(stream.track.stopped, true);
+  assert.equal(outcome.blob, null);
+  assert.match(outcome.error.message, /niet afronden/);
 });
 
 test('recorder initialization failure releases the microphone', () => {
@@ -156,6 +165,8 @@ test('paid Grok grades and verifies with Groq backup and valid graph connections
     assert.equal(node.parameters.url, 'https://openrouter.ai/api/v1/chat/completions');
     assert.match(node.parameters.jsonBody, /x-ai\/grok-4\.3/);
     assert.doesNotMatch(node.parameters.jsonBody, /:free/);
+    assert.match(node.parameters.jsonBody, /reasoning: \{ effort: "none" \}/);
+    assert.equal(node.parameters.options.timeout, 20000);
   }
   assert.equal(workflow.nodes.find(node => node.name === 'Grade backup (Groq)').parameters.nodeCredentialType, 'groqApi');
   const names = new Set(workflow.nodes.map(node => node.name));
@@ -281,6 +292,8 @@ test('server transcript becomes visible after recording stops', async () => {
   await Promise.resolve();
   assert.equal(page.answer().transcript, result.transcript);
   assert.equal(elements.get('#transcript').value, result.transcript);
+  assert.match(elements.get('#answerFeedback').textContent, /8 \/ 10/);
+  assert.equal(elements.get('#answerFeedback').hidden, false);
   assert.match(elements.get('#recordStatus').textContent, /transcript opgeslagen/);
   // A second recording starts independently after the previous stream is released.
   await page.toggleRecording();
