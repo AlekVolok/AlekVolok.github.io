@@ -149,6 +149,21 @@ export function buildEvaluationPayload(item, recording) {
   };
 }
 
+// No model call is needed to recognise an intentionally skipped question.
+// Capture failures remain ungraded technical errors, never a zero for silence.
+export function localEvaluation(item, answer) {
+  if (answer.recordingError) return { result: null, error: answer.recordingError };
+  if (answer.audioBlob || answer.transcript?.trim()) return null;
+  return {
+    result: {
+      error: '', transcript: '', verdict: 'no-answer', score: 0, completed: false,
+      proposedAnswer: item.modelAnswer || '', strengths: [], missingPoints: [], mistakes: [],
+      feedback: 'Je hebt deze vraag overgeslagen. Bekijk de vraag en probeer het opnieuw.',
+    },
+    error: '',
+  };
+}
+
 /**
  * Parses the webhook reply. The workflow returns the evaluation object directly;
  * JSON wrapped in a code fence or prose is tolerated.

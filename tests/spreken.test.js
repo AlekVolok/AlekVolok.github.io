@@ -223,7 +223,7 @@ test('both grading and verification receive the same communicative A2 rubric', (
   }
 });
 
-function examPage(getUserMedia = async () => microphone(), gradeResult = null) {
+function examPage(getUserMedia = async () => microphone(), gradeResult = null, options = {}) {
   const elements = new Map();
   const element = () => ({
     hidden: false, value: '', textContent: '', dataset: {}, style: {}, disabled: false,
@@ -239,28 +239,34 @@ function examPage(getUserMedia = async () => microphone(), gradeResult = null) {
   };
   let recognitionStarts = 0;
   class BrokenPreview { start() { recognitionStarts += 1; throw new Error('speech recognition unavailable'); } stop() {} }
-  const config = { blocks: [{ id: 'audio', source: 'audio', count: 1, seconds: 30 }], examMinutes: 45, passRule: { answeredRequired: 1, note: '' } };
+  const count = options.count || 1;
+  const config = { blocks: [{ id: 'audio', source: 'audio', count, seconds: 30 }], examMinutes: 45, passRule: { answeredRequired: Math.ceil(count * .8), note: '' } };
   const source = fs.readFileSync(new URL('../src/pages/spreken.astro', import.meta.url), 'utf8')
     .match(/<script>([\s\S]*?)<\/script>/)[1].replace(/^\s*import .*;$/gm, '');
+  let remoteCalls = 0;
   const bindings = {
     ...helpers, createRecording: stream => createRecording(stream, Recorder), requestMicrophone,
-    testGradeResult: gradeResult,
-    config, audioPool: [{ id: 'test', question: 'Wat doe je?' }], picturePool: [], document,
+    testEvaluate: async (item, answer) => {
+      remoteCalls += 1;
+      const outcome = options.evaluate
+        ? await options.evaluate(item, answer)
+        : gradeResult || { result: null, error: 'offline' };
+      if (outcome.result) return { ...outcome, result: helpers.parseEvaluation(JSON.stringify(outcome.result)) };
+      return outcome;
+    },
+    config, audioPool: Array.from({length: count}, (_, i) => ({ id: `test-${i}`, question: 'Wat doe je?' })), picturePool: [], document,
     window: { MediaRecorder: Recorder, SpeechRecognition: BrokenPreview, scrollTo() {} },
     navigator: { mediaDevices: { getUserMedia } },
     setInterval: () => 1, clearInterval() {},
   };
   // Replace the external grading boundary; execute the actual page event logic.
   const page = new Function(...Object.keys(bindings), source + `
-    enqueueGrade = questionIndex => {
-      const answer = answers[questionIndex];
-      if (!answer.grading) answer.grading = Promise.resolve(testGradeResult || { result: null, error: 'offline' });
-      return answer.grading;
-    };
+    gradeWithRetry = testEvaluate;
     return { startExam, toggleRecording, completeExam, navigateTo,
-      answer: () => answers[index], currentIndex: () => index };
+      answer: () => answers[index], allAnswers: () => answers, currentIndex: () => index,
+      seedAnswer: (i, values) => Object.assign(answers[i], values) };
   `)(...Object.values(bindings));
-  return { page, elements, recognitionStarts: () => recognitionStarts };
+  return { page, elements, recognitionStarts: () => recognitionStarts, remoteCalls: () => remoteCalls };
 }
 
 test('page records with one microphone consumer and finish awaits final audio', async () => {
@@ -309,4 +315,66 @@ test('microphone permission failure is retained as a technical recording error',
   await page.toggleRecording();
   assert.match(page.answer().recordingError, /microfoon/);
   assert.equal(page.answer().audioBlob, null);
+});
+
+test('finishing 16 skipped questions makes no remote grading requests', async () => {
+  const { page, elements, remoteCalls } = examPage(undefined, null, { count: 16 });
+  page.startExam();
+  const started = performance.now();
+  await page.completeExam();
+  assert.equal(remoteCalls(), 0);
+  assert.ok(performance.now() - started < 500, 'Skipped questions should finish locally');
+  assert.equal(page.allAnswers().filter(answer => answer.outcome?.result?.verdict === 'no-answer').length, 16);
+  assert.equal(elements.get('#averageScore').textContent, '0.0 / 10');
+  assert.equal(elements.get('#restart').disabled, false);
+});
+
+test('finishing an already graded 16-question exam reuses all results immediately', async () => {
+  const { page, elements, remoteCalls } = examPage(undefined, null, { count: 16 });
+  page.startExam();
+  const result = helpers.parseEvaluation(JSON.stringify({ verdict: 'answered', score: 8, transcript: 'Ik werk.' }));
+  for (let i = 0; i < 16; i += 1) {
+    const outcome = { result, error: '' };
+    page.seedAnswer(i, { transcript: result.transcript, outcome, grading: Promise.resolve(outcome) });
+  }
+  const started = performance.now();
+  const completion = page.completeExam();
+  assert.equal(elements.get('#results').hidden, false);
+  assert.equal(elements.get('#averageScore').textContent, '8.0 / 10');
+  await completion;
+  assert.equal(remoteCalls(), 0);
+  assert.ok(performance.now() - started < 500, 'Cached results must not wait for a webhook');
+  assert.match(elements.get('#resultSummary').textContent, /16 van 16/);
+});
+
+test('final results appear while the last answer is still being graded', async () => {
+  let resolveGrade;
+  const pending = new Promise(resolve => { resolveGrade = resolve; });
+  const { page, elements, remoteCalls } = examPage(undefined, null, { count: 16, evaluate: () => pending });
+  page.startExam();
+  page.seedAnswer(15, { transcript: 'Ik werk.' });
+  const completion = page.completeExam();
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(remoteCalls(), 1);
+  assert.equal(elements.get('#results').hidden, false);
+  assert.equal(elements.get('#averageScore').textContent, '0.0 / 10');
+  assert.match(elements.get('#resultSummary').textContent, /15 van 16/);
+  resolveGrade({ result: { verdict: 'answered', score: 8, transcript: 'Ik werk.' }, error: '' });
+  await completion;
+  assert.equal(elements.get('#averageScore').textContent, '0.5 / 10');
+  assert.doesNotMatch(elements.get('#resultSummary').textContent, /verwerken/);
+});
+
+test('typed answers begin grading on navigation and technical errors stay ungraded', async () => {
+  const { page, remoteCalls } = examPage(undefined, { result: { verdict: 'answered', score: 8, transcript: 'Ik werk.' }, error: '' }, { count: 16 });
+  page.startExam();
+  page.answer().transcript = 'Ik werk.';
+  await page.navigateTo(1);
+  await Promise.resolve();
+  assert.equal(remoteCalls(), 1);
+  page.seedAnswer(1, { recordingError: 'Microphone failed' });
+  await page.completeExam();
+  assert.equal(remoteCalls(), 1);
+  assert.equal(page.allAnswers()[1].outcome.result, null);
+  assert.equal(page.allAnswers()[1].outcome.error, 'Microphone failed');
 });

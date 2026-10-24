@@ -98,7 +98,7 @@ import '../styles/global.css';
   import audioPool from '../data/spreken-audio.json';
   import picturePool from '../data/spreken-pictures.json';
   import { createRecording, requestMicrophone } from '../lib/spreken-recording.js';
-  import { assessPass, buildExam, buildEvaluationPayload, buildReportMarkdown, encodeMp3, parseEvaluation, verdictLabels } from '../lib/spreken.js';
+  import { assessPass, buildExam, buildEvaluationPayload, buildReportMarkdown, encodeMp3, localEvaluation, parseEvaluation, verdictLabels } from '../lib/spreken.js';
 
   const $ = (selector) => document.querySelector(selector);
   const intro = $('#intro');
@@ -370,6 +370,8 @@ import '../styles/global.css';
     if (completing) return;
     await stopRecording();
     if (completing) return;
+    // Start typed answers in the background too, before the next question.
+    if (answers[index].transcript.trim()) enqueueGrade(index);
     index = questionIndex;
     renderQuestion();
   }
@@ -573,9 +575,19 @@ import '../styles/global.css';
     if (!answer.grading) {
       const snapshot = { ...answer };
       const item = questions[questionIndex];
-      answer.grading = new Promise((resolve) => {
+      const local = localEvaluation(item, snapshot);
+      if (local) {
+        answer.outcome = local;
+        answer.grading = Promise.resolve(local);
+        return answer.grading;
+      }
+      const grading = new Promise((resolve) => {
         gradeQueue.push(async () => resolve(await gradeWithRetry(item, snapshot)));
         pumpGrades();
+      });
+      answer.grading = grading;
+      grading.then((outcome) => {
+        if (answer.grading === grading) answer.outcome = outcome;
       });
     }
     return answer.grading;
@@ -585,45 +597,58 @@ import '../styles/global.css';
     if (completing) return;
     completing = true;
     clearInterval(clock);
-    await stopRecording();
     exam.hidden = true;
     results.hidden = false;
+    renderResults(questions.map((item, questionIndex) => ({
+      item,
+      transcript: answers[questionIndex].transcript,
+      audioUrl: answers[questionIndex].audioUrl,
+      result: answers[questionIndex].outcome?.result || null,
+      error: answers[questionIndex].outcome?.error || '',
+    })));
+    $('#resultSummary').textContent += ' Laatste opname opslaan…';
+    $('#restart').disabled = true;
+    await stopRecording();
     await gradeAll();
   }
 
   // Grades every answer (reusing gradings that already finished) and shows the results.
   // "Opnieuw beoordelen" calls this again after clearing the failed gradings.
   async function gradeAll() {
-    $('#averageScore').textContent = 'Bezig met beoordelen…';
-    $('#resultSummary').textContent = '';
-    $('#download').hidden = true;
+    const examAnswers = answers;
+    $('#restart').disabled = true;
     $('#regrade').hidden = true;
-    $('#review').replaceChildren();
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    // Empty answers are sent too: the grader proposes an answer for them.
+    // Reuse every completed or running grade. Skipped questions resolve locally.
+    const gradings = questions.map((_, questionIndex) => enqueueGrade(questionIndex));
     const entries = questions.map((item, questionIndex) => ({
       item,
       transcript: answers[questionIndex].transcript,
       audioUrl: answers[questionIndex].audioUrl,
-      result: null,
-      error: '',
+      result: answers[questionIndex].outcome?.result || null,
+      error: answers[questionIndex].outcome?.error || '',
     }));
     let finished = 0;
     const showProgress = () => {
-      $('#averageScore').textContent = `Bezig met beoordelen… ${finished} van ${entries.length}`;
+      if (answers !== examAnswers) return;
+      renderResults(entries);
+      if (finished < entries.length) {
+        $('#resultSummary').textContent += ` Beoordelingen verwerken: ${finished} van ${entries.length}.`;
+      }
     };
     showProgress();
 
     await Promise.all(entries.map(async (entry, questionIndex) => {
-      const outcome = await enqueueGrade(questionIndex);
+      const outcome = await gradings[questionIndex];
       entry.result = outcome.result;
       entry.error = outcome.error;
       if (outcome.result) entry.transcript = outcome.result.transcript || entry.transcript;
       finished += 1;
       showProgress();
     }));
-    renderResults(entries);
+    if (answers !== examAnswers) return;
+    $('#restart').disabled = false;
     const failed = entries.map((entry, questionIndex) => (entry.result ? -1 : questionIndex)).filter((i) => i >= 0);
     const regrade = $('#regrade');
     regrade.hidden = failed.length === 0;
