@@ -1,12 +1,12 @@
 import { writeFileSync } from 'node:fs';
 
-// Spreken A2 grading workflow, free models only:
-// Groq Whisper transcribes, a Groq model grades, OpenRouter free is the grading backup,
-// and a second Groq model does the final check.
+// Spreken A2 grading workflow:
+// Groq Whisper transcribes. Paid xAI Grok via OpenRouter grades and verifies;
+// Groq is the backup grader. Bind existing credentials when deploying.
 
-const GRADE_MODEL = 'openai/gpt-oss-120b';
-const VERIFY_MODEL = 'llama-3.3-70b-versatile';
-const BACKUP_MODEL = 'thinkingmachines/inkling:free';
+const GRADE_MODEL = 'x-ai/grok-4.3';
+const VERIFY_MODEL = 'x-ai/grok-4.3';
+const BACKUP_MODEL = 'openai/gpt-oss-120b';
 const WHISPER_MODEL = 'whisper-large-v3';
 
 const GRADE_SYSTEM = `You are an examiner for the Dutch Inburgering A2 speaking exam (Spreken). You grade ONE answer of a candidate.
@@ -76,7 +76,7 @@ const prepareVerifyCode = [
   "const grade = $input.first().json;",
   "const draft = grade.choices && grade.choices[0] && grade.choices[0].message ? grade.choices[0].message.content : '';",
   "const context = $('Set transcript').first().json.user;",
-  "if (!draft) return [{ json: { draft: '', messages: [], error: 'Both free grading models failed or hit their free limit. Try again later.' } }];",
+  "if (!draft) return [{ json: { draft: '', messages: [], error: 'Both grading providers failed. Try again later.' } }];",
   "const messages = [{ role: 'system', content: " + JSON.stringify(VERIFY_SYSTEM) + " }, { role: 'user', content: context + '\\n\\nDraft grading (JSON):\\n' + draft }];",
   "messages[0].content += \"\\n\\nA2 COMMUNICATIVE RUBRIC (takes priority over stricter wording elsewhere): Judge whether a listener can understand a relevant response to the actual question. The reference answer and key points are examples, NOT a mandatory script or vocabulary checklist. Accept synonyms, simple vocabulary, short sentences, reasonable alternative interpretations and personal choices with any understandable relevant reason. Do not require details or reasons not asked for in the question. Apply the generic block instruction only where compatible with the specific question. Minor omissions reduce the score proportionately; they do not automatically make a relevant understandable answer incorrect. Reserve incorrect for mostly off-topic, largely missing essential requested information, or unintelligible answers. Missing articles, wrong gender, tense or word order, accent, repetition and pauses are normal at A2 when meaning is clear; give learning tips without turning them into a failed answer. Never infer pronunciation or fluency problems from text. Do not penalise obvious speech-recognition artifacts. Score 6-7 for an understandable relevant A2 answer with some gaps, 8-9 for a clear answer covering the task, 10 for a fully effective simple A2 answer; do not demand B1/B2 complexity for high marks. Scores 1-5 are for insufficient communication. No-answer and score 0 are ONLY for genuinely absent input, never a technical transcription failure. Mark completed true when the essential communicative task is achieved. List only missing essential information requested by the actual question, and at most three unambiguous useful language corrections. In doubt about a plausible recognition error, give the candidate the benefit of the doubt.\\nDo not downgrade a sufficient A2 answer merely to add more corrections. Re-evaluate any draft incorrect verdict using this communicative rubric.\";",
   "messages[0].content += \"\\n\\nSPOKEN ANSWER CALIBRATION: Spelling, capitalization, compound-word spacing and spelling of proper names in an automatic transcript are NOT spoken-language mistakes. Never ask a speaker to double-check spelling. For example, Alia versus Ayla and kleur uit potloden versus kleurpotloden can be recognition artifacts; do not count them as independent language errors without audio evidence. Do not require exact vocabulary such as knutselen when a broader relevant verb such as werken communicates a plausible use; suggest the more specific word as optional advice, not a condition for passing. If asked what is in the pictures and to say something about all of them, naming every pictured item in a single sentence addresses them all. Do not invent a requirement to mention grass, color, location, picture numbering or one sentence per picture. Small article mistakes may receive a brief correction but must not by themselves cause incorrect or a score below 6 when the task is understandable.\\nCALIBRATION EXAMPLE 1: Question: Wat ziet u op deze plaatjes? Vertel ook wat Ayla met deze spullen kan doen? Pictures: kleurpotloden, lijm, schaar. Transcript: Ik zie de kleur uit potloden, het lijm en het schaar. Alia kan met deze spullen werken. Expected: answered, at least 6/10; all objects and a broadly relevant use are communicated. Optionally suggest hiermee knutselen for precision. Do not penalise name spelling or compound-word transcription.\\nCALIBRATION EXAMPLE 2: Question: wat zie je op deze plaatjes? Vertel iets over alle plaatjes. Pictures: kat, konijn, hond on grass. Transcript: Ik zie de kat, de konijn en de hond. Expected: answered, at least 6/10; all three pictures are addressed. One minor article correction (het konijn) is useful. Grass and separate sentences per picture are optional. These examples do not excuse answers which fail to identify the objects or omit an explicitly requested use entirely.\";",
@@ -134,6 +134,7 @@ const ifNode = (name, position, leftValue, operator) => ({
 });
 
 const GROQ_CHAT = 'https://api.groq.com/openai/v1/chat/completions';
+const OPENROUTER_CHAT = 'https://openrouter.ai/api/v1/chat/completions';
 const jsonFormat = ', response_format: { type: "json_object" }';
 
 const workflow = {
@@ -168,11 +169,11 @@ const workflow = {
       id: 'whisper1', name: 'Transcribe (Groq Whisper)', type: 'n8n-nodes-base.httpRequest', typeVersion: 4.2, position: [660, 100], onError: 'continueRegularOutput',
     },
     { parameters: { jsCode: setTranscriptCode }, id: 'settranscript1', name: 'Set transcript', type: 'n8n-nodes-base.code', typeVersion: 2, position: [880, 200] },
-    chatNode('Grade (Groq)', [1100, 200], 'groqApi', GROQ_CHAT, GRADE_MODEL, '$json.messages', jsonFormat),
+    chatNode('Grade (Grok via OpenRouter)', [1100, 200], 'openRouterApi', OPENROUTER_CHAT, GRADE_MODEL, '$json.messages', jsonFormat),
     ifNode('Graded?', [1320, 200], '={{ $json.choices?.[0]?.message?.content ?? "" }}', { type: 'string', operation: 'notEmpty', singleValue: true }),
-    chatNode('Grade backup (OpenRouter free)', [1540, 340], 'openRouterApi', 'https://openrouter.ai/api/v1/chat/completions', BACKUP_MODEL, "$('Set transcript').first().json.messages"),
+    chatNode('Grade backup (Groq)', [1540, 340], 'groqApi', GROQ_CHAT, BACKUP_MODEL, "$('Set transcript').first().json.messages", jsonFormat),
     { parameters: { jsCode: prepareVerifyCode }, id: 'prepare1', name: 'Prepare verify', type: 'n8n-nodes-base.code', typeVersion: 2, position: [1760, 200] },
-    chatNode('Verify (Groq)', [1980, 200], 'groqApi', GROQ_CHAT, VERIFY_MODEL, '$json.messages', jsonFormat),
+    chatNode('Verify (Grok via OpenRouter)', [1980, 200], 'openRouterApi', OPENROUTER_CHAT, VERIFY_MODEL, '$json.messages', jsonFormat),
     { parameters: { jsCode: parseCode }, id: 'parse1', name: 'Parse evaluation', type: 'n8n-nodes-base.code', typeVersion: 2, position: [2200, 200] },
     { parameters: { respondWith: 'json', responseBody: '={{ $json }}', options: {} }, id: 'respond1', name: 'Respond', type: 'n8n-nodes-base.respondToWebhook', typeVersion: 1.1, position: [2420, 200] },
   ],
@@ -181,12 +182,12 @@ const workflow = {
     'Build request': { main: [[{ node: 'Has audio?', type: 'main', index: 0 }]] },
     'Has audio?': { main: [[{ node: 'Transcribe (Groq Whisper)', type: 'main', index: 0 }], [{ node: 'Set transcript', type: 'main', index: 0 }]] },
     'Transcribe (Groq Whisper)': { main: [[{ node: 'Set transcript', type: 'main', index: 0 }]] },
-    'Set transcript': { main: [[{ node: 'Grade (Groq)', type: 'main', index: 0 }]] },
-    'Grade (Groq)': { main: [[{ node: 'Graded?', type: 'main', index: 0 }]] },
-    'Graded?': { main: [[{ node: 'Prepare verify', type: 'main', index: 0 }], [{ node: 'Grade backup (OpenRouter free)', type: 'main', index: 0 }]] },
-    'Grade backup (OpenRouter free)': { main: [[{ node: 'Prepare verify', type: 'main', index: 0 }]] },
-    'Prepare verify': { main: [[{ node: 'Verify (Groq)', type: 'main', index: 0 }]] },
-    'Verify (Groq)': { main: [[{ node: 'Parse evaluation', type: 'main', index: 0 }]] },
+    'Set transcript': { main: [[{ node: 'Grade (Grok via OpenRouter)', type: 'main', index: 0 }]] },
+    'Grade (Grok via OpenRouter)': { main: [[{ node: 'Graded?', type: 'main', index: 0 }]] },
+    'Graded?': { main: [[{ node: 'Prepare verify', type: 'main', index: 0 }], [{ node: 'Grade backup (Groq)', type: 'main', index: 0 }]] },
+    'Grade backup (Groq)': { main: [[{ node: 'Prepare verify', type: 'main', index: 0 }]] },
+    'Prepare verify': { main: [[{ node: 'Verify (Grok via OpenRouter)', type: 'main', index: 0 }]] },
+    'Verify (Grok via OpenRouter)': { main: [[{ node: 'Parse evaluation', type: 'main', index: 0 }]] },
     'Parse evaluation': { main: [[{ node: 'Respond', type: 'main', index: 0 }]] },
   },
   settings: { executionOrder: 'v1' },

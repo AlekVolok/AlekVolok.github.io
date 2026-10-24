@@ -1,6 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import * as helpers from '../src/lib/spreken.js';
 import { createRecording } from '../src/lib/spreken-recording.js';
 import { assessPass, buildReportMarkdown, parseEvaluation } from '../src/lib/spreken.js';
@@ -99,6 +102,34 @@ test('malformed grading replies are rejected instead of becoming zero scores', (
 });
 
 const workflow = JSON.parse(fs.readFileSync(new URL('../n8n/spreken-evaluate.workflow.json', import.meta.url)));
+test('workflow generator reproduces the deployed template', () => {
+  const folder = fs.mkdtempSync(path.join(os.tmpdir(), 'spreken-workflow-'));
+  const output = path.join(folder, 'workflow.json');
+  try {
+    execFileSync(process.execPath, [new URL('../n8n/build-workflow.mjs', import.meta.url).pathname.replace(/^\/(\w:)/, '$1'), output]);
+    assert.deepEqual(JSON.parse(fs.readFileSync(output)), workflow);
+  } finally {
+    fs.rmSync(output, { force: true });
+    fs.rmdirSync(folder);
+  }
+});
+
+test('paid Grok grades and verifies with Groq backup and valid graph connections', () => {
+  for (const name of ['Grade (Grok via OpenRouter)', 'Verify (Grok via OpenRouter)']) {
+    const node = workflow.nodes.find(node => node.name === name);
+    assert.equal(node.parameters.nodeCredentialType, 'openRouterApi');
+    assert.equal(node.parameters.url, 'https://openrouter.ai/api/v1/chat/completions');
+    assert.match(node.parameters.jsonBody, /x-ai\/grok-4\.3/);
+    assert.doesNotMatch(node.parameters.jsonBody, /:free/);
+  }
+  assert.equal(workflow.nodes.find(node => node.name === 'Grade backup (Groq)').parameters.nodeCredentialType, 'groqApi');
+  const names = new Set(workflow.nodes.map(node => node.name));
+  for (const [from, connection] of Object.entries(workflow.connections)) {
+    assert.ok(names.has(from), `Missing source ${from}`);
+    for (const edge of connection.main.flat()) assert.ok(names.has(edge.node), `Missing target ${edge.node}`);
+  }
+});
+
 function runNode(name, input, outputs) {
   const code = workflow.nodes.find(node => node.name === name).parameters.jsCode;
   return new Function('$input', '$', code)(

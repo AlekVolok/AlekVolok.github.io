@@ -138,18 +138,18 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
         "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "groqApi",
+        "nodeCredentialType": "openRouterApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ model: \"openai/gpt-oss-120b\", messages: $json.messages, temperature: 0.2, response_format: { type: \"json_object\" } }) }}",
+        "jsonBody": "={{ JSON.stringify({ model: \"x-ai/grok-4.3\", messages: $json.messages, temperature: 0.2, response_format: { type: \"json_object\" } }) }}",
         "options": {
           "timeout": 120000
         }
       },
-      "id": "GradeGroq",
-      "name": "Grade (Groq)",
+      "id": "GradeGrokviaOpenRouter",
+      "name": "Grade (Grok via OpenRouter)",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
@@ -194,18 +194,18 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
         "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "openRouterApi",
+        "nodeCredentialType": "groqApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ model: \"thinkingmachines/inkling:free\", messages: $('Set transcript').first().json.messages, temperature: 0.2 }) }}",
+        "jsonBody": "={{ JSON.stringify({ model: \"openai/gpt-oss-120b\", messages: $('Set transcript').first().json.messages, temperature: 0.2, response_format: { type: \"json_object\" } }) }}",
         "options": {
           "timeout": 120000
         }
       },
-      "id": "GradebackupOpenRouterfree",
-      "name": "Grade backup (OpenRouter free)",
+      "id": "GradebackupGroq",
+      "name": "Grade backup (Groq)",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
@@ -216,7 +216,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const grade = $input.first().json;\nconst draft = grade.choices && grade.choices[0] && grade.choices[0].message ? grade.choices[0].message.content : '';\nconst context = $('Set transcript').first().json.user;\nif (!draft) return [{ json: { draft: '', messages: [], error: 'Both free grading models failed or hit their free limit. Try again later.' } }];\nconst messages = [{ role: 'system', content: \"You are a second examiner doing the final check of a grading for the Dutch Inburgering A2 speaking exam. You receive the question context, the transcript and a DRAFT grading in JSON.\\n\\nReturn a corrected version in the same JSON shape, JSON only:\\n- verdict: \\\"no-answer\\\" only when the transcript is empty; otherwise \\\"answered\\\" or \\\"incorrect\\\", matching the transcript and the task.\\n- mistakes: keep only real grammar or word-choice errors. Each \\\"original\\\" must be an exact fragment of the transcript and each \\\"correction\\\" correct, minimal Dutch. Remove items that are not errors (for example: \\\"want\\\" + main-clause word order is correct). Add missing important errors.\\n- proposedAnswer: empty when the verdict is \\\"answered\\\"; otherwise a correct short A2 Dutch answer covering every key point and matching the picture description.\\n- score: 0 for \\\"no-answer\\\", 6 or more for \\\"answered\\\", otherwise consistent with the mistakes.\\n- Strategies (parrot, denial, Makhmud, universal answers, picture templates) are valid when the task is still addressed.\\nKeep the transcript unchanged and the feedback in English. Fields: transcript, verdict, score, completed, strengths, missingPoints, mistakes, proposedAnswer, feedback.\" }, { role: 'user', content: context + '\\n\\nDraft grading (JSON):\\n' + draft }];\nmessages[0].content += \"\\n\\nA2 COMMUNICATIVE RUBRIC (takes priority over stricter wording elsewhere): Judge whether a listener can understand a relevant response to the actual question. The reference answer and key points are examples, NOT a mandatory script or vocabulary checklist. Accept synonyms, simple vocabulary, short sentences, reasonable alternative interpretations and personal choices with any understandable relevant reason. Do not require details or reasons not asked for in the question. Apply the generic block instruction only where compatible with the specific question. Minor omissions reduce the score proportionately; they do not automatically make a relevant understandable answer incorrect. Reserve incorrect for mostly off-topic, largely missing essential requested information, or unintelligible answers. Missing articles, wrong gender, tense or word order, accent, repetition and pauses are normal at A2 when meaning is clear; give learning tips without turning them into a failed answer. Never infer pronunciation or fluency problems from text. Do not penalise obvious speech-recognition artifacts. Score 6-7 for an understandable relevant A2 answer with some gaps, 8-9 for a clear answer covering the task, 10 for a fully effective simple A2 answer; do not demand B1/B2 complexity for high marks. Scores 1-5 are for insufficient communication. No-answer and score 0 are ONLY for genuinely absent input, never a technical transcription failure. Mark completed true when the essential communicative task is achieved. List only missing essential information requested by the actual question, and at most three unambiguous useful language corrections. In doubt about a plausible recognition error, give the candidate the benefit of the doubt.\\nDo not downgrade a sufficient A2 answer merely to add more corrections. Re-evaluate any draft incorrect verdict using this communicative rubric.\";\nmessages[0].content += \"\\n\\nSPOKEN ANSWER CALIBRATION: Spelling, capitalization, compound-word spacing and spelling of proper names in an automatic transcript are NOT spoken-language mistakes. Never ask a speaker to double-check spelling. For example, Alia versus Ayla and kleur uit potloden versus kleurpotloden can be recognition artifacts; do not count them as independent language errors without audio evidence. Do not require exact vocabulary such as knutselen when a broader relevant verb such as werken communicates a plausible use; suggest the more specific word as optional advice, not a condition for passing. If asked what is in the pictures and to say something about all of them, naming every pictured item in a single sentence addresses them all. Do not invent a requirement to mention grass, color, location, picture numbering or one sentence per picture. Small article mistakes may receive a brief correction but must not by themselves cause incorrect or a score below 6 when the task is understandable.\\nCALIBRATION EXAMPLE 1: Question: Wat ziet u op deze plaatjes? Vertel ook wat Ayla met deze spullen kan doen? Pictures: kleurpotloden, lijm, schaar. Transcript: Ik zie de kleur uit potloden, het lijm en het schaar. Alia kan met deze spullen werken. Expected: answered, at least 6/10; all objects and a broadly relevant use are communicated. Optionally suggest hiermee knutselen for precision. Do not penalise name spelling or compound-word transcription.\\nCALIBRATION EXAMPLE 2: Question: wat zie je op deze plaatjes? Vertel iets over alle plaatjes. Pictures: kat, konijn, hond on grass. Transcript: Ik zie de kat, de konijn en de hond. Expected: answered, at least 6/10; all three pictures are addressed. One minor article correction (het konijn) is useful. Grass and separate sentences per picture are optional. These examples do not excuse answers which fail to identify the objects or omit an explicitly requested use entirely.\";\nreturn [{ json: { draft, messages } }];"
+        "jsCode": "const grade = $input.first().json;\nconst draft = grade.choices && grade.choices[0] && grade.choices[0].message ? grade.choices[0].message.content : '';\nconst context = $('Set transcript').first().json.user;\nif (!draft) return [{ json: { draft: '', messages: [], error: 'Both grading providers failed. Try again later.' } }];\nconst messages = [{ role: 'system', content: \"You are a second examiner doing the final check of a grading for the Dutch Inburgering A2 speaking exam. You receive the question context, the transcript and a DRAFT grading in JSON.\\n\\nReturn a corrected version in the same JSON shape, JSON only:\\n- verdict: \\\"no-answer\\\" only when the transcript is empty; otherwise \\\"answered\\\" or \\\"incorrect\\\", matching the transcript and the task.\\n- mistakes: keep only real grammar or word-choice errors. Each \\\"original\\\" must be an exact fragment of the transcript and each \\\"correction\\\" correct, minimal Dutch. Remove items that are not errors (for example: \\\"want\\\" + main-clause word order is correct). Add missing important errors.\\n- proposedAnswer: empty when the verdict is \\\"answered\\\"; otherwise a correct short A2 Dutch answer covering every key point and matching the picture description.\\n- score: 0 for \\\"no-answer\\\", 6 or more for \\\"answered\\\", otherwise consistent with the mistakes.\\n- Strategies (parrot, denial, Makhmud, universal answers, picture templates) are valid when the task is still addressed.\\nKeep the transcript unchanged and the feedback in English. Fields: transcript, verdict, score, completed, strengths, missingPoints, mistakes, proposedAnswer, feedback.\" }, { role: 'user', content: context + '\\n\\nDraft grading (JSON):\\n' + draft }];\nmessages[0].content += \"\\n\\nA2 COMMUNICATIVE RUBRIC (takes priority over stricter wording elsewhere): Judge whether a listener can understand a relevant response to the actual question. The reference answer and key points are examples, NOT a mandatory script or vocabulary checklist. Accept synonyms, simple vocabulary, short sentences, reasonable alternative interpretations and personal choices with any understandable relevant reason. Do not require details or reasons not asked for in the question. Apply the generic block instruction only where compatible with the specific question. Minor omissions reduce the score proportionately; they do not automatically make a relevant understandable answer incorrect. Reserve incorrect for mostly off-topic, largely missing essential requested information, or unintelligible answers. Missing articles, wrong gender, tense or word order, accent, repetition and pauses are normal at A2 when meaning is clear; give learning tips without turning them into a failed answer. Never infer pronunciation or fluency problems from text. Do not penalise obvious speech-recognition artifacts. Score 6-7 for an understandable relevant A2 answer with some gaps, 8-9 for a clear answer covering the task, 10 for a fully effective simple A2 answer; do not demand B1/B2 complexity for high marks. Scores 1-5 are for insufficient communication. No-answer and score 0 are ONLY for genuinely absent input, never a technical transcription failure. Mark completed true when the essential communicative task is achieved. List only missing essential information requested by the actual question, and at most three unambiguous useful language corrections. In doubt about a plausible recognition error, give the candidate the benefit of the doubt.\\nDo not downgrade a sufficient A2 answer merely to add more corrections. Re-evaluate any draft incorrect verdict using this communicative rubric.\";\nmessages[0].content += \"\\n\\nSPOKEN ANSWER CALIBRATION: Spelling, capitalization, compound-word spacing and spelling of proper names in an automatic transcript are NOT spoken-language mistakes. Never ask a speaker to double-check spelling. For example, Alia versus Ayla and kleur uit potloden versus kleurpotloden can be recognition artifacts; do not count them as independent language errors without audio evidence. Do not require exact vocabulary such as knutselen when a broader relevant verb such as werken communicates a plausible use; suggest the more specific word as optional advice, not a condition for passing. If asked what is in the pictures and to say something about all of them, naming every pictured item in a single sentence addresses them all. Do not invent a requirement to mention grass, color, location, picture numbering or one sentence per picture. Small article mistakes may receive a brief correction but must not by themselves cause incorrect or a score below 6 when the task is understandable.\\nCALIBRATION EXAMPLE 1: Question: Wat ziet u op deze plaatjes? Vertel ook wat Ayla met deze spullen kan doen? Pictures: kleurpotloden, lijm, schaar. Transcript: Ik zie de kleur uit potloden, het lijm en het schaar. Alia kan met deze spullen werken. Expected: answered, at least 6/10; all objects and a broadly relevant use are communicated. Optionally suggest hiermee knutselen for precision. Do not penalise name spelling or compound-word transcription.\\nCALIBRATION EXAMPLE 2: Question: wat zie je op deze plaatjes? Vertel iets over alle plaatjes. Pictures: kat, konijn, hond on grass. Transcript: Ik zie de kat, de konijn en de hond. Expected: answered, at least 6/10; all three pictures are addressed. One minor article correction (het konijn) is useful. Grass and separate sentences per picture are optional. These examples do not excuse answers which fail to identify the objects or omit an explicitly requested use entirely.\";\nreturn [{ json: { draft, messages } }];"
       },
       "id": "prepare1",
       "name": "Prepare verify",
@@ -230,18 +230,18 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
         "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "groqApi",
+        "nodeCredentialType": "openRouterApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ model: \"llama-3.3-70b-versatile\", messages: $json.messages, temperature: 0.2, response_format: { type: \"json_object\" } }) }}",
+        "jsonBody": "={{ JSON.stringify({ model: \"x-ai/grok-4.3\", messages: $json.messages, temperature: 0.2, response_format: { type: \"json_object\" } }) }}",
         "options": {
           "timeout": 120000
         }
       },
-      "id": "VerifyGroq",
-      "name": "Verify (Groq)",
+      "id": "VerifyGrokviaOpenRouter",
+      "name": "Verify (Grok via OpenRouter)",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
@@ -335,14 +335,14 @@
       "main": [
         [
           {
-            "node": "Grade (Groq)",
+            "node": "Grade (Grok via OpenRouter)",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Grade (Groq)": {
+    "Grade (Grok via OpenRouter)": {
       "main": [
         [
           {
@@ -364,14 +364,14 @@
         ],
         [
           {
-            "node": "Grade backup (OpenRouter free)",
+            "node": "Grade backup (Groq)",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Grade backup (OpenRouter free)": {
+    "Grade backup (Groq)": {
       "main": [
         [
           {
@@ -386,14 +386,14 @@
       "main": [
         [
           {
-            "node": "Verify (Groq)",
+            "node": "Verify (Grok via OpenRouter)",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Verify (Groq)": {
+    "Verify (Grok via OpenRouter)": {
       "main": [
         [
           {
