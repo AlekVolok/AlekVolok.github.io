@@ -30,19 +30,19 @@ STRATEGIES THE CANDIDATE IS ALLOWED TO USE (do NOT penalise them if the task is 
 
 MISTAKES: at most 6 real grammar or word-choice mistakes, most important first. "original" is an exact fragment of the transcript, "correction" the corrected Dutch fragment, "explanation" a short English rule. Do not list recognition artifacts. Remember: after "want" the main-clause word order stays (want + subject + verb); after "omdat" the verb goes to the end. Do not "correct" correct Dutch.
 
-PROPOSED ANSWER: if the verdict is "incorrect" or "no-answer", write a correct, short A2 Dutch answer that uses the templates above, covers every key point and matches the picture description. Otherwise an empty string.
+PROPOSED ANSWER: ALWAYS provide a short example of a good A2 Dutch answer, including when the candidate already answered correctly. Use simple natural Dutch, answer the actual question and match the picture description. Usually 1-3 short sentences; use more only if the task explicitly needs more items. This is one valid example, not a mandatory wording or a higher standard for grading the candidate. Keep it separate from the transcript and never change the transcript to match it.
 
 SCORE: integer 0-10. "answered" scores 6 or more, "no-answer" scores 0.
 
 Reply with JSON only, in this exact shape:
-{"transcript": "<the transcript as given>", "verdict": "answered" | "incorrect" | "no-answer", "score": <integer>, "completed": <true or false>, "strengths": ["<English>"], "missingPoints": ["<English>"], "mistakes": [{"original": "<exact fragment>", "correction": "<Dutch>", "explanation": "<English>"}], "proposedAnswer": "<Dutch or empty string>", "feedback": "<2-3 sentences in English with the most useful advice>"}`;
+{"transcript": "<the transcript as given>", "verdict": "answered" | "incorrect" | "no-answer", "score": <integer>, "completed": <true or false>, "strengths": ["<English>"], "missingPoints": ["<English>"], "mistakes": [{"original": "<exact fragment>", "correction": "<Dutch>", "explanation": "<English>"}], "proposedAnswer": "<short correct A2 Dutch example, always provided>", "feedback": "<2-3 sentences in English with the most useful advice>"}`;
 
 const VERIFY_SYSTEM = `You are a second examiner doing the final check of a grading for the Dutch Inburgering A2 speaking exam. You receive the question context, the transcript and a DRAFT grading in JSON.
 
 Return a corrected version in the same JSON shape, JSON only:
 - verdict: "no-answer" only when the transcript is empty; otherwise "answered" or "incorrect", matching the transcript and the task.
 - mistakes: keep only real grammar or word-choice errors. Each "original" must be an exact fragment of the transcript and each "correction" correct, minimal Dutch. Remove items that are not errors (for example: "want" + main-clause word order is correct). Add missing important errors.
-- proposedAnswer: empty when the verdict is "answered"; otherwise a correct short A2 Dutch answer covering every key point and matching the picture description.
+- proposedAnswer: ALWAYS preserve or improve a short, correct A2 Dutch example, also for an "answered" verdict. Answer the actual question using simple natural Dutch and the picture description. This is one valid example, not required wording and not a reason to downgrade a different valid answer. Never return an empty example for a correct answer.
 - score: 0 for "no-answer", 6 or more for "answered", otherwise consistent with the mistakes.
 - Strategies (parrot, denial, Makhmud, universal answers, picture templates) are valid when the task is still addressed.
 Keep the transcript unchanged and the feedback in English. Fields: transcript, verdict, score, completed, strengths, missingPoints, mistakes, proposedAnswer, feedback.`;

@@ -62,6 +62,7 @@ import '../styles/global.css';
             <textarea id="transcript" class="transcript" rows="4" placeholder="Het transcript verschijnt na het stoppen van de opname. Je kunt je antwoord ook typen."></textarea>
             <audio id="playback" class="playback" controls hidden></audio>
             <p id="answerFeedback" class="answer-feedback" aria-live="polite" hidden></p>
+            <div id="answerGuide"></div>
 
             <div class="exam-actions">
               <button id="previous" class="secondary-button" type="button">← Vorige</button>
@@ -98,7 +99,7 @@ import '../styles/global.css';
   import audioPool from '../data/spreken-audio.json';
   import picturePool from '../data/spreken-pictures.json';
   import { createRecording, requestMicrophone } from '../lib/spreken-recording.js';
-  import { assessPass, buildExam, buildEvaluationPayload, buildReportMarkdown, encodeMp3, localEvaluation, parseEvaluation, verdictLabels } from '../lib/spreken.js';
+  import { assessPass, buildAnswerGuide, buildExam, buildEvaluationPayload, buildReportMarkdown, encodeMp3, localEvaluation, parseEvaluation, verdictLabels } from '../lib/spreken.js';
 
   const $ = (selector) => document.querySelector(selector);
   const intro = $('#intro');
@@ -190,6 +191,32 @@ import '../styles/global.css';
     answerFeedback.textContent = outcome?.result
       ? `${outcome.result.score} / 10 · ${verdictLabels[outcome.result.verdict]}. ${outcome.result.feedback || ''}`
       : outcome?.error || '';
+    $('#answerGuide').replaceChildren(createAnswerGuide(questions[index], outcome?.result));
+  }
+
+  function createAnswerGuide(item, result) {
+    const guide = buildAnswerGuide(item, result);
+    const details = document.createElement('details');
+    details.className = 'answer-guide';
+    const summary = document.createElement('summary');
+    summary.textContent = 'Zo bouw je een goed A2-antwoord op';
+    const structure = document.createElement('p');
+    structure.textContent = `Opbouw: ${guide.structure}`;
+    const template = document.createElement('p');
+    template.textContent = `Patroon: ${guide.template}`;
+    details.append(summary, structure, template);
+    if (guide.example) {
+      const label = document.createElement('strong');
+      label.textContent = 'Voorbeeld van een goed A2-antwoord';
+      const example = document.createElement('blockquote');
+      example.textContent = guide.example;
+      details.append(label, example);
+    }
+    const note = document.createElement('p');
+    note.className = 'hint';
+    note.textContent = guide.note;
+    details.append(note);
+    return details;
   }
 
   function renderQuestion() {
@@ -481,15 +508,10 @@ import '../styles/global.css';
         article.append(ownAudio);
       }
 
-      if (result?.proposedAnswer) {
-        const proposal = document.createElement('p');
-        proposal.className = 'proposal';
-        proposal.textContent = `Voorstel: ${result.proposedAnswer}`;
-        article.append(proposal);
-      }
-      if (item.modelAnswer) {
+      article.append(createAnswerGuide(item, result));
+      if (item.modelAnswer && item.modelAnswer !== buildAnswerGuide(item, result).example) {
         const model = document.createElement('p');
-        model.textContent = `Voorbeeldantwoord: ${item.modelAnswer}`;
+        model.textContent = `Voorbeeld uit het lesmateriaal: ${item.modelAnswer}`;
         article.append(model);
       }
       if (item.modelAudio) {
@@ -720,6 +742,10 @@ import '../styles/global.css';
   .picture-grid[data-count="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .picture-grid img { width: 100%; height: 260px; object-fit: contain; display: block; border-radius: var(--r-core); border: 1px solid var(--hairline); background: #fff; }
   .proposal { color: var(--accent-hi); }
+  .answer-guide { margin-top: var(--sp-4); padding: var(--sp-4); border: 1px solid var(--hairline); border-radius: var(--r-core-sm); }
+  .answer-guide summary { color: var(--accent); cursor: pointer; font-weight: 600; }
+  .answer-guide p { margin: var(--sp-3) 0; }
+  .answer-guide blockquote { margin: var(--sp-3) 0; padding-left: var(--sp-3); border-left: 2px solid var(--accent); color: var(--text); }
   .question-text { font-family: var(--font-sans); font-size: clamp(1.1rem, 2vw, 1.35rem); line-height: 1.4; margin: var(--sp-2) 0 var(--sp-5); }
   .record-row { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; margin-bottom: var(--sp-5); }
   .record-button { display: inline-flex; align-items: center; gap: 10px; border-radius: 999px; padding: 12px 18px; border: 1px solid var(--hairline); background: var(--bg-core); color: var(--text); font-weight: 600; }

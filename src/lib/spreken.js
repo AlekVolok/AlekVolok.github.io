@@ -164,6 +164,31 @@ export function localEvaluation(item, answer) {
   };
 }
 
+export function buildAnswerGuide(item, result = null) {
+  const question = item.question || '';
+  let structure = 'Direct antwoord → de extra informatie die de vraag vraagt';
+  let template = 'Ik … . Ook … .';
+  if (/probleem|wat moet|wat kan .* doen|wat raadt/i.test(question)) {
+    structure = 'Situatie of probleem → een passende oplossing';
+    template = '… heeft … . Hij/Zij kan … .';
+  } else if (/waarom|leg uit/i.test(question)) {
+    structure = 'Antwoord of keuze → een korte reden';
+    template = 'Ik …, want … .';
+  } else if (/waarvoor|gebruiken|mee.*doen|met.*doen|kan.*doen|kunt.*doen/i.test(question)) {
+    structure = 'Benoem de gevraagde spullen → vertel waarvoor ze dienen';
+    template = 'Ik zie … . Daarmee kan … .';
+  } else if (/noem|beschrijf|wat zie|wat doet|wat doen|vertel iets/i.test(question)) {
+    structure = 'Benoem of beschrijf wat de vraag vraagt';
+    template = 'Ik zie …, … en … . / Hij/Zij … .';
+  }
+  return {
+    structure,
+    template,
+    example: (result?.proposedAnswer || item.modelAnswer || '').trim(),
+    note: 'Dit is één mogelijk antwoord. Andere duidelijke antwoorden zijn ook goed; je hoeft dit voorbeeld niet letterlijk te herhalen.',
+  };
+}
+
 /**
  * Parses the webhook reply. The workflow returns the evaluation object directly;
  * JSON wrapped in a code fence or prose is tolerated.
@@ -261,8 +286,11 @@ export function buildReportMarkdown(entries, passRule, date = new Date()) {
     const transcript = (result?.transcript || entry.transcript || '').trim();
     lines.push(transcript ? `> ${transcript}` : '> (geen antwoord opgenomen)', '');
 
-    if (result?.proposedAnswer) lines.push('### Voorstel voor het antwoord', '', `> ${result.proposedAnswer}`, '');
-    if (item.modelAnswer) lines.push('### Voorbeeldantwoord', '', `> ${item.modelAnswer}`, '');
+    const guide = buildAnswerGuide(item, result);
+    lines.push('### Zo bouw je een goed A2-antwoord op', '', `Opbouw: ${guide.structure}`, '', `Patroon: ${guide.template}`, '');
+    if (guide.example) lines.push('Voorbeeld van een goed A2-antwoord:', '', `> ${guide.example}`, '');
+    lines.push(guide.note, '');
+    if (item.modelAnswer && item.modelAnswer !== guide.example) lines.push('### Voorbeeld uit het lesmateriaal', '', `> ${item.modelAnswer}`, '');
 
     if (result) {
       if (result.mistakes.length) {

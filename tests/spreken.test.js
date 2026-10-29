@@ -145,6 +145,27 @@ test('malformed grading replies are rejected instead of becoming zero scores', (
   assert.equal(parseEvaluation('{"error":"Whisper failed"}').error, 'Whisper failed');
 });
 
+test('answer guides show a good example for correct answers and keep source fallbacks', () => {
+  const item = { question: 'Welke fiets kiest u? Vertel ook waarom.', modelAnswer: 'Ik kies deze fiets, want hij is goedkoop.' };
+  const guide = helpers.buildAnswerGuide(item, { verdict: 'answered', proposedAnswer: 'Ik kies de rode fiets, want die is mooi.' });
+  assert.match(guide.structure, /reden/);
+  assert.equal(guide.example, 'Ik kies de rode fiets, want die is mooi.');
+  assert.equal(helpers.buildAnswerGuide(item).example, item.modelAnswer);
+  assert.match(guide.note, /niet letterlijk/);
+  const report = helpers.buildReportMarkdown([{ item, transcript: 'De rode fiets.', result: helpers.parseEvaluation(JSON.stringify({ verdict: 'answered', score: 8, proposedAnswer: guide.example })) }], { answeredRequired: 1, note: '' });
+  assert.match(report, /Zo bouw je een goed A2-antwoord op/);
+  assert.match(report, /Ik kies de rode fiets/);
+});
+
+test('skipped picture questions still have a local answer pattern without model calls', () => {
+  const item = { question: 'Wat ziet u? Waarvoor kan zij deze spullen gebruiken?' };
+  const outcome = helpers.localEvaluation(item, { transcript: '' });
+  const guide = helpers.buildAnswerGuide(item, outcome.result);
+  assert.match(guide.structure, /spullen/);
+  assert.match(guide.template, /Daarmee/);
+  assert.equal(guide.example, '');
+});
+
 const workflow = JSON.parse(fs.readFileSync(new URL('../n8n/spreken-evaluate.workflow.json', import.meta.url)));
 test('workflow generator reproduces the deployed template', () => {
   const folder = fs.mkdtempSync(path.join(os.tmpdir(), 'spreken-workflow-'));
@@ -220,6 +241,8 @@ test('both grading and verification receive the same communicative A2 rubric', (
     assert.match(result.messages[0].content, /CALIBRATION EXAMPLE 1/);
     assert.match(result.messages[0].content, /CALIBRATION EXAMPLE 2/);
     assert.match(result.messages[0].content, /Grass and separate sentences per picture are optional/);
+    assert.match(result.messages[0].content, /ALWAYS/);
+    assert.doesNotMatch(result.messages[0].content, /proposedAnswer: empty when/);
   }
 });
 
