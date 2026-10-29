@@ -82,6 +82,7 @@ import '../styles/global.css';
         <p class="eyebrow"><span class="dot"></span> Resultaat</p>
         <h1 id="averageScore">Bezig met beoordelen…</h1>
         <p id="resultSummary" class="lead"></p>
+        <p class="score-legend">0–5: verder oefenen · 6–8: voldoende, met verbeterpunten · 9–10: sterk antwoord</p>
         <div id="review" class="review"></div>
         <div class="result-actions">
           <button id="regrade" class="secondary-button" type="button" hidden>Opnieuw beoordelen</button>
@@ -185,11 +186,23 @@ import '../styles/global.css';
     }
   }
 
+  function scoreTone(result) {
+    if (!result) return '';
+    return result.score >= 9 ? 'correct' : result.score >= 6 ? 'improve' : 'incorrect';
+  }
+
+  function scoreDescription(result) {
+    return scoreTone(result) === 'improve'
+      ? 'voldoende — bekijk de verbeterpunten'
+      : verdictLabels[result.verdict];
+  }
+
   function showAnswerFeedback(answer) {
     const outcome = answer.outcome;
     answerFeedback.hidden = !outcome;
+    answerFeedback.className = `answer-feedback ${scoreTone(outcome?.result)}`;
     answerFeedback.textContent = outcome?.result
-      ? `${outcome.result.score} / 10 · ${verdictLabels[outcome.result.verdict]}. ${outcome.result.feedback || ''}`
+      ? `${outcome.result.score} / 10 · ${scoreDescription(outcome.result)}. ${outcome.result.feedback || ''}`
       : outcome?.error || '';
     $('#answerGuide').replaceChildren(createAnswerGuide(questions[index], outcome?.result));
   }
@@ -487,13 +500,13 @@ import '../styles/global.css';
     review.replaceChildren(...entries.map((entry, entryIndex) => {
       const { item, result } = entry;
       const article = document.createElement('article');
-      article.className = `review-item ${result && result.score >= 6 ? 'correct' : 'incorrect'}`;
+      article.className = `review-item ${scoreTone(result)}`;
 
       const heading = document.createElement('strong');
       heading.textContent = `Vraag ${entryIndex + 1} · ${item.title}`;
       const status = document.createElement('p');
       status.className = 'kicker';
-      status.textContent = `${item.blockTitle}${result ? ` · ${result.score} / 10 · ${verdictLabels[result.verdict]}` : ''}`;
+      status.textContent = `${item.blockTitle}${result ? ` · ${result.score} / 10 · ${scoreDescription(result)}` : ''}`;
       article.append(status);
       const questionLine = document.createElement('p');
       questionLine.textContent = `Vraag: ${item.question}`;
@@ -768,7 +781,14 @@ import '../styles/global.css';
   .review { display: grid; gap: var(--sp-3); margin: var(--sp-7) 0; }
   .review-item { border-left: 3px solid var(--hairline); padding: var(--sp-4); background: var(--glass); border-radius: 0 var(--r-core-sm) var(--r-core-sm) 0; }
   .review-item.correct { border-color: var(--accent); }
+  .review-item.improve { border-color: #facc15; background: rgba(250,204,21,.045); }
+  .review-item.improve .kicker { color: #fde047; }
   .review-item.incorrect { border-color: #fb7185; }
+  .answer-feedback { border-left: 3px solid var(--hairline); padding: var(--sp-3); }
+  .answer-feedback.correct { border-color: var(--accent); }
+  .answer-feedback.improve { border-color: #facc15; background: rgba(250,204,21,.045); }
+  .answer-feedback.incorrect { border-color: #fb7185; }
+  .score-legend { color: var(--text-dim); font-size: .85rem; margin-top: var(--sp-3); }
   .review-item p, .review-item li { margin-top: 6px; color: var(--text-dim); font-size: .9rem; }
   .result-actions { display: flex; flex-wrap: wrap; gap: var(--sp-3); }
   @media (max-width: 760px) { .exam-header { align-items: flex-start; flex-direction: column; } .picture-grid[data-count="2"], .picture-grid[data-count="3"] { grid-template-columns: 1fr; } .intro-card, .results-card { padding: var(--sp-5); } .timer { min-width: auto; } }
