@@ -73,7 +73,7 @@ const payload = { sources, cards: cards.map(({ forms, sources: examples, ...card
 
       <section id="empty" class="end-panel" hidden><p class="eyebrow">Чистый лист</p><h2>В этом наборе пока нет слов</h2><p>Выбери другую тему, убери поиск или добавь карточки в избранное кнопкой ★.</p></section>
       <section id="summary" class="end-panel" hidden><p class="eyebrow">Подход завершён</p><h2 id="summaryTitle"></h2><p id="summaryText"></p><div class="summary-actions"><button id="repeatMistakes" class="secondary" type="button">Повторить сложные</button><button id="newSession" class="primary" type="button">Ещё один подход →</button></div><div id="missedWords" class="missed-words"></div></section>
-      <footer><p id="storageStatus">Прогресс сохраняется только в этом браузере. «Знакомо» — после трёх правильных повторений подряд.</p><p>Картинки: Ad Appel Taaltrainingen · тренировочный словарь для Spreken A2.</p></footer>
+      <footer><p id="storageStatus">Прогресс сохраняется только в этом браузере. В карточках «Знаю» сразу отмечает слово знакомым. В проверочных режимах — после трёх правильных повторений подряд.</p><p>Картинки: Ad Appel Taaltrainingen · тренировочный словарь для Spreken A2.</p></footer>
     </main>
     <script id="quizData" type="application/json" set:html={JSON.stringify(payload).replaceAll('<', '\u003c')} />
   </body>
@@ -194,7 +194,7 @@ const payload = { sources, cards: cards.map(({ forms, sources: examples, ...card
     $('#cardText').lang = reverse ? 'nl' : 'ru';
     $('#cardTranslation').textContent = '';
     $('#flipHint').textContent = 'Нажми на карточку, чтобы увидеть ответ';
-    $('#again').disabled = true; $('#know').disabled = true;
+    $('#again').disabled = false; $('#know').disabled = false;
     $('#questionLabel').textContent = reverse ? 'Как переводится это слово?' : 'Как это сказать по-нидерландски?';
     $('#question').textContent = reverse ? card.term : card.translation;
     $('#question').lang = reverse ? 'nl' : 'ru';
@@ -239,11 +239,11 @@ const payload = { sources, cards: cards.map(({ forms, sources: examples, ...card
     $('#flipHint').textContent = flipped ? 'Получилось вспомнить?' : 'Нажми на карточку, чтобы увидеть ответ';
     $('#context').textContent = sourceFor(card).context;
     $('#context').hidden = !flipped;
-    $('#again').disabled = !flipped; $('#know').disabled = !flipped;
   }
 
   function record(card, isCorrect) {
     progress = updateProgress(progress, card.id, isCorrect);
+    if (mode === 'cards' && isCorrect) progress[card.id].level = 3;
     if (isCorrect) correct += 1; else missed.add(card.id);
     save();
   }
@@ -325,8 +325,8 @@ const payload = { sources, cards: cards.map(({ forms, sources: examples, ...card
   $('#newSession').addEventListener('click', () => start());
   $('#repeatMistakes').addEventListener('click', () => start([...missed].map(id => byId.get(id))));
   $('#flashcard').addEventListener('click', flip);
-  $('#again').addEventListener('click', () => { if (flipped) { record(deck[index], false); index++; render(); } });
-  $('#know').addEventListener('click', () => { if (flipped) { record(deck[index], true); index++; render(); } });
+  $('#again').addEventListener('click', () => { if (deck[index]) { record(deck[index], false); index++; render(); } });
+  $('#know').addEventListener('click', () => { if (deck[index]) { record(deck[index], true); index++; render(); } });
   $('#next').addEventListener('click', () => { if (answered) { index++; render(); } });
   $('#nextRound').addEventListener('click', renderMatch);
   $('#writeForm').addEventListener('submit', event => { event.preventDefault(); if ($('#typed').value.trim()) submit(checkAnswer($('#typed').value, deck[index].term)); });
@@ -350,8 +350,8 @@ const payload = { sources, cards: cards.map(({ forms, sources: examples, ...card
   document.addEventListener('keydown', event => {
     if (['INPUT','SELECT','TEXTAREA','BUTTON'].includes(document.activeElement?.tagName) || mode !== 'cards' || $('#study').hidden) return;
     if (event.code === 'Space') { event.preventDefault(); flip(); }
-    if (flipped && event.key === 'ArrowLeft') $('#again').click();
-    if (flipped && event.key === 'ArrowRight') $('#know').click();
+    if (event.key === 'ArrowLeft') { event.preventDefault(); $('#again').click(); }
+    if (event.key === 'ArrowRight') { event.preventDefault(); $('#know').click(); }
   });
   window.addEventListener('pagehide', () => window.speechSynthesis?.cancel());
   updateStats(); start();

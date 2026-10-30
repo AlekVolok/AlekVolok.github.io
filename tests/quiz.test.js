@@ -93,7 +93,7 @@ function createPage() {
 test('flashcards flip, record a difficult word and repeat only missed words', () => {
   const { $, api, saved } = createPage();
   const id = api.current().id;
-  assert.equal($('#again').disabled, true);
+  assert.equal($('#again').disabled, false);
   $('#flashcard').click();
   assert.equal($('#cardText').textContent, api.current().term);
   assert.equal($('#again').disabled, false);
@@ -108,6 +108,22 @@ test('flashcards flip, record a difficult word and repeat only missed words', ()
   assert.equal(api.deck().length, 1);
   assert.equal(api.current().id, id);
   assert.ok(saved.get('spreken-quiz-v1'));
+});
+
+test('self-rating works without flipping and Know immediately marks a word familiar', () => {
+  const { $, api, saved } = createPage();
+  const known = api.current().id;
+  assert.equal($('#know').disabled, false);
+  $('#know').click();
+  assert.equal($('#knownCount').textContent, 1);
+  assert.equal(JSON.parse(saved.get('spreken-quiz-v1')).progress[known].level, 3);
+  const learning = api.current().id;
+  $('#again').click();
+  assert.ok(api.mistakes().includes(learning));
+  const progress = JSON.parse(saved.get('spreken-quiz-v1')).progress;
+  assert.equal(progress[learning].level, 0);
+  assert.equal(progress[learning].wrong, 1);
+  assert.equal($('#weakCount').textContent, 1);
 });
 
 test('multiple choice and writing show corrections and cannot score twice', () => {
