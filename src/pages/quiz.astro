@@ -1,0 +1,454 @@
+---
+import '../styles/global.css';
+import vocabulary from '../data/quiz-vocabulary.js';
+import pictures from '../data/spreken-pictures.json';
+import { buildQuizCards } from '../lib/quiz.js';
+const cards = buildQuizCards(vocabulary, pictures);
+const sources = [...new Map(cards.flatMap(card => card.sources).map(source => [source.src, source])).values()];
+const sourceIndexes = new Map(sources.map((source, i) => [source.src, i]));
+// Send each caption once; many words share the same source illustration.
+const payload = { sources, cards: cards.map(({ forms, sources: examples, ...card }) => ({ ...card, sourceIndexes: examples.map(source => sourceIndexes.get(source.src)) })) };
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#050505" />
+    <link rel="icon" href="/favicon.svg" />
+    <title>Quiz · Слова для Spreken</title>
+  </head>
+  <body>
+    <main class="quiz-shell">
+      <header class="page-header">
+        <div><p class="eyebrow">Nederlands · A2 · Spreken</p><h1>Слова в <em>картинках.</em></h1><p class="intro">Узнавай, вспоминай, говори. Лексика из всего набора Spreken.</p></div>
+        <div class="collection-size"><strong>{cards.length}</strong><span>слов и выражений<br />Картинок: {sources.length} · заданий: {pictures.length}</span></div>
+      </header>
+
+      <section class="dashboard" aria-label="Ваш прогресс">
+        <div><span class="stat-label">Знакомо</span><strong id="knownCount">0</strong></div>
+        <div><span class="stat-label">На повторение</span><strong id="weakCount">0</strong></div>
+        <div><span class="stat-label">Избранное</span><strong id="starCount">0</strong></div>
+        <div class="mastery"><span class="stat-label" id="masteryText">Собери свою коллекцию знакомых слов</span><progress id="masteryBar" max={cards.length} value="0" aria-label="Знакомые слова"></progress></div>
+      </section>
+
+      <nav class="mode-tabs" aria-label="Режим тренировки">
+        <button type="button" data-mode="cards" aria-pressed="true">▱ Карточки</button>
+        <button type="button" data-mode="learn" aria-pressed="false">◉ Выбор ответа</button>
+        <button type="button" data-mode="write" aria-pressed="false">✎ Написание</button>
+        <button type="button" data-mode="match" aria-pressed="false">⇄ Найти пары</button>
+      </nav>
+
+      <section class="filters" aria-label="Настройки набора">
+        <label>Тема<select id="category"><option value="all">Все темы</option>{[...new Set(cards.map(card => card.category))].map(category => <option value={category}>{category}</option>)}</select></label>
+        <label>Набор<select id="scope"><option value="all">Все слова</option><option value="weak">Сложные слова</option><option value="starred">Избранное ★</option><option value="new">Ещё не изучал</option></select></label>
+        <label>За подход<select id="sessionSize"><option value="10">10 слов</option><option value="20" selected>20 слов</option><option value="all">Весь набор</option></select></label>
+        <label id="directionLabel">Направление<select id="direction"><option value="nl">Русский → нидерландский</option><option value="ru">Нидерландский → русский</option></select></label>
+        <label class="search-label">Поиск<input id="search" type="search" placeholder="fiets, велосипед…" autocomplete="off" /></label>
+        <button id="start" class="primary" type="button">Начать заново ↻</button>
+      </section>
+
+      <div class="session-heading"><span id="sessionLabel"></span><span id="sessionCount"></span></div>
+      <progress id="sessionBar" value="0" max="20" aria-label="Прогресс текущего подхода"></progress>
+
+      <section id="study" aria-label="Тренировка">
+        <div id="wordHeader" class="word-header"><span id="wordCategory"></span><button id="star" type="button" aria-label="Добавить в избранное" aria-pressed="false">☆</button></div>
+        <button id="flashcard" class="flashcard" type="button" aria-label="Перевернуть карточку">
+          <div class="picture-stage"><img id="picture" alt="" /></div>
+          <div class="card-body"><span id="cardSide" class="mini-label"></span><h2 id="cardText"></h2><p id="cardTranslation"></p><p id="flipHint" class="muted">Нажми на карточку, чтобы увидеть ответ</p></div>
+        </button>
+        <div id="recallCard" class="recall-card" hidden><img id="recallPicture" alt="" /><div><span class="mini-label" id="questionLabel"></span><h2 id="question"></h2></div></div>
+        <div class="word-tools"><button id="speak" type="button" class="quiet">◖ Послушать слово</button><span id="speakStatus" role="status"></span></div>
+        <p id="context" class="context" lang="nl" hidden></p>
+        <div id="cardActions" class="card-actions"><button id="again" type="button" class="secondary">↻ Ещё учу</button><button id="know" type="button" class="primary">Знаю →</button></div>
+        <div id="choices" class="choices" hidden></div>
+        <form id="writeForm" class="write-form" hidden><label for="typed">Напиши слово по-нидерландски <span class="muted">(можно без артикля)</span></label><div><input id="typed" lang="nl" autocomplete="off" autocapitalize="none" spellcheck="false" required placeholder="Твой ответ…" /><button id="check" class="primary" type="submit">Проверить</button></div></form>
+        <div id="feedback" class="feedback" role="status" hidden></div>
+        <button id="next" class="primary next" type="button" hidden>Следующее слово →</button>
+      </section>
+
+      <section id="matchPanel" class="match-panel" hidden aria-label="Сопоставление слов"><p class="muted">Нажми на слово, затем на его перевод. Собери все пары.</p><div id="matchGrid" class="match-grid"></div><p id="matchStatus" role="status"></p><button id="nextRound" class="primary" type="button" hidden>Дальше →</button></section>
+
+      <section id="empty" class="end-panel" hidden><p class="eyebrow">Чистый лист</p><h2>В этом наборе пока нет слов</h2><p>Выбери другую тему, убери поиск или добавь карточки в избранное кнопкой ★.</p></section>
+      <section id="summary" class="end-panel" hidden><p class="eyebrow">Подход завершён</p><h2 id="summaryTitle"></h2><p id="summaryText"></p><div class="summary-actions"><button id="repeatMistakes" class="secondary" type="button">Повторить сложные</button><button id="newSession" class="primary" type="button">Ещё один подход →</button></div><div id="missedWords" class="missed-words"></div></section>
+      <footer><p id="storageStatus">Прогресс сохраняется только в этом браузере. «Знакомо» — после трёх правильных повторений подряд.</p><p>Картинки: Ad Appel Taaltrainingen · тренировочный словарь для Spreken A2.</p></footer>
+    </main>
+    <script id="quizData" type="application/json" set:html={JSON.stringify(payload).replaceAll('<', '\u003c')} />
+  </body>
+</html>
+
+<script>
+  import { checkAnswer, makeChoices, makeSession, shuffle, updateProgress } from '../lib/quiz.js';
+
+  const $ = selector => document.querySelector(selector);
+  const data = JSON.parse($('#quizData').textContent);
+  const cards = data.cards.map(card => ({ ...card, sources: card.sourceIndexes.map(i => data.sources[i]) }));
+  const byId = new Map(cards.map(card => [card.id, card]));
+  const storageKey = 'spreken-quiz-v1';
+  let progress = {};
+  let stars = new Set();
+  try {
+    const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
+    stars = new Set((Array.isArray(saved.stars) ? saved.stars : []).filter(id => byId.has(id)));
+    for (const [id, entry] of Object.entries(saved.progress || {})) {
+      if (byId.has(id) && Number.isInteger(entry?.level) && entry.level >= 0 && entry.level <= 3) {
+        progress[id] = { level: entry.level, correct: Number(entry.correct) || 0, wrong: Number(entry.wrong) || 0 };
+      }
+    }
+  } catch { /* Start a fresh in-memory collection if storage is unavailable. */ }
+
+  let mode = 'cards';
+  let deck = [];
+  let index = 0;
+  let flipped = false;
+  let answered = false;
+  let correct = 0;
+  let missed = new Set();
+  let pool = [];
+  let sources = new Map();
+  let matchSelected = [];
+  let matchDone = new Set();
+  let matchErrors = new Set();
+  let matchRound = [];
+
+  function save() {
+    try { localStorage.setItem(storageKey, JSON.stringify({ progress, stars: [...stars] })); }
+    catch { $('#storageStatus').textContent = 'Браузер не разрешает сохранять прогресс. В этой вкладке тренировка работает.'; }
+    updateStats();
+  }
+
+  function updateStats() {
+    const known = cards.filter(card => progress[card.id]?.level === 3).length;
+    $('#knownCount').textContent = known;
+    $('#weakCount').textContent = cards.filter(card => progress[card.id]?.wrong > 0 && progress[card.id].level < 3).length;
+    $('#starCount').textContent = stars.size;
+    $('#masteryBar').value = known;
+    $('#masteryText').textContent = `Знакомо ${known} из ${cards.length} · ${Math.round(known / cards.length * 100)}%`;
+  }
+
+  function filteredPool() {
+    const category = $('#category').value;
+    const scope = $('#scope').value;
+    const query = $('#search').value.trim().toLowerCase();
+    return cards.filter(card => (category === 'all' || category === card.category)
+      && (!query || `${card.term} ${card.translation}`.toLowerCase().includes(query))
+      && (scope !== 'starred' || stars.has(card.id))
+      && (scope !== 'new' || !progress[card.id])
+      && (scope !== 'weak' || (progress[card.id]?.wrong > 0 && progress[card.id].level < 3)));
+  }
+
+  function start(repeat = null) {
+    window.speechSynthesis?.cancel();
+    pool = filteredPool();
+    const candidates = repeat || pool;
+    const size = $('#sessionSize').value === 'all' ? candidates.length : Number($('#sessionSize').value);
+    deck = makeSession(candidates, progress, repeat ? candidates.length : size);
+    index = 0; correct = 0; missed = new Set(); sources = new Map();
+    $('#summary').hidden = true;
+    $('#empty').hidden = Boolean(deck.length);
+    $('#directionLabel').hidden = mode === 'write' || mode === 'match';
+    $('#study').hidden = !deck.length || mode === 'match';
+    $('#matchPanel').hidden = !deck.length || mode !== 'match';
+    if (!deck.length) { updateSession(); return; }
+    if (mode === 'match') renderMatch(); else render();
+  }
+
+  function updateSession() {
+    $('#sessionLabel').textContent = { cards: 'Вспомни слово', learn: 'Выбери перевод', write: 'Вспомни и напиши', match: 'Соедини пары' }[mode];
+    $('#sessionCount').textContent = `${Math.min(index, deck.length)} / ${deck.length}`;
+    $('#sessionBar').max = Math.max(1, deck.length);
+    $('#sessionBar').value = index;
+  }
+
+  function sourceFor(card) {
+    if (!sources.has(card.id)) sources.set(card.id, card.sources[Math.floor(Math.random() * card.sources.length)]);
+    return sources.get(card.id);
+  }
+
+  function render() {
+    if (index >= deck.length) { finish(); return; }
+    updateSession();
+    const card = deck[index];
+    const reverse = $('#direction').value === 'ru' && mode !== 'write';
+    const source = sourceFor(card);
+    flipped = false; answered = false;
+    $('#wordCategory').textContent = card.category;
+    $('#star').textContent = stars.has(card.id) ? '★' : '☆';
+    $('#star').setAttribute('aria-pressed', String(stars.has(card.id)));
+    $('#star').setAttribute('aria-label', stars.has(card.id) ? 'Убрать из избранного' : 'Добавить в избранное');
+    $('#flashcard').hidden = mode !== 'cards';
+    $('#recallCard').hidden = mode === 'cards';
+    $('#cardActions').hidden = mode !== 'cards';
+    $('#choices').hidden = mode !== 'learn';
+    $('#writeForm').hidden = mode !== 'write';
+    $('#feedback').hidden = true; $('#next').hidden = true; $('#context').hidden = true;
+    for (const id of ['picture', 'recallPicture']) {
+      $( '#' + id).src = source.src;
+      $( '#' + id).alt = 'Иллюстрация из задания Spreken';
+    }
+    $('#cardSide').textContent = reverse ? 'Nederlands' : 'Переведи на нидерландский';
+    $('#cardText').textContent = reverse ? card.term : card.translation;
+    $('#flashcard').setAttribute('aria-label', `${$('#cardText').textContent}. Перевернуть карточку`);
+    $('#cardText').lang = reverse ? 'nl' : 'ru';
+    $('#cardTranslation').textContent = '';
+    $('#flipHint').textContent = 'Нажми на карточку, чтобы увидеть ответ';
+    $('#again').disabled = true; $('#know').disabled = true;
+    $('#questionLabel').textContent = reverse ? 'Как переводится это слово?' : 'Как это сказать по-нидерландски?';
+    $('#question').textContent = reverse ? card.term : card.translation;
+    $('#question').lang = reverse ? 'nl' : 'ru';
+    $('#speak').disabled = !('speechSynthesis' in window) || (mode !== 'cards' && !reverse);
+    $('#speakStatus').textContent = '';
+    if (mode === 'learn') {
+      $('#choices').replaceChildren(...makeChoices(card, cards, reverse).map(option => {
+        const button = document.createElement('button');
+        button.type = 'button'; button.className = 'choice';
+        button.textContent = reverse ? option.translation : option.term;
+        button.lang = reverse ? 'ru' : 'nl';
+        button.dataset.id = option.id;
+        button.addEventListener('click', () => {
+          if (answered) return;
+          const isCorrect = option.id === card.id;
+          for (const choice of $('#choices').children) {
+            choice.disabled = true;
+            choice.classList.toggle('right', choice.dataset.id === card.id);
+            choice.classList.toggle('wrong', !isCorrect && choice === button);
+          }
+          submit(isCorrect);
+        });
+        return button;
+      }));
+    }
+    if (mode === 'write') {
+      $('#typed').value = ''; $('#typed').readOnly = false; $('#check').disabled = false;
+      $('#typed').focus({ preventScroll: true });
+    }
+  }
+
+  function flip() {
+    if (mode !== 'cards' || !deck[index]) return;
+    flipped = !flipped;
+    const card = deck[index];
+    const reverse = $('#direction').value === 'ru';
+    $('#cardSide').textContent = flipped ? (reverse ? 'Перевод' : 'Nederlands') : (reverse ? 'Nederlands' : 'Переведи на нидерландский');
+    $('#cardText').textContent = flipped ? (reverse ? card.translation : card.term) : (reverse ? card.term : card.translation);
+    $('#flashcard').setAttribute('aria-label', `${$('#cardText').textContent}. Перевернуть карточку`);
+    $('#cardText').lang = (flipped !== reverse) ? 'nl' : 'ru';
+    $('#cardTranslation').textContent = flipped ? (reverse ? card.term : card.translation) : '';
+    $('#flipHint').textContent = flipped ? 'Получилось вспомнить?' : 'Нажми на карточку, чтобы увидеть ответ';
+    $('#context').textContent = sourceFor(card).context;
+    $('#context').hidden = !flipped;
+    $('#again').disabled = !flipped; $('#know').disabled = !flipped;
+  }
+
+  function record(card, isCorrect) {
+    progress = updateProgress(progress, card.id, isCorrect);
+    if (isCorrect) correct += 1; else missed.add(card.id);
+    save();
+  }
+
+  function submit(isCorrect) {
+    if (answered) return;
+    answered = true;
+    const card = deck[index];
+    record(card, isCorrect);
+    $('#feedback').hidden = false;
+    $('#feedback').className = `feedback ${isCorrect ? 'right' : 'wrong'}`;
+    $('#feedback').textContent = `${isCorrect ? 'Верно!' : 'Запомним:'} ${card.term} — ${card.translation}`;
+    $('#context').textContent = sourceFor(card).context; $('#context').hidden = false;
+    $('#next').hidden = false;
+    $('#speak').disabled = !('speechSynthesis' in window);
+    $('#typed').readOnly = true; $('#check').disabled = true;
+  }
+
+  function finish() {
+    updateSession();
+    $('#study').hidden = true; $('#matchPanel').hidden = true; $('#summary').hidden = false;
+    $('#summaryTitle').textContent = missed.size ? 'Ещё немного практики.' : 'Отличный подход!';
+    $('#summaryText').textContent = `${correct} из ${deck.length} ${mode === 'cards' ? 'вспомнил самостоятельно' : 'правильно с первой попытки'}. ${missed.size ? 'Сложные слова можно повторить отдельным набором.' : 'Попробуй другой режим или возьми новые слова.'}`;
+    $('#repeatMistakes').hidden = !missed.size;
+    $('#missedWords').replaceChildren(...[...missed].map(id => {
+      const p = document.createElement('p'); const card = byId.get(id);
+      p.textContent = `${card.term} — ${card.translation}`; return p;
+    }));
+  }
+
+  function renderMatch() {
+    if (index >= deck.length) { finish(); return; }
+    updateSession();
+    matchRound = deck.slice(index, index + 6);
+    matchSelected = []; matchDone = new Set(); matchErrors = new Set();
+    $('#nextRound').hidden = true; $('#matchStatus').textContent = '';
+    const tiles = matchRound.flatMap(card => [{ card, side: 'nl' }, { card, side: 'ru' }]);
+    $('#matchGrid').replaceChildren(...shuffle(tiles).map(tile => {
+      const button = document.createElement('button');
+      button.type = 'button'; button.className = 'match-tile'; button.lang = tile.side;
+      button.textContent = tile.side === 'nl' ? tile.card.term : tile.card.translation;
+      button.addEventListener('click', () => {
+        if (button.disabled || matchSelected.some(selected => selected.button === button)) return;
+        if (matchSelected.length === 1 && matchSelected[0].side === tile.side) {
+          matchSelected[0].button.classList.remove('selected'); matchSelected = [];
+        }
+        button.classList.add('selected'); matchSelected.push({ ...tile, button });
+        if (matchSelected.length !== 2) return;
+        const [a, b] = matchSelected;
+        a.button.classList.remove('selected'); b.button.classList.remove('selected');
+        if (a.card.id === b.card.id) {
+          a.button.disabled = true; b.button.disabled = true;
+          a.button.classList.add('matched'); b.button.classList.add('matched');
+          matchDone.add(a.card.id);
+          record(a.card, !matchErrors.has(a.card.id));
+          $('#matchStatus').textContent = `Найдено пар: ${matchDone.size} / ${matchRound.length}`;
+          if (matchDone.size === matchRound.length) {
+            index += matchRound.length; updateSession(); $('#nextRound').hidden = false;
+          }
+        } else {
+          matchErrors.add(a.card.id); matchErrors.add(b.card.id);
+          $('#matchStatus').textContent = 'Это разные слова. Попробуй другую пару.';
+        }
+        matchSelected = [];
+      });
+      return button;
+    }));
+  }
+
+  document.querySelectorAll('[data-mode]').forEach(button => button.addEventListener('click', () => {
+    mode = button.dataset.mode;
+    document.querySelectorAll('[data-mode]').forEach(tab => tab.setAttribute('aria-pressed', String(tab === button)));
+    start();
+  }));
+  for (const id of ['category','scope','sessionSize','direction']) $('#' + id).addEventListener('change', () => start());
+  let searchTimer;
+  $('#search').addEventListener('input', () => { clearTimeout(searchTimer); searchTimer = setTimeout(() => start(), 250); });
+  $('#start').addEventListener('click', () => start());
+  $('#newSession').addEventListener('click', () => start());
+  $('#repeatMistakes').addEventListener('click', () => start([...missed].map(id => byId.get(id))));
+  $('#flashcard').addEventListener('click', flip);
+  $('#again').addEventListener('click', () => { if (flipped) { record(deck[index], false); index++; render(); } });
+  $('#know').addEventListener('click', () => { if (flipped) { record(deck[index], true); index++; render(); } });
+  $('#next').addEventListener('click', () => { if (answered) { index++; render(); } });
+  $('#nextRound').addEventListener('click', renderMatch);
+  $('#writeForm').addEventListener('submit', event => { event.preventDefault(); if ($('#typed').value.trim()) submit(checkAnswer($('#typed').value, deck[index].term)); });
+  $('#star').addEventListener('click', () => {
+    const card = deck[index];
+    if (stars.has(card.id)) stars.delete(card.id); else stars.add(card.id);
+    $('#star').textContent = stars.has(card.id) ? '★' : '☆';
+    $('#star').setAttribute('aria-pressed', String(stars.has(card.id)));
+    $('#star').setAttribute('aria-label', stars.has(card.id) ? 'Убрать из избранного' : 'Добавить в избранное'); save();
+  });
+  $('#speak').addEventListener('click', () => {
+    if (!window.speechSynthesis || !deck[index]) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(deck[index].term);
+    utterance.lang = 'nl-NL'; utterance.rate = .85;
+    const voice = window.speechSynthesis.getVoices().find(voice => voice.lang.startsWith('nl'));
+    if (voice) utterance.voice = voice;
+    utterance.onerror = () => { $('#speakStatus').textContent = 'Озвучка недоступна в этом браузере.'; };
+    window.speechSynthesis.speak(utterance);
+  });
+  document.addEventListener('keydown', event => {
+    if (['INPUT','SELECT','TEXTAREA','BUTTON'].includes(document.activeElement?.tagName) || mode !== 'cards' || $('#study').hidden) return;
+    if (event.code === 'Space') { event.preventDefault(); flip(); }
+    if (flipped && event.key === 'ArrowLeft') $('#again').click();
+    if (flipped && event.key === 'ArrowRight') $('#know').click();
+  });
+  window.addEventListener('pagehide', () => window.speechSynthesis?.cancel());
+  updateStats(); start();
+</script>
+
+<style is:global>
+  .quiz-shell { position: relative; z-index: 1; max-width: 1120px; margin: 0 auto; padding: 58px 24px 32px; }
+  .quiz-shell [hidden] { display: none !important; }
+  .quiz-shell button, .quiz-shell input, .quiz-shell select { font: inherit; }
+  .quiz-shell button { cursor: pointer; transition: background .15s, border-color .15s, transform .15s; }
+  .quiz-shell button:disabled { cursor: default; opacity: .48; }
+  .quiz-shell :focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+  .quiz-shell .page-header { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 32px; }
+  .quiz-shell .eyebrow { color: var(--accent); text-transform: uppercase; font: .72rem var(--font-mono); letter-spacing: .16em; }
+  .quiz-shell h1 { font: 600 clamp(2rem, 5vw, 3.5rem)/1.15 var(--font-display); margin: 12px 0; letter-spacing: -.04em; }
+  .quiz-shell h1 em { color: var(--accent); font-style: normal; }
+  .quiz-shell .intro { color: var(--text-muted); font-size: .95rem; }
+  .quiz-shell .collection-size { display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
+  .quiz-shell .collection-size strong { font: 500 3.6rem var(--font-display); color: var(--accent); }
+  .quiz-shell .collection-size span { font-size: .75rem; color: var(--text-dim); }
+  .quiz-shell .dashboard { display: grid; grid-template-columns: repeat(3, 1fr) 2fr; gap: 20px; padding: 22px 26px; background: var(--glass); border: 1px solid var(--hairline); border-radius: 20px; }
+  .quiz-shell .dashboard strong { display: block; font-size: 1.6rem; font-weight: 500; }
+  .quiz-shell .stat-label { color: var(--text-muted); font-size: .75rem; }
+  .quiz-shell .mastery { display: flex; flex-direction: column; justify-content: center; gap: 12px; }
+  .quiz-shell progress { appearance: none; width: 100%; height: 5px; border: 0; border-radius: 10px; background: #24252a; display: block; color: var(--accent); overflow: hidden; }
+  .quiz-shell progress::-webkit-progress-bar { background: #24252a; }
+  .quiz-shell progress::-webkit-progress-value { background: var(--accent); border-radius: 10px; }
+  .quiz-shell progress::-moz-progress-bar { background: var(--accent); }
+  .quiz-shell .mode-tabs { display: flex; gap: 4px; margin: 30px 0 22px; border-bottom: 1px solid var(--hairline); overflow-x: auto; }
+  .quiz-shell .mode-tabs button { padding: 14px 20px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: var(--text-dim); white-space: nowrap; }
+  .quiz-shell .mode-tabs button[aria-pressed="true"] { border-color: var(--accent); color: var(--text); }
+  .quiz-shell .filters { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; }
+  .quiz-shell label { display: flex; flex-direction: column; gap: 7px; color: var(--text-muted); font-size: .72rem; }
+  .quiz-shell select, .quiz-shell input { color: var(--text); background: #111115; border: 1px solid var(--hairline-strong); border-radius: 10px; padding: 10px 12px; min-width: 0; }
+  .quiz-shell .search-label { flex: 1; min-width: 150px; }
+  .quiz-shell .primary, .quiz-shell .secondary { border-radius: 12px; padding: 11px 20px; border: 1px solid transparent; font-size: .85rem; font-weight: 600; }
+  .quiz-shell .primary { background: var(--accent); color: var(--accent-ink); }
+  .quiz-shell .primary:hover:not(:disabled) { background: var(--accent-hi); }
+  .quiz-shell .secondary { background: var(--glass-strong); border-color: var(--hairline-strong); color: var(--text); }
+  .quiz-shell .secondary:hover:not(:disabled) { border-color: var(--accent); }
+  .quiz-shell .session-heading { display: flex; justify-content: space-between; margin: 28px 0 10px; color: var(--text-muted); font-size: .8rem; }
+  .quiz-shell #study, .quiz-shell .match-panel { max-width: 760px; margin: 22px auto; }
+  .quiz-shell .word-header { display: flex; align-items: center; justify-content: space-between; color: var(--text-dim); font-size: .75rem; margin-bottom: 10px; }
+  .quiz-shell #star { border: none; background: none; color: #fde047; font-size: 1.7rem; line-height: 1; padding: 8px; }
+  .quiz-shell .flashcard { display: block; width: 100%; border: 1px solid var(--hairline-strong); border-radius: 24px; overflow: hidden; background: #111216; color: var(--text); text-align: center; box-shadow: 0 12px 40px #0004; }
+  .quiz-shell .flashcard:hover { border-color: #5eead455; }
+  .quiz-shell .picture-stage { background: #f5f3ef; padding: 16px; }
+  .quiz-shell .picture-stage img { width: 100%; height: 245px; object-fit: contain; display: block; }
+  .quiz-shell .card-body { min-height: 175px; padding: 25px 20px; }
+  .quiz-shell .mini-label { display: block; color: var(--accent); font-size: .65rem; text-transform: uppercase; letter-spacing: .13em; }
+  .quiz-shell h2 { font-size: clamp(1.4rem, 3vw, 2rem); margin: 10px 0; line-height: 1.25; letter-spacing: -.02em; }
+  .quiz-shell #cardTranslation { color: var(--text-muted); font-size: .9rem; margin: 8px 0; }
+  .quiz-shell .muted, .quiz-shell #flipHint { color: var(--text-dim); font-size: .8rem; }
+  .quiz-shell .word-tools { display: flex; justify-content: center; align-items: center; gap: 12px; margin: 12px 0; font-size: .75rem; }
+  .quiz-shell .quiet { border: 0; background: transparent; color: var(--text-muted); padding: 8px; }
+  .quiz-shell .context { color: var(--text-muted); background: var(--glass); border-radius: 10px; padding: 12px 16px; font-size: .85rem; margin: 10px 0 16px; }
+  .quiz-shell .card-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .quiz-shell .recall-card { display: flex; align-items: center; gap: 25px; border: 1px solid var(--hairline); background: var(--glass); padding: 20px; border-radius: 20px; }
+  .quiz-shell .recall-card img { width: 43%; height: 200px; object-fit: contain; background: #f5f3ef; border-radius: 12px; padding: 10px; }
+  .quiz-shell .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+  .quiz-shell .choice, .quiz-shell .match-tile { border: 1px solid var(--hairline-strong); border-radius: 14px; background: #111216; color: var(--text); padding: 20px; text-align: left; }
+  .quiz-shell .choice:hover:not(:disabled), .quiz-shell .match-tile:hover:not(:disabled) { border-color: var(--accent); }
+  .quiz-shell .choice.right, .quiz-shell .feedback.right { border-color: var(--accent); background: #5eead412; }
+  .quiz-shell .choice.wrong, .quiz-shell .feedback.wrong { border-color: #fda4af; background: #fda4af0b; }
+  .quiz-shell .choice:disabled { opacity: 1; }
+  .quiz-shell .feedback { padding: 16px; border: 1px solid; border-radius: 12px; margin-top: 16px; font-size: .95rem; }
+  .quiz-shell .next { display: block; margin: 18px 0 0 auto; }
+  .quiz-shell .write-form { margin-top: 22px; }
+  .quiz-shell .write-form > div { display: flex; gap: 12px; margin-top: 10px; }
+  .quiz-shell #typed { flex: 1; font-size: 1.1rem; }
+  .quiz-shell .match-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 20px 0; }
+  .quiz-shell .match-tile { min-height: 95px; text-align: center; font-size: .9rem; }
+  .quiz-shell .match-tile.selected { border-color: var(--accent); background: #5eead415; }
+  .quiz-shell .match-tile.matched { opacity: .25; border-color: var(--accent); }
+  .quiz-shell #matchStatus { min-height: 30px; font-size: .85rem; color: var(--text-muted); }
+  .quiz-shell .end-panel { text-align: center; border: 1px solid var(--hairline); border-radius: 24px; padding: 55px 24px; margin: 25px auto; max-width: 760px; background: var(--glass); }
+  .quiz-shell .end-panel > p:not(.eyebrow) { color: var(--text-muted); margin: 20px auto; max-width: 500px; }
+  .quiz-shell .summary-actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+  .quiz-shell .missed-words { margin-top: 25px; text-align: left; font-size: .85rem; color: var(--text-muted); }
+  .quiz-shell .missed-words p { border-top: 1px solid var(--hairline); padding: 10px 0; }
+  .quiz-shell footer { border-top: 1px solid var(--hairline); margin-top: 40px; padding-top: 20px; text-align: center; color: var(--text-faint); font-size: .7rem; }
+  @media(max-width: 640px) {
+    .quiz-shell { padding: 30px 16px 25px; }
+    .quiz-shell .collection-size { display: none; }
+    .quiz-shell .dashboard { grid-template-columns: repeat(3, 1fr); padding: 16px; gap: 12px; }
+    .quiz-shell .mastery { grid-column: 1 / -1; }
+    .quiz-shell .mode-tabs button { padding: 13px 14px; font-size: .85rem; }
+    .quiz-shell .filters label { flex: 1 1 44%; }
+    .quiz-shell .filters > button { flex: 1; }
+    .quiz-shell .picture-stage img { height: 200px; }
+    .quiz-shell .card-body { min-height: 155px; }
+    .quiz-shell .recall-card { gap: 16px; padding: 12px; }
+    .quiz-shell .recall-card img { height: 150px; }
+    .quiz-shell .recall-card h2 { font-size: 1.25rem; }
+    .quiz-shell .match-grid { grid-template-columns: repeat(2, 1fr); }
+    .quiz-shell .write-form > div { flex-direction: column; }
+    .quiz-shell .choice { padding: 16px 12px; font-size: .9rem; }
+  }
+  @media(prefers-reduced-motion: reduce) { .quiz-shell button { transition: none; } }
+</style>
