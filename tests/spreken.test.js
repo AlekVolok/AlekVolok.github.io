@@ -263,7 +263,7 @@ function examPage(getUserMedia = async () => microphone(), gradeResult = null, o
   let recognitionStarts = 0;
   class BrokenPreview { start() { recognitionStarts += 1; throw new Error('speech recognition unavailable'); } stop() {} }
   const count = options.count || 1;
-  const config = { blocks: [{ id: 'audio', source: 'audio', count, seconds: 30 }], examMinutes: 45, passRule: { answeredRequired: Math.ceil(count * .8), note: '' } };
+  const config = { blocks: [{ id: 'audio', source: 'audio', count, seconds: 30 }], examMinutes: 35, passRule: { answeredRequired: Math.ceil(count * .8), note: '' } };
   const source = fs.readFileSync(new URL('../src/pages/spreken.astro', import.meta.url), 'utf8')
     .match(/<script>([\s\S]*?)<\/script>/)[1].replace(/^\s*import .*;$/gm, '');
   let remoteCalls = 0;

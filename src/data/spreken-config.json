@@ -1,7 +1,7 @@
 {
-  "_note": "Exam structure follows the DUO Spreken A2 exam: 16 questions in 4 blocks, 45 minutes. 'seconds' is a suggested answer time per question, shown as a timer; the 45-minute exam timer is the hard limit. Set evaluateUrl to your n8n webhook URL.",
+  "_note": "Exam structure follows the DUO Spreken A2 exam: 16 questions in 4 blocks, 35 minutes. 'seconds' is a suggested answer time per question, shown as a timer; the 35-minute exam timer is the hard limit. Set evaluateUrl to your n8n webhook URL.",
   "evaluateUrl": "https://www.alekvolzokn8n.online/webhook/spreken-evaluate",
-  "examMinutes": 45,
+  "examMinutes": 35,
   "passRule": {
     "answeredRequired": 13,
     "note": "No official numeric pass mark for Spreken A2 was found (inburgering.org gives a rubric of 0-12 points per answer, the DUO page is gone). 13 of 16 is an estimate from the published 19 of 25 for reading and listening (76%). Change it when DUO publishes the rule."

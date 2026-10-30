@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import config from '../data/spreken-config.json';
 ---
 
 <!doctype html>
@@ -17,7 +18,7 @@ import '../styles/global.css';
       <section id="intro" class="intro-card">
         <p class="eyebrow"><span class="dot"></span> Inburgering · A2</p>
         <h1>Spreken<br /><em>oefenexamen</em></h1>
-        <p class="lead"><span id="questionCount"></span> vragen · 45 minuten · je antwoord wordt opgenomen en daarna beoordeeld.</p>
+        <p class="lead"><span id="questionCount"></span> vragen · {config.examMinutes} minuten · je antwoord wordt opgenomen en daarna beoordeeld.</p>
         <ol class="block-list" id="blockList"></ol>
         <p id="support" class="support-note" hidden></p>
         <button id="startExam" class="primary-button" type="button">Start oefenexamen <span>→</span></button>
@@ -31,7 +32,7 @@ import '../styles/global.css';
             <strong id="progress"></strong>
           </div>
           <div class="timers">
-            <div id="examTimer" class="timer" aria-label="Resterende tijd voor het examen">45:00</div>
+            <div id="examTimer" class="timer" aria-label="Resterende tijd voor het examen">{config.examMinutes}:00</div>
             <div id="questionTimer" class="timer small" aria-label="Voorgestelde tijd voor deze vraag">00:00</div>
           </div>
         </header>
