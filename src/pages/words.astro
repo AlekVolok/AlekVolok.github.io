@@ -15,7 +15,7 @@ import '../styles/global.css';
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <script src="/register-sw.js" defer></script>
   </head>
-  <body>
+  <body class="words-trainer">
     <main class="game-page">
       <section id="learningModeChooser" class="learning-mode-chooser" aria-labelledby="learningModeTitle">
         <p class="chooser-kicker">Practice</p>
@@ -1571,8 +1571,10 @@ import '../styles/global.css';
     cursor: pointer;
     transition: border-color 0.15s, background 0.15s, transform 0.1s;
   }
-  .word-col button:hover:not(:disabled) {
-    border-color: var(--border-hover);
+  @media (hover: hover) and (pointer: fine) {
+    .word-col button:hover:not(:disabled) {
+      border-color: var(--border-hover);
+    }
   }
   .word-col button.selected {
     border-color: var(--accent);
@@ -1590,6 +1592,24 @@ import '../styles/global.css';
     border-color: #f08080;
     background: rgba(240, 128, 128, 0.12);
     color: #f08080;
+  }
+
+  /* Avoid full-screen filtered overlays and animated button paint on touch
+     devices: Android compositors can lose the updated content until scrolling. */
+  @media (hover: none), (pointer: coarse) {
+    body.words-trainer::before,
+    body.words-trainer::after {
+      content: none;
+    }
+    .words-trainer .word-col button {
+      transition: none;
+      touch-action: manipulation;
+    }
+    .words-trainer .word-col button.correct {
+      opacity: 1;
+      color: var(--text-dim);
+      background: var(--bg-card);
+    }
   }
 
   /* Rule content is created in JavaScript, so it must not rely on Astro's
