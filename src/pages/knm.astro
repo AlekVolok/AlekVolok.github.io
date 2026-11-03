@@ -93,7 +93,7 @@ const testNumbers = Array.from({ length: 26 }, (_, i) => i + 1);
 
 <script>
   import bank from '../data/knm-oefenexamens.json';
-  import { buildExam, examDurationMinutes, examLength, passMark, renderMarkdown, scoreExam, topicFor } from '../lib/knm.js';
+  import { articleFor, buildExam, examDurationMinutes, examLength, passMark, renderMarkdown, scoreExam, topicFor } from '../lib/knm.js';
 
   const $ = (selector) => document.querySelector(selector);
   const intro = $('#intro');
@@ -225,25 +225,92 @@ const testNumbers = Array.from({ length: 26 }, (_, i) => i + 1);
       const selected = answers[questionIndex];
       const selectedOption = item.options.find((option) => option.id === selected)?.text || 'Niet beantwoord';
       const correctOption = item.options.find((option) => option.id === item.correct).text;
-      const article = document.createElement('article');
-      article.className = `review-item ${selected === item.correct ? 'correct' : 'incorrect'}`;
+      const wrong = selected !== item.correct;
+      // A wrong answer opens like an accordion and shows the matching article to read.
+      const article = document.createElement(wrong ? 'details' : 'article');
+      article.className = `review-item ${wrong ? 'incorrect' : 'correct'}`;
+      const head = wrong ? document.createElement('summary') : article;
       const title = document.createElement('strong');
       title.textContent = `${stars.has(item.id) ? '★ ' : ''}${questionIndex + 1}. ${item.prompt}`;
       const mine = document.createElement('p');
       mine.textContent = `Jouw antwoord: ${selected || '—'} — ${selectedOption}`;
-      article.append(title, mine);
-      if (selected !== item.correct) {
+      head.append(title, mine);
+      if (wrong) {
         const right = document.createElement('p');
         right.textContent = `Goed antwoord: ${item.correct} — ${correctOption}`;
-        article.append(right);
+        head.append(right);
       }
       const source = document.createElement('small');
       source.textContent = `Oefentoets ${String(item.test).padStart(3, '0')} · vraag ${item.number}`;
-      article.append(source);
+      head.append(source);
+      if (wrong) {
+        const hint = document.createElement('span');
+        hint.className = 'read-more';
+        hint.textContent = 'Статья по теме';
+        head.append(hint);
+        article.append(head);
+        article.addEventListener('toggle', () => { if (article.open && !article.dataset.loaded) renderArticle(article, item); });
+      }
       return article;
     }));
     renderFavorites();
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Topic texts are large, so each set loads only the first time it is needed.
+  let topicsRequest = null;
+  let konspektRequest = null;
+  const loadTopics = () => (topicsRequest ??= import('../data/knm-topics.json').then((module) => module.default));
+  const loadKonspekt = () => (konspektRequest ??= import('../data/knm-konspekt.json').then((module) => module.default));
+
+  function topicBlock(topic) {
+    const block = document.createElement('div');
+    block.className = 'topic';
+    const heading = document.createElement('p');
+    heading.className = 'topic-heading';
+    heading.textContent = `Onderwerp: ${topic.article}${topic.title !== topic.article ? ` · ${topic.title}` : ''}`;
+    const text = document.createElement('div');
+    text.className = 'topic-text';
+    text.innerHTML = renderMarkdown(topic.nl);
+    const translation = document.createElement('details');
+    const summary = document.createElement('summary');
+    summary.textContent = `По-русски${topic.titleRu ? `: ${topic.titleRu}` : ''}`;
+    const ru = document.createElement('div');
+    ru.className = 'topic-text';
+    ru.lang = 'ru';
+    ru.innerHTML = renderMarkdown(topic.ru);
+    translation.append(summary, ru);
+    block.append(heading, text, translation);
+    return block;
+  }
+
+  function konspektBlock(entry) {
+    const block = document.createElement('div');
+    block.className = 'topic konspekt';
+    block.lang = 'ru';
+    const heading = document.createElement('p');
+    heading.className = 'topic-heading';
+    heading.textContent = `Конспект · ${entry.chapter}`;
+    const title = document.createElement('h3');
+    title.className = 'konspekt-title';
+    title.textContent = entry.title;
+    const text = document.createElement('div');
+    text.className = 'topic-text';
+    text.innerHTML = renderMarkdown(entry.body);
+    block.append(heading, title, text);
+    return block;
+  }
+
+  // The Russian konspekt comes first; questions it does not cover fall back to "Welkom in Nederland".
+  async function renderArticle(container, item) {
+    container.dataset.loaded = 'true';
+    const loading = Object.assign(document.createElement('p'), { className: 'topic-none', textContent: 'Загрузка…' });
+    container.append(loading);
+    const konspekt = await loadKonspekt();
+    const entry = articleFor(item, konspekt);
+    const topic = entry ? null : topicFor(item, await loadTopics());
+    loading.replaceWith(entry ? konspektBlock(entry) : topic ? topicBlock(topic)
+      : Object.assign(document.createElement('p'), { className: 'topic-none', textContent: 'Статья по этой теме не найдена.' }));
   }
 
   async function renderFavorites() {
@@ -254,8 +321,7 @@ const testNumbers = Array.from({ length: 26 }, (_, i) => i + 1);
     $('#favoriteCount').textContent = `(${favorites.length})`;
     const list = $('#favoriteList');
     list.textContent = 'Uitleg laden…';
-    // The topic texts are large, so they load only when the exam has favourites.
-    const { default: topics } = await import('../data/knm-topics.json');
+    const topics = await loadTopics();
     list.replaceChildren(...favorites.map(({ item, questionIndex }) => {
       const selected = answers[questionIndex];
       const article = document.createElement('article');
@@ -280,24 +346,7 @@ const testNumbers = Array.from({ length: 26 }, (_, i) => i + 1);
       article.append(title, answer, mine);
       const topic = topicFor(item, topics);
       if (topic) {
-        const details = document.createElement('div');
-        details.className = 'topic';
-        const heading = document.createElement('p');
-        heading.className = 'topic-heading';
-        heading.textContent = `Onderwerp: ${topic.article}${topic.title !== topic.article ? ` · ${topic.title}` : ''}`;
-        const text = document.createElement('div');
-        text.className = 'topic-text';
-        text.innerHTML = renderMarkdown(topic.nl);
-        const translation = document.createElement('details');
-        const summary = document.createElement('summary');
-        summary.textContent = `По-русски${topic.titleRu ? `: ${topic.titleRu}` : ''}`;
-        const ru = document.createElement('div');
-        ru.className = 'topic-text';
-        ru.lang = 'ru';
-        ru.innerHTML = renderMarkdown(topic.ru);
-        translation.append(summary, ru);
-        details.append(heading, text, translation);
-        article.append(details);
+        article.append(topicBlock(topic));
       } else {
         const none = document.createElement('p');
         none.className = 'topic-none';
@@ -416,6 +465,14 @@ const testNumbers = Array.from({ length: 26 }, (_, i) => i + 1);
   .review-item.correct { border-color: var(--accent); }
   .review-item.incorrect { border-color: #fb7185; }
   .review-item p { margin-top: 6px; color: var(--text-dim); font-size: .9rem; }
+  details.review-item { min-width: 0; overflow-wrap: break-word; }
+  details.review-item > summary { list-style: none; cursor: pointer; }
+  details.review-item > summary::-webkit-details-marker { display: none; }
+  details.review-item:hover { background: var(--glass-strong); }
+  .read-more { display: inline-block; margin-top: var(--sp-3); color: var(--accent); font-size: .82rem; }
+  .read-more::after { content: ' ▾'; }
+  details.review-item[open] .read-more::after { content: ' ▴'; }
+  .konspekt-title { font-family: var(--font-sans); font-size: 1.05rem; margin-top: 6px; color: var(--text); }
   .review-item small { display: block; margin-top: 6px; color: var(--text-faint); font-family: var(--font-mono); font-size: .7rem; }
   @media (max-width: 760px) { .exam-header { align-items: flex-start; } .timer { min-width: auto; } .intro-card, .results-card, .question-card { padding: var(--sp-5); } .favorite-item { padding: var(--sp-4); } .topic-text th, .topic-text td { min-width: 4.5em; } }
 </style>

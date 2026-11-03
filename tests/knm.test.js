@@ -58,3 +58,17 @@ test('topic markdown renders lists, tables and bold text and escapes HTML', () =
   const html = knm.renderMarkdown('Een **vet** woord <b>\n\n- een\n- twee\n\n| A | B |\n|---|---|\n| 1 | 2 |\n\n1. eerst');
   assert.equal(html, '<p>Een <strong>vet</strong> woord &lt;b&gt;</p><ul><li>een</li><li>twee</li></ul><table><thead><tr><th>A</th><th>B</th></tr></thead><tbody><tr><td>1</td><td>2</td></tr></tbody></table><ol><li>eerst</li></ol>');
 });
+
+const konspekt = JSON.parse(fs.readFileSync(new URL('../src/data/knm-konspekt.json', import.meta.url)));
+
+test('konspekt articles cover many questions and every link points at an article', () => {
+  const ids = new Set(konspekt.articles.map(article => article.id));
+  assert.ok(Object.keys(konspekt.questionArticles).length > 550);
+  for (const [questionId, articleId] of Object.entries(konspekt.questionArticles)) {
+    assert.ok(questions.some(item => item.id === questionId), questionId);
+    assert.ok(ids.has(articleId), articleId);
+  }
+  for (const article of konspekt.articles) assert.ok(article.title && article.chapter && article.body.length > 200, article.id);
+  assert.equal(knm.articleFor({ id: 't001q37' }, konspekt), null);
+  assert.equal(knm.articleFor({ id: 't002q09' }, konspekt).id, 'k03-07');
+});

@@ -42,6 +42,11 @@ export function topicFor(item, topics) {
   return id ? topics.sections.find(section => section.id === id) : null;
 }
 
+export function articleFor(item, konspekt) {
+  const id = konspekt.questionArticles[item.id];
+  return id ? konspekt.articles.find(article => article.id === id) : null;
+}
+
 const escapeHtml = text => text.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 const inline = text => escapeHtml(text).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
 const cells = row => row.trim().replace(/^\||\|$/g, '').split('|').map(cell => cell.trim());
