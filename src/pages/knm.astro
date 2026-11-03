@@ -50,7 +50,10 @@ const testNumbers = Array.from({ length: 26 }, (_, i) => i + 1);
         <div class="progress-track" aria-hidden="true"><span id="progressBar"></span></div>
 
         <section class="question-card">
-          <p class="question-label">Kies het beste antwoord</p>
+          <div class="question-head">
+            <p class="question-label">Kies het beste antwoord</p>
+            <button id="star" class="star-button" type="button" aria-pressed="false" aria-label="Markeer als favoriet" title="Na het examen ziet u het antwoord en uitleg over het onderwerp">☆</button>
+          </div>
           <h2 id="question"></h2>
           <div id="options" class="options" role="radiogroup" aria-label="Antwoorden"></div>
           <div class="exam-actions">
@@ -63,7 +66,7 @@ const testNumbers = Array.from({ length: 26 }, (_, i) => i + 1);
         <section class="question-overview" aria-label="Vraagoverzicht">
           <div class="overview-heading">
             <span>Vraagoverzicht · <b id="answeredCount">0</b> / {examLength} beantwoord</span>
-            <span class="legend"><i class="answered-dot"></i> Beantwoord <i class="visited-dot"></i> Bekeken</span>
+            <span class="legend"><i class="answered-dot"></i> Beantwoord <i class="visited-dot"></i> Bekeken <b class="star-mark">★</b> Favoriet</span>
           </div>
           <nav id="questionNav" class="question-nav" aria-label="Vragennavigatie"></nav>
         </section>
@@ -74,6 +77,12 @@ const testNumbers = Array.from({ length: 26 }, (_, i) => i + 1);
         <h1><span id="correctCount">0</span> / {examLength} goed</h1>
         <p id="verdict" class="verdict"></p>
         <p id="resultSummary" class="lead"></p>
+        <section id="favorites" class="favorites" hidden>
+          <h2>★ Favorieten <span id="favoriteCount"></span></h2>
+          <p class="favorites-note">Het goede antwoord en uitleg over het onderwerp, uit „Welkom in Nederland”.</p>
+          <div id="favoriteList" class="favorite-list"></div>
+        </section>
+        <h2 class="review-title">Alle vragen</h2>
         <div id="review" class="review"></div>
         <button id="restart" class="primary-button" type="button">Nieuw oefenexamen <span>↻</span></button>
       </section>
@@ -84,7 +93,7 @@ const testNumbers = Array.from({ length: 26 }, (_, i) => i + 1);
 
 <script>
   import bank from '../data/knm-oefenexamens.json';
-  import { buildExam, examDurationMinutes, examLength, passMark, scoreExam } from '../lib/knm.js';
+  import { buildExam, examDurationMinutes, examLength, passMark, renderMarkdown, scoreExam, topicFor } from '../lib/knm.js';
 
   const $ = (selector) => document.querySelector(selector);
   const intro = $('#intro');
@@ -107,6 +116,24 @@ const testNumbers = Array.from({ length: 26 }, (_, i) => i + 1);
   let deadline = 0;
   let clock = null;
   let visited = new Set();
+  const star = $('#star');
+  const storageKey = 'knm-stars-v1';
+  let stars = new Set();
+  try { stars = new Set(JSON.parse(localStorage.getItem(storageKey) || '[]')); }
+  catch { /* Keep favourites in memory only if storage is unavailable. */ }
+
+  function saveStars() {
+    try { localStorage.setItem(storageKey, JSON.stringify([...stars])); }
+    catch { /* Favourites still work for this exam. */ }
+  }
+
+  function renderStar() {
+    const starred = stars.has(questions[index].id);
+    star.textContent = starred ? '★' : '☆';
+    star.classList.toggle('active', starred);
+    star.setAttribute('aria-pressed', String(starred));
+    star.setAttribute('aria-label', starred ? 'Verwijder uit favorieten' : 'Markeer als favoriet');
+  }
 
   function formatTime(milliseconds) {
     const seconds = Math.max(0, Math.ceil(milliseconds / 1000));
@@ -148,6 +175,7 @@ const testNumbers = Array.from({ length: 26 }, (_, i) => i + 1);
     }));
     previous.disabled = index === 0;
     next.textContent = index === examLength - 1 ? 'Naar afronden →' : 'Volgende →';
+    renderStar();
     renderNav();
   }
 
@@ -160,6 +188,7 @@ const testNumbers = Array.from({ length: 26 }, (_, i) => i + 1);
       button.classList.toggle('active', questionIndex === index);
       button.classList.toggle('answered', Boolean(answers[questionIndex]));
       button.classList.toggle('visited', visited.has(questionIndex) && !answers[questionIndex]);
+      button.classList.toggle('starred', stars.has(questions[questionIndex].id));
       button.setAttribute('aria-label', `Vraag ${questionIndex + 1}`);
       button.addEventListener('click', () => { index = questionIndex; renderQuestion(); });
       return button;
@@ -199,7 +228,7 @@ const testNumbers = Array.from({ length: 26 }, (_, i) => i + 1);
       const article = document.createElement('article');
       article.className = `review-item ${selected === item.correct ? 'correct' : 'incorrect'}`;
       const title = document.createElement('strong');
-      title.textContent = `${questionIndex + 1}. ${item.prompt}`;
+      title.textContent = `${stars.has(item.id) ? '★ ' : ''}${questionIndex + 1}. ${item.prompt}`;
       const mine = document.createElement('p');
       mine.textContent = `Jouw antwoord: ${selected || '—'} — ${selectedOption}`;
       article.append(title, mine);
@@ -213,9 +242,82 @@ const testNumbers = Array.from({ length: 26 }, (_, i) => i + 1);
       article.append(source);
       return article;
     }));
+    renderFavorites();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  async function renderFavorites() {
+    const favorites = questions.map((item, questionIndex) => ({ item, questionIndex })).filter(({ item }) => stars.has(item.id));
+    const section = $('#favorites');
+    section.hidden = !favorites.length;
+    if (!favorites.length) return;
+    $('#favoriteCount').textContent = `(${favorites.length})`;
+    const list = $('#favoriteList');
+    list.textContent = 'Uitleg laden…';
+    // The topic texts are large, so they load only when the exam has favourites.
+    const { default: topics } = await import('../data/knm-topics.json');
+    list.replaceChildren(...favorites.map(({ item, questionIndex }) => {
+      const selected = answers[questionIndex];
+      const article = document.createElement('article');
+      article.className = `favorite-item ${selected === item.correct ? 'correct' : 'incorrect'}`;
+      const title = document.createElement('h3');
+      title.textContent = `${questionIndex + 1}. ${item.prompt}`;
+      const answer = document.createElement('p');
+      answer.className = 'favorite-answer';
+      answer.textContent = `Goed antwoord: ${item.correct} — ${item.options.find((option) => option.id === item.correct).text}`;
+      const mine = document.createElement('p');
+      mine.className = 'favorite-mine';
+      mine.textContent = selected === item.correct ? 'Uw antwoord was goed.' : `Uw antwoord: ${selected ? `${selected} — ${item.options.find((option) => option.id === selected).text}` : 'niet beantwoord'}`;
+      const unstar = document.createElement('button');
+      unstar.type = 'button';
+      unstar.className = 'unstar-button';
+      unstar.textContent = 'Uit favorieten verwijderen';
+      unstar.addEventListener('click', () => {
+        stars.delete(item.id);
+        saveStars();
+        unstar.replaceWith(Object.assign(document.createElement('span'), { className: 'unstar-done', textContent: 'Verwijderd uit favorieten' }));
+      });
+      article.append(title, answer, mine);
+      const topic = topicFor(item, topics);
+      if (topic) {
+        const details = document.createElement('div');
+        details.className = 'topic';
+        const heading = document.createElement('p');
+        heading.className = 'topic-heading';
+        heading.textContent = `Onderwerp: ${topic.article}${topic.title !== topic.article ? ` · ${topic.title}` : ''}`;
+        const text = document.createElement('div');
+        text.className = 'topic-text';
+        text.innerHTML = renderMarkdown(topic.nl);
+        const translation = document.createElement('details');
+        const summary = document.createElement('summary');
+        summary.textContent = `По-русски${topic.titleRu ? `: ${topic.titleRu}` : ''}`;
+        const ru = document.createElement('div');
+        ru.className = 'topic-text';
+        ru.lang = 'ru';
+        ru.innerHTML = renderMarkdown(topic.ru);
+        translation.append(summary, ru);
+        details.append(heading, text, translation);
+        article.append(details);
+      } else {
+        const none = document.createElement('p');
+        none.className = 'topic-none';
+        none.textContent = 'Geen passend onderwerp gevonden in „Welkom in Nederland”.';
+        article.append(none);
+      }
+      const source = document.createElement('small');
+      source.textContent = `Oefentoets ${String(item.test).padStart(3, '0')} · vraag ${item.number}`;
+      article.append(source, unstar);
+      return article;
+    }));
+  }
+
+  star.addEventListener('click', () => {
+    const { id } = questions[index];
+    if (stars.has(id)) stars.delete(id); else stars.add(id);
+    saveStars();
+    renderStar();
+    renderNav();
+  });
   $('#startExam').addEventListener('click', startExam);
   $('#restart').addEventListener('click', () => { results.hidden = true; intro.hidden = false; window.scrollTo({ top: 0, behavior: 'smooth' }); });
   previous.addEventListener('click', () => { if (index > 0) { index -= 1; renderQuestion(); } });
@@ -275,6 +377,38 @@ const testNumbers = Array.from({ length: 26 }, (_, i) => i + 1);
   .question-nav button.answered { border-color: rgba(94,234,212,.65); background: rgba(94,234,212,.12); color: var(--accent-hi); }
   .question-nav button.visited { border-color: rgba(251,191,36,.75); background: rgba(251,191,36,.11); color: #fde68a; }
   .question-nav button.active { outline: 2px solid var(--text); outline-offset: 2px; }
+  .question-head { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); }
+  .star-button { border: none; background: none; color: var(--text-faint); font-size: 1.7rem; line-height: 1; padding: 4px 8px; transition: color .15s ease, transform .15s ease; }
+  .star-button:hover { color: #fde047; transform: scale(1.08); }
+  .star-button.active { color: #fde047; }
+  .star-mark { color: #fde047; margin-left: 5px; font-weight: 400; }
+  .question-nav button { position: relative; }
+  .question-nav button.starred::after { content: '★'; position: absolute; top: -7px; right: -4px; color: #fde047; font-size: .7rem; }
+  .favorites { margin-top: var(--sp-7); }
+  .favorites h2, .review-title { margin-bottom: var(--sp-2); }
+  .review-title { margin-top: var(--sp-7); }
+  .favorites-note { color: var(--text-faint); font-size: .85rem; }
+  .favorite-list { display: grid; gap: var(--sp-4); margin-top: var(--sp-5); }
+  .favorite-item { min-width: 0; overflow-wrap: break-word; border: 1px solid var(--hairline); border-left: 3px solid #fde047; border-radius: 0 var(--r-core-sm) var(--r-core-sm) 0; background: var(--glass); padding: var(--sp-5); }
+  .favorite-item h3 { font-family: var(--font-sans); font-size: 1.05rem; line-height: 1.4; }
+  .favorite-answer { margin-top: var(--sp-3); color: var(--accent); font-weight: 600; }
+  .favorite-mine { margin-top: 4px; color: var(--text-dim); font-size: .9rem; }
+  .favorite-item.incorrect .favorite-mine { color: #fda4af; }
+  .topic { margin-top: var(--sp-4); padding-top: var(--sp-4); border-top: 1px solid var(--hairline); }
+  .topic-heading { color: var(--text-faint); font-family: var(--font-mono); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; }
+  .topic-text { color: var(--text-muted); font-size: .92rem; line-height: 1.6; }
+  .topic-text p, .topic-text ul, .topic-text ol, .topic-text table { margin-top: var(--sp-3); }
+  .topic-text ul, .topic-text ol { padding-left: 1.3em; }
+  .topic-text strong { color: var(--text); }
+  .topic-text table { display: block; overflow-x: auto; border-collapse: collapse; font-size: .85rem; }
+  .topic-text th, .topic-text td { border: 1px solid var(--hairline); padding: 6px 10px; text-align: left; vertical-align: top; }
+  .topic details { margin-top: var(--sp-4); }
+  .topic summary { cursor: pointer; color: var(--accent); font-size: .85rem; }
+  .topic-none { margin-top: var(--sp-3); color: var(--text-faint); font-size: .85rem; font-style: italic; }
+  .favorite-item small { display: block; margin-top: var(--sp-4); color: var(--text-faint); font-family: var(--font-mono); font-size: .7rem; }
+  .unstar-button { margin-top: var(--sp-2); border: none; background: none; padding: 0; color: var(--text-faint); font-size: .78rem; text-decoration: underline; }
+  .unstar-button:hover { color: var(--text); }
+  .unstar-done { display: block; margin-top: var(--sp-2); color: var(--text-faint); font-size: .78rem; }
   .verdict { display: inline-block; padding: 6px 14px; border-radius: 999px; font-weight: 600; color: #fb7185; border: 1px solid rgba(251,113,133,.5); margin-bottom: var(--sp-4); }
   .verdict.passed { color: var(--accent); border-color: var(--accent); }
   .review { display: grid; gap: var(--sp-3); margin: var(--sp-7) 0; }
@@ -283,5 +417,5 @@ const testNumbers = Array.from({ length: 26 }, (_, i) => i + 1);
   .review-item.incorrect { border-color: #fb7185; }
   .review-item p { margin-top: 6px; color: var(--text-dim); font-size: .9rem; }
   .review-item small { display: block; margin-top: 6px; color: var(--text-faint); font-family: var(--font-mono); font-size: .7rem; }
-  @media (max-width: 760px) { .exam-header { align-items: flex-start; } .timer { min-width: auto; } .intro-card, .results-card, .question-card { padding: var(--sp-5); } }
+  @media (max-width: 760px) { .exam-header { align-items: flex-start; } .timer { min-width: auto; } .intro-card, .results-card, .question-card { padding: var(--sp-5); } .favorite-item { padding: var(--sp-4); } .topic-text th, .topic-text td { min-width: 4.5em; } }
 </style>

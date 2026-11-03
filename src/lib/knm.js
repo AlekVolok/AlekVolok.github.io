@@ -36,3 +36,27 @@ export function scoreExam(questions, answers) {
   const correct = questions.filter((item, i) => answers[i] === item.correct).length;
   return { correct, total: questions.length, passed: correct >= passMark };
 }
+
+export function topicFor(item, topics) {
+  const id = topics.questionTopics[item.id];
+  return id ? topics.sections.find(section => section.id === id) : null;
+}
+
+const escapeHtml = text => text.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
+const inline = text => escapeHtml(text).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+const cells = row => row.trim().replace(/^\||\|$/g, '').split('|').map(cell => cell.trim());
+
+// The topic notes only use paragraphs, bullet and numbered lists, tables and bold text.
+export function renderMarkdown(markdown) {
+  return markdown.trim().split(/\n\s*\n/).map(block => {
+    const lines = block.split('\n').map(line => line.trim()).filter(Boolean);
+    if (lines.every(line => line.startsWith('|'))) {
+      const [head, ...rows] = lines.filter(line => !/^\|[\s:|-]+\|$/.test(line));
+      const row = (line, tag) => `<tr>${cells(line).map(cell => `<${tag}>${inline(cell)}</${tag}>`).join('')}</tr>`;
+      return `<table><thead>${row(head, 'th')}</thead><tbody>${rows.map(line => row(line, 'td')).join('')}</tbody></table>`;
+    }
+    if (lines.every(line => /^[-*] /.test(line))) return `<ul>${lines.map(line => `<li>${inline(line.slice(2))}</li>`).join('')}</ul>`;
+    if (lines.every(line => /^\d+\. /.test(line))) return `<ol>${lines.map(line => `<li>${inline(line.replace(/^\d+\. /, ''))}</li>`).join('')}</ol>`;
+    return `<p>${lines.map(inline).join('<br />')}</p>`;
+  }).join('');
+}
