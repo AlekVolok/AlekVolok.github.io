@@ -24,6 +24,12 @@ import Base from '../layouts/Base.astro';
   </section>
 </Base>
 
+<script is:inline>
+  // GitHub Pages paths are case-sensitive: send /KNM to /knm before showing the 404.
+  const lower = location.pathname.toLowerCase();
+  if (lower !== location.pathname) location.replace(lower + location.search + location.hash);
+</script>
+
 <style>
   .notfound {
     min-height: 100dvh;
